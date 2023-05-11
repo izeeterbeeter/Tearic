@@ -1,0 +1,351 @@
+on load:
+    set {mobs::*} to zombie, skeleton, enderman, spider, creeper, item, wither skeleton, blaze
+
+on spawn:
+    if "zombie" or "skeleton" is "%event-entity%":
+        if {serverage} is 1:
+            set event-entity's max health to 15 
+            set event-entity's health to 15 
+        if {serverage} is 2:
+            set event-entity's max health to 20
+            set event-entity's health to 20
+        if {serverage} is 3:
+            set event-entity's max health to 25
+            set event-entity's health to 25
+        if {serverage} is 4:
+            set event-entity's max health to 30
+            set event-entity's health to 30
+
+function v_firefall(b: block, m: entity):
+    if {ya.%{_m}%} is set:
+        stop
+    set {ya.%{_m}%} to true
+    play sound "entity.evoker.cast_spell" with volume 1 at {_b} for all players
+    aoe_show(5,red,1.5,{_b})
+    wait 1.5 second
+    aoe_show(5,yellow,5,{_b})
+    set {_ya} to {_m}'s tool
+    remove {_m}'s tool from {_m}'s tool
+    loop 5 times:
+        play sound "entity.ender_dragon.shoot" with volume 1 at {_b} for all players
+        play sound "item.firecharge.use" with volume 1 at {_b} for all players
+        loop all entities in radius 5 of {_b}:
+            if loop-entity is not {_m}:
+                loop-entity is alive
+                loop-entity is not a zombie
+                loop-entity is not a skeleton
+                loop-entity is not a spider
+                loop-entity is not a creeper
+                loop-entity is not a wither skeleton
+                loop-entity is not a item
+                dodamage({_m}, loop-entity, 1, "Fire")
+        loop all blocks in radius 5 of {_b}:
+            loop-block's y-coord is y-coord of {_b}
+            if loop-block is {_b}:
+                draw 30 of dust using dustOption(white, 2) 1 above loop-block with offset vector(0.3, 2, 0.3)
+            draw 30 of dust using dustOption(orange, 0.7) 1 above loop-block with offset vector(0.2, 1.5, 0.2)
+        wait 1 seconds
+    set tool of {_m} to {_ya}
+    clear {ya.%{_m}%}
+
+
+
+function v_icewall(v: entity, m: entity):
+    set {_b} to block below {_v}
+    if {ya.%{_m}%} is set:
+        stop
+    set {ya.%{_m}%} to true
+    play sound "entity.evoker.cast_spell" with volume 1 at {_m} for all players
+    play sound "entity.evoker.cast_spell" with volume 1 at {_b} for all players
+    set {_b2} to block below {_m}
+    ray_show(red,red, 1, {_b}, {_b2})
+    wait 1.5 second
+    ray_show(aqua,blue, 1, {_b}, {_b2})
+    set {_ya} to {_m}'s tool
+    remove {_m}'s tool from {_m}'s tool
+    loop 5 times:
+        loop all blocks between {_b2} and {_b}:
+            draw 30 of dust using dustOption(aqua, 2) 1 above loop-block with offset vector(0.3, 2, 0.3)
+            draw 30 of dust using dustOption(blue, 2) 1 above loop-block
+            play sound "block.snow.place" with volume 1 at loop-block for all players
+            play sound "entity.snow_golem.shoot" with volume 1 at loop-block for all players
+            loop all entities in radius 1.5 of loop-block:
+                if loop-entity is not {_m}:
+                    loop-entity is alive
+                    loop-entity is not a zombie
+                    loop-entity is not a skeleton
+                    loop-entity is not a spider
+                    loop-entity is not a creeper
+                    loop-entity is not a wither skeleton
+                    loop-entity is not a item
+                    dodamage({_m}, loop-entity, 2, "Frost")
+        wait 1 second
+    set tool of {_m} to {_ya}
+    clear {ya.%{_m}%}
+
+function v_lightningdefense(m: entity):
+    if {ya.%{_m}%} is set:
+        stop
+    set {ya.%{_m}%} to true
+    play sound "entity.evoker.cast_spell" with volume 1 at {_m} for all players
+    set {_b} to block below {_m}
+    aoe_show(5,red,1,block at {_b})
+    sphere_show(false,true,5,red,1,block at {_b})
+    wait 1 second
+    aoe_show(5,yellow,5,block at {_b})
+    set {_ya} to {_m}'s tool
+    remove {_m}'s tool from {_m}'s tool
+    loop 5 times:
+        {_m} is alive
+        aoe_show(5,yellow,1,block below {_m})
+        sphere_show(false,true,5,yellow,1,block below {_m})
+        draw 100 of dust using dustOption(yellow, 2) 3 above {_m} with offset vector(1.5, 1.5, 1.5) #entity.lightning_bolt.impact
+        play sound "entity.lightning_bolt.thunder" with volume 1 at {_m} for all players #block.redstone_torch.burnout
+        play sound "block.redstone_torch.burnout" with volume 1 at {_m} for all players 
+        loop all entities in radius 5 of {_m}:
+            if loop-entity is not {_m}:
+                loop-entity is alive
+                loop-entity is not a zombie
+                loop-entity is not a skeleton
+                loop-entity is not a spider
+                loop-entity is not a creeper
+                loop-entity is not a wither skeleton
+                loop-entity is not a item
+                dodamage({_m}, loop-entity, 2, "Lightning")
+        wait 1 second
+    set tool of {_m} to {_ya}
+    clear {ya.%{_m}%}
+
+
+command /healer:
+    trigger:
+        player is "Izlador"
+        spawn zombie
+        set tool of last spawned zombie to stick with lore "Heal"
+
+
+on damage of zombie or skeleton or wither skeleton or spider:
+    loop all mobs in radius 15 of victim:
+        if loop-mob's tool's lore contains "Heal":
+            loop-mob is not victim
+            chance of 60%
+            play sound "item.honey_bottle.drink" with volume 2 at victim for all players
+            loop all blocks between victim and loop-mob's location:
+                wait 1 tick
+                draw 10 of dust using dustOption(green, 2) 1 above loop-block
+            add 1 to {healstack.%loop-mob%}
+
+
+
+on spawn of zombie or skeleton:
+    {serverage} > 0
+    if event-entity is skeleton:
+        set {_ya} to bow
+    if event-entity is zombie:
+        set {_ya} to stick
+    set {_mob} to event-entity
+    chance of 25%:
+        set {_a} to random integer between 1 and 5
+        if {_a} is 1:
+            {serverage} > 1
+            add "&eLightning +3" to lore of {_ya}
+            set tool of {_mob} to {_ya}
+        if {_a} is 2:
+            {serverage} > 0
+            add "&bFrost +3" to lore of {_ya}
+            set tool of {_mob} to {_ya}
+            chance of 2%:
+                set display name of {_mob} to "&b&lFrost Guard"
+                set max health of {_mob} to 35
+                set health of {_mob} to 35
+        if {_a} is 3:
+            {serverage} > 1
+            add "&cFire +3" to lore of {_ya}
+            set tool of {_mob} to {_ya}
+            chance of 2%:
+                set display name of {_mob} to "&c&lFire Warden"
+                set max health of {_mob} to 35
+                set health of {_mob} to 35
+        if {_a} is 5:
+            {serverage} > 1
+            add "&eLightning +3" to lore of {_ya}
+            set tool of {_mob} to {_ya}
+            chance of 2%:
+                set display name of {_mob} to "&e&lLightning Knight"
+                set max health of {_mob} to 35
+                set health of {_mob} to 35
+        if {_a} is 4:
+            {serverage} > 0
+            add "Heal" to lore of {_ya}
+            set tool of {_mob} to {_ya}
+    while {_mob} is alive:
+        wait 1 second
+        if lore of {_mob}'s tool contains "&eLightning +3":
+            draw 20 of dust using dustOption(purple, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+            draw 20 of dust using dustOption(yellow, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+        if lore of {_mob}'s tool contains "Heal":
+            draw 20 of dust using dustOption(purple, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+            draw 20 of dust using dustOption(green, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+            if {healstack.%{_mob}%} is greater than 4:
+                set {healstack.%{_mob}%} to 5
+                chance of 33%:
+                    play sound "entity.evoker.cast_spell" with volume 2 at {_mob} for all players
+                    wait 1 second
+                    play sound "block.conduit.activate" with volume 2 at {_mob} for all players
+                    loop all mobs in radius 13 of {_mob}:
+                        loop-mob's health is greater than 0.3
+                        heal loop-mob by 4
+                        draw 40 of dust using dustOption(purple, 1) 3 above {_mob}'s location with offset vector(0.5, 2, 0.5)
+                        draw 40 of dust using dustOption(green, 1) 3 above {_mob}'s location with offset vector(0.5, 2, 0.5)
+                        draw 60 of dust using dustOption(green, 2) 3 above loop-mob's location with offset vector(0.5, 2, 0.5)
+                        #entity.mooshroom.convert
+                        play sound "entity.mooshroom.convert" with volume 1 at loop-mob for all players
+                        #entity.witch.drink
+                        clear {healstack.%{_mob}%}
+        if lore of {_mob}'s tool contains "&cFire +3":
+            draw 20 of dust using dustOption(purple, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+            draw 20 of dust using dustOption(red, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+        if lore of {_mob}'s tool contains "&bFrost +3":
+            draw 20 of dust using dustOption(purple, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+            draw 20 of dust using dustOption(aqua, 1) at {_mob}'s location with offset vector(0.5, 1.2, 0.5)
+
+command /resetheal:
+    trigger:
+        player is "Izlador"
+        loop all mobs in radius 20 of player:
+            {healstack.%loop-mob%} is set
+            clear {healstack.%loop-mob%}
+
+command /frostguard:
+    trigger:
+        player is "Izlador"
+        spawn zombie
+        set {_ya} to stick
+        set {_mob} to last spawned zombie
+        set display name of last spawned zombie to "&b&lFrost Guard"
+        add "&bFrost +3" to lore of {_ya}
+        set tool of {_mob} to {_ya}
+        set max health of {_mob} to 30
+        set health of {_mob} to 30
+
+command /firewarden:
+    trigger:
+        player is "Izlador"
+        spawn zombie
+        set {_ya} to stick
+        set {_mob} to last spawned zombie
+        set display name of {_mob} to "&c&lFire Warden"
+        add "&cFire +3" to lore of {_ya}
+        set tool of {_mob} to {_ya}
+        set max health of {_mob} to 30
+        set health of {_mob} to 30
+
+command /lightningknight:
+    trigger:
+        player is "Izlador"
+        spawn zombie
+        set {_ya} to stick
+        set {_mob} to last spawned zombie
+        set display name of {_mob} to "&e&lLightning Knight"
+        add "&eLightning +3" to lore of {_ya}
+        set tool of {_mob} to {_ya}
+        set max health of {_mob} to 35
+        set health of {_mob} to 35
+
+command /mykill:
+    trigger:
+        player is "Izlador"
+        make player damage player's target by 1000
+
+on death:
+    if victim is zombie or skeleton:
+        if victim's tool's lore contains "&bFrost +3":
+            chance of 10%
+            title_reward(attacker,"Fart Baron")
+        if victim's tool's lore contains "&eLightning +3":
+            chance of 10%
+            title_reward(attacker,"Single")
+        if victim's tool's lore contains "&cFire +3":
+            chance of 10%
+            title_reward(attacker,"Single AND Virgin")
+        if victim's name contains "&c&lFire Warden":
+            attacker is player
+            add 1 to {FKILLS.%attacker%}
+            if {FKILLS.%attacker%} is 5:
+                set {_chest} to chest named "&6&lBoss Reward"
+                add "&8---------------------" to the lore of {_chest}
+                add "&bDropped by: &c&lFire Warden" to the lore of {_chest}
+                add "&bContains: &9&oSpecial" to the lore of {_chest}
+                add "&8---------------------" to the lore of {_chest}
+                drop {_chest}
+                clear {FKILLS.%attacker%}
+        if victim's name contains "&e&lLightning Knight":
+            attacker is player
+            add 1 to {LKILLS.%attacker%}
+            broadcast {LKILLS.%attacker%}
+            if {LKILLS.%attacker%} is 5:
+                set {_chest} to chest named "&6&lBoss Reward"
+                add "&8---------------------" to the lore of {_chest}
+                add "&bDropped by: &e&lLightning Knight" to the lore of {_chest}
+                add "&bContains: &9&oSpecial" to the lore of {_chest}
+                add "&8---------------------" to the lore of {_chest}
+                drop {_chest}
+                clear {LKILLS.%attacker%}
+
+on damage:
+    attacker is entity
+    if victim's display name contains "&c&lFire Warden":
+        chance of 40%
+        v_firefall(block below attacker,victim)
+    if attacker's display name contains "&c&lFire Warden":
+        chance of 40%
+        v_firefall(block below victim,attacker)
+    if victim's display name contains "&e&lLightning Knight":
+        chance of 40%
+        v_lightningdefense(victim)
+    if attacker's display name contains "&e&lLightning Knight":
+        chance of 40%
+        v_lightningdefense(attacker)
+
+function frostguard_freezerain(e: entity):
+    #v_icewall(entity's target, entity)
+    make {_e} shoot a snowball at speed 3
+    loop all entities in radius 2 of {_e}:
+        loop-entity is a snowball
+        set {_ball} to loop-entity
+    while {_ball} is alive:
+        wait 1 tick
+        play sound "entity.wither_skeleton.step" with volume 1 with pitch 10 at location of {_ball} for all entities
+        play sound "block.soul_sand.place" with volume 1 with pitch 1.5 at location of {_ball} for all entities
+        play sound "block.ice.break" with volume 1 with pitch 1.5 at location of {_ball} for all entities
+        draw 20 of dust using dustOption(rgb(55, 230, 221), 1) at {_ball} with offset vector(1, 1, 1)
+        draw 20 of dust using dustOption(rgb(55, 230, 221), 1) at {_ball} with offset vector(0.2, 0.2, 0.2)
+        draw 20 of dust using dustOption(rgb(200, 232, 2303), 1) at {_ball} with offset vector(0.2, 0.2, 0.2)
+        draw 20 of dust using dustOption(rgb(200, 232, 2303), 1) at {_ball} with offset vector(1, 1, 1)
+        set {_block} to block at {_ball}
+    set {_block} to block above {_block}
+    play sound "entity.player.hurt_freeze" with volume 1 with pitch 0.1 at {_block} for all entities
+    loop all blocks in radius 5 of {_block}:
+        loop-block is air or tall grass
+        draw 20 of dust using dustOption(rgb(200, 232, 2303), 1) at loop-block with offset vector(0.5, 0.5, 0.5)
+        draw 2 of dust using dustOption(rgb(55, 230, 221), 1) at loop-block with offset vector(0.1, 0.1, 0.1)
+    loop all entities in radius 5 of {_block}:
+        loop-entity is not {_e} or projectile
+        apply slowness of tier 50 without any particles to loop-entity for 2 seconds
+        apply jump boost of tier 128 without any particles to loop-entity for 2 seconds
+
+
+on entity target:
+    if name of entity contains "&b&lFrost Guard":
+        while entity's target is set:
+            wait 5 ticks
+            chance of 1%
+            frostguard_freezerain(entity)
+    if name of entity contains "&c&lFire Warden":
+        chance of 66%
+        wait 1 second
+        distance between entity's target and entity is less than 25
+        v_firefall(block below entity's target,entity)
+        
+
+

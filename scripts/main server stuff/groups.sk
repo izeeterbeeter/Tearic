@@ -1,0 +1,56 @@
+command /group <text="create"> [<player>]:
+    trigger:
+        if arg-1 is "create":
+            loop {groups::*}:
+                if {groups::%loop-value%::*} contains player:
+                    send "&7You are already in a group! Use &d/group leave &7to leave!"
+                    stop
+            add player to {groups::*}
+            add player to {groups::%player%::*}
+            send "&7You created a group! Use &d/group invite &7to invite a player!" to player
+        if arg-1 is "glow":
+            loop {groups::*}:
+                if {groups::%loop-value%::*} contains player:
+                    loop {groups::%loop-value%::*}:
+                        loop-value-2 is not player
+                        make loop-value-2 glow light green for player
+                        loop all players:
+                            if loop-player is not player:
+                                make loop-value-2 not glow for loop-player
+        if arg-1 is "show":
+            loop {groups::*}:
+                if {groups::%loop-value-1%::*} contains player:
+                    send "&7-------------&6%loop-value-1%'s group&7-------------"
+                    send ""
+                    loop {groups::%loop-value-1%::*}:
+                        send "&6%loop-value-2%" to player
+                    send ""
+                    send "&7----------------------------------"
+        if arg-1 is "leave":
+            loop {groups::*}:
+                if {groups::%loop-value-1%::*} contains player:
+                    send "&7You have left &6%loop-value-1%'s &7group!" to player
+                    remove player from {groups::%loop-value-1%::*}
+                    if player is loop-value-1:
+                        clear {groups::%loop-value-1%::*}
+                        remove loop-value-1 from {groups::*}
+                        send "&cGroup deleted!" to player
+        if arg-1 is "invite":
+            loop {groups::*}:
+                if player is loop-value:
+                    if arg-2 is set:
+                        send "&6%player% &7has invited you to their group! Do &d/group join &7to join!" to arg-2
+                        send "&7Invite sent." to player
+                        set {invited.%arg-2%} to player
+        if arg-1 is "join":
+            if {invited.%player%} is set:
+                add player to {groups::%{invited.%player%}%::*}
+                send "&7You have joined &6%{invited.%player%}%'s &7group!" to player
+                clear {invited.%player%}
+
+command /resetgroups:
+    trigger:
+        clear {groups::*}
+        loop all players:
+            clear {invited.%loop-player%}
+                        

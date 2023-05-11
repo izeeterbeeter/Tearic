@@ -1,0 +1,106 @@
+on load:
+    set {jungle::*} to "bamboo jungle","jungle","sparse jungle","swamp","mangrove swamp"
+    set {desert::*} to "desert","badlands","eroded badlands","savanna","savanna plateau","windswept savanna","wooded badlands","mesa"
+    set {cold::*} to "taiga","old growth pine taiga","old growth spruce taiga","windswept forest","windswept hills","windswept gravelly hills","stone shores","cold ocean","deep cold ocean","stony shore","stony peaks"
+    set {snowy::*} to "grove","frozen peaks","frozen slopes","ice spikes","jagged peaks","snowy beach","snowy slopes","cold taiga","tundra","frozen ocean","frozen river","deep frozen ocean","snowy plains"
+    set {temperate::*} to "roofed forest","meadow","plains","sunflower plains","birch forest","dark forest","flower forest","old growth birch forest","forest","beach","mushroom fields","ocean","deep lukewarm ocean","deep ocean","lukewarm ocean","river","warm ocean","stone peaks"
+    set {caves::*} to "dripstone caves","lush caves","noise caves","deep dark","ancient city"
+
+on load:
+    set {_tof} to glowing ghast tear named "&d&lTear of Study"
+    set {_wf} to light gray dye named "&7Wolf Fur"
+    set {_i2} to leather chestplate named "&7Wolf Fur Coat" with lore "&70°F -- 70°F"
+    set {_i3} to iron chestplate named "&7Wolf Fur Coat" with lore "&70°F -- 70°F"
+    dye {_i2} gray
+    register new shaped recipe for {_i2} using {_wf}, {_wf}, {_wf}, string, leather chestplate, string, {_wf}, {_wf} and {_wf} with id "wolffur_coat"
+    register new shaped recipe for {_i3} using iron ingot, iron ingot, iron ingot, iron ingot, {_i2}, iron ingot, iron ingot, iron ingot and iron ingot with id "wolffur_coat2"
+    #register new shaped recipe for {_i2} using string, string, string, white wool, leather chestplate, white wool, string, string and string with id "wolffur_coat" in group "wolffur_armor"
+
+on rightclick:
+    player's tool's name is "&cHeat Repellent Seal"
+    cancel event
+    player's chestplate is a chestplate
+    player's chestplate's lore does not contain "&cHeat Repellent"
+    remove 1 from item amount of player's tool
+    add "&cHeat Repellent" to player's chestplate's lore
+
+function heatsource_num(p: player) :: number:
+    loop all blocks in radius 10 of {_p}:
+        if loop-block is campfire or minecraft:fire or minecraft:lava or flowing lava or lit furnace or magma block:
+            add 1 to {_hs.%{_p}%}
+            loop all blocks between block 1 above {_p} and block 1 above loop-block:
+                loop-block-2 is not air or minecraft:grass or campfire or vines or minecraft:lava or minecraft:fire or sculk vein or glow lichen or any trapdoor or iron bars or any door or any slab or flowing lava or minecraft:snow or lit furnace
+                add 1 to {_pee}
+                exit 1 loop
+    return {_hs.%{_p}%}-{_pee}
+
+function get_temp(p: player) :: number:
+    set {_biome} to biome at {_p}
+    if {_p} is in world "world_nether":
+        set {_basetemp.%{_p}%} to 32
+    if {jungle::*} contains "%{_biome}%":
+        set {_basetemp.%{_p}%} to 90
+    if {desert::*} contains "%{_biome}%":
+        set {_basetemp.%{_p}%} to 100
+    if {cold::*} contains "%{_biome}%":
+        set {_basetemp.%{_p}%} to 45
+    if {snowy::*} contains "%{_biome}%":
+        set {_basetemp.%{_p}%} to 14
+    if {temperate::*} contains "%{_biome}%":
+        set {_basetemp.%{_p}%} to 80
+    if {caves::*} contains "%{_biome}%":
+        set {_basetemp.%{_p}%} to 45
+    return {_basetemp.%{_p}%}+2*heatsource_num({_p})
+                        
+
+on death of wolf:
+    chance of 10%:
+        drop light gray dye named "&7Wolf Fur"
+
+on join:
+    while player is online:
+        wait 10 ticks
+        if get_temp(player) is less than 46:
+            chance of 50
+            draw 4 of dust using dustOption(white, 1) 1.4 above and 0.3 in front of player
+        set {_temp.%player%} to get_temp(player)
+        #send action bar "<light blue>%{_temp.%player%}%&7°F" to player
+        if get_temp(player) is greater than 110:
+            add 1 to {heatthresh.%player%}
+            if player's chestplate's lore contains "&cHeat Repellent":
+                get_temp(player) is greater than 110
+                clear {heatthresh.%player%}
+            {heatthresh.%player%} is greater than 10
+            ignite player for 1 second
+            if block at player is minecraft:water:
+                set block at player to air
+                show 5 black dust above block at player #block.lava.extinguish
+                play sound "block.lava.extinguish" with volume 1 at block at player for all players
+        else:
+            clear {heatthresh.%player%}
+        if get_temp(player) is less than 33:
+            if name of player's chestplate is "&7Wolf Fur Coat":
+                get_temp(player) is greater than -1
+                clear {freezethresh.%player%}
+            add 1 to {freezethresh.%player%}
+            {freezethresh.%player%} is greater than 10
+            damage player by 1 heart
+        else:
+            clear {freezethresh.%player%}
+
+command settime:
+    trigger:
+        set time of "world" to 5am
+
+at 5am:
+    if {rain} is not set:
+        chance of 5%:
+            broadcast "&eRainy season has started!"
+            set {rain} to 1
+            set weather of "world" to rain
+    else:
+        set weather of "world" to rain
+        add 1 to {rain}
+        if {rain} is 3:
+            clear {rain}
+        

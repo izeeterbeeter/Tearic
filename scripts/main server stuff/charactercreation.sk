@@ -1,0 +1,160 @@
+
+command /cc:
+    trigger:
+        charactercreator(player)
+
+
+on jump:
+    {incc.%player%} is set
+    cancel event
+    {ccchoice.%player%} is set
+    if {stage.%player%} is 1:
+        if {ccchoice.%player%} is 1:
+            set {main.%player%} to "botanist"
+            send "&aBotanist chosen!" to player
+        if {ccchoice.%player%} is 2:
+            set {main.%player%} to "furnace"
+            send "&8Blacksmith chosen!" to player
+        if {ccchoice.%player%} is 3:
+            set {main.%player%} to "magic"
+            send "&dTearic chosen!" to player
+        set {stage.%player%} to 2
+    if {stage.%player%} is 2:
+        if {ccchoice.%player%} is 2:
+            send "&aConfirmed." to player
+            set {stage.%player%} to 4
+        if {ccchoice.%player%} is 3:
+            send "&aDenied." to player
+            set {stage.%player%} to 3
+
+
+
+on any movement:
+    {incc.%player%} is set
+    if location of block below player is location(0.5,299.5,1.5):
+        set {ccchoice.%player%} to 1
+    if location of block below player is location(1.5,299.5,0.5):
+        set {ccchoice.%player%} to 2
+    if location of block below player is location(-0.5,299.5,0.5):
+        set {ccchoice.%player%} to 3
+    if location of block below player is location(0.5,299.5,-0.5):
+        set {ccchoice.%player%} to 4
+
+
+
+function charactercreator(p: player):
+    clear {incc.%{_p}%}
+    clear {stage.%{_p}%}
+    clear {ccchoice.%{_p}%}
+    teleport {_p} to location(0.5,300,0.5)
+    set block below {_p} to barrier
+    set block below 1 east {_p} to barrier
+    set block 2 east {_p} to barrier
+    set block below 1 north {_p} to barrier
+    set block 2 north {_p} to barrier
+    set block below 1 south {_p} to barrier
+    set block 2 south {_p} to barrier
+    set block below 1 west {_p} to barrier
+    set block 2 west {_p} to barrier
+    set block 1 east 1 north of {_p} to barrier
+    set block 1 east 1 south of {_p} to barrier
+    set block 1 west 1 north of {_p} to barrier
+    set block 1 west 1 south of {_p} to barrier
+    set {incc.%{_p}%} to true
+    set {stage.%{_p}%} to 1
+    while {stage.%{_p}%} is 1:
+        wait 5 ticks
+        {ccchoice.%{_p}%} is set
+        if {ccchoice.%{_p}%} != {_n}:
+            set {_n} to {ccchoice.%{_p}%}
+            if {ccchoice.%{_p}%} is 1:
+                send "" to {_p}
+                send "&7----------- &6Character Creation &7-----------" to {_p}
+                send "" to {_p}
+                send "&aBotanist" to {_p}
+                send "" to {_p}
+                send "&7  - This specilization allows you to meditate and communicate with the Tree Spirits. Revolves around healing and dealing elemental damage. You can create totems which provide various effects in a radius." to {_p}
+                send "" to {_p}
+                send "&7  - Allows the player to level up the Botany skill past level 12. But doesn't allow them to level up &dTearic &7or &8Blacksmithing &7past level 12." to {_p}
+                send "" to {_p}
+                send "&7----------------&6Jump to confirm!&7-----------------" to {_p}
+                send "" to {_p}
+            if {ccchoice.%{_p}%} is 2:
+                send "" to {_p}
+                send "&7----------- &6Character Creation &7-----------" to {_p}
+                send "" to {_p}
+                send "&8Blacksmith" to {_p}
+                send "" to {_p}
+                send "&7  - Allows the player to use ores to create weapons, tools, and armor. This whole skill revolves around weapon crafting and tools. Tanky." to {_p}
+                send "" to {_p}
+                send "&7  - Allows the player to level up the Blacksmithing skill past level 12. But doesn't allow them to level up &dTearic &7or &aBotany &7past level 12." to {_p}
+                send "" to {_p}
+                send "&7----------------&6Jump to confirm!&7-----------------" to {_p}
+                send "" to {_p}
+            if {ccchoice.%{_p}%} is 3:
+                send "" to {_p}
+                send "&7----------- &6Character Creation &7-----------" to {_p}
+                send "" to {_p}
+                send "&dTearic" to {_p}
+                send "" to {_p}
+                send "&7  - Allows the player to use the powers of Tears and cast magical spells. This whole skill revolves around dealing damage, making useful spells, and being physically weak." to {_p}
+                send "" to {_p}
+                send "&7  - Allows the player to level up the Blacksmithing skill past level 12. But doesn't allow them to level up &8Blacksmithing &7or &aBotany &7past level 12." to {_p}
+                send "" to {_p}
+                send "&7----------------&6Jump to confirm!&7-----------------" to {_p}
+                send "" to {_p}
+    teleport {_p} to location(0.5,300,0.5)
+    wait 2 seconds
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "&7Would you like to create a backstory?" to {_p}
+    send "  &7  - (Increased starting skill levels, at the cost of 3 skill xp gaining debuffs.)" to {_p}
+    send "" to {_p}
+    send "&7Move to your left or right to decide." to {_p}
+    send "" to {_p}
+    clear {ccchoice.%{_p}%}
+    clear {_n}
+    while {stage.%{_p}%} is 2:
+        wait 5 ticks
+        {ccchoice.%{_p}%} is set
+        if {ccchoice.%{_p}%} != {_n}:
+            set {_n} to {ccchoice.%{_p}%}
+            if {ccchoice.%{_p}%} is 2:
+                send "&aYes! (Jump to confirm)" to {_p}
+            if {ccchoice.%{_p}%} is 3:
+                send "&cNo!! (Jump to confirm)" to {_p}
+    teleport {_p} to location(0.5,300,0.5)
+    while {stage.%{_p}%} is 3:
+        wait 2 seconds
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        send "" to {_p}
+        clear {_n}
+        spawn({_p})
+        stop
+    wait 2 seconds
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "&7Move to decide." to {_p}
+    send "" to {_p}
+    while {stage.%{_p}%} is 4:
+
+    

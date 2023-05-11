@@ -1,0 +1,134 @@
+on load:
+	set {sprefix::*} to "Sword of ", "Greatsword of ", "Blade of ", "Rapier of ", "Reincarnated Blade of ", "Crimson Blade of ", "Warped Blade of ", "Chorus Blade of ", "Skulk Blade of ", "Khopesh of ", "Katana of ", "Hungry Blade of ", "Cutlass of "
+	set {ssuffix::*} to "Ancients", "the Keeper", "the Redeemer", "Tree Spirits", "Ender", "Vladimir", "Gilgamesh", "Guts", "Griffith", "Casca", "Bellerophon", "Sisyphus", "Hatshepsut", "Bastet", "Mugen", "King Bradley", "Ruined King", "Fiora", "King Darius", "Matthew Morbius", "Roronoa", "Trafalgar", "Rayleigh", "Mihawk", "Oden", "Dainsleif", "Skofnung", "Hǫfuð"
+	set {wperks::*} to "Lifesteal", "Momentum", "Beheading"
+	set {aprefix::*} to "Waraxe of ", "Axe of ", "Bloodied Axe of ", "Great Halberd of ", "Battleaxe of ", "Hatchet of ", "Tabar of ", "Warped Battleaxe of ", "Crimson Hatchet of ", "Skulk Halberd of ", "Devoured Axe of ", "Pole-Axe of "
+
+	
+on load:
+	set {_i1} to chainmail chestplate
+	register new shaped recipe for {_i1} using chain, air, chain, chain, chain, chain, chain, chain and chain with id "chainmail_chestplate" in group "armor"
+	register new shaped recipe for chainmail leggings using chain, chain, chain, chain, air, chain, chain, air and chain with id "chainmail_leggings" in group "armor"
+	register new shaped recipe for chainmail boots using chain, air, chain, chain, air, chain, air, air and air with id "chainmail_boots" in group "armor"
+	register new shaped recipe for chainmail helmet using chain, chain, chain, chain, air, chain, air, air and air with id "chainmail_helmet" in group "armor"
+
+on inventory click:
+	if {furnace.%player%} < 12:
+		if name of current inventory is "Furnace" or "Blast Furnace":
+			if event-item is iron ingot or iron ore or raw iron:
+				cancel event
+				wait 0.1 seconds
+				close player's inventory
+				send action bar "&7You need at least smithing level &c12 &7to do this!" to player
+	if {furnace.%player%} < 7:
+		if name of current inventory is "Furnace":
+			if event-item is any meat or potato:
+				cancel event
+				wait 0.1 seconds
+				close player's inventory
+				send action bar "&7You need at least smithing level &c7 &7to do this!" to player
+				
+on death:
+	if lore of attacker's tool contains "&7Momentum":
+		if attacker doesn't have speed:
+			apply speed of tier 2 without any particles to attacker for 2 seconds
+	if lore of attacker's tool contains "&7Beheading":
+		chance of 15%:
+			if victim is a cow:
+				drop 1 of skull of "MHF_Cow" parsed as offline player named "&cCow Head" at location of victim
+			if victim is a pig:
+				drop 1 of skull of "MHF_Pig" parsed as offline player named "&cPig Head" at location of victim
+			if victim is a chicken:
+				drop 1 of skull of "MHF_Chicken" parsed as offline player named "&cChicken Head" at location of victim
+			if victim is a villager:
+				drop 1 of skull of "MHF_Villager" parsed as offline player named "&cVillager Head" at location of victim
+			if victim is a squid:
+				drop 1 of skull of "MHF_Squid" parsed as offline player named "&cSquid Head" at location of victim
+			if victim is a skeleton:
+				drop 1 skeleton skull at location of victim
+			if victim is a zombie:
+				drop 1 of zombie head at location of victim
+			if victim is a player:
+				drop 1 of victim's skull at location of victim
+			
+	
+on damage:
+	if victim is not blocking:
+		if attacker's attack cooldown is 1:
+			if lore of attacker's tool contains "&cMythic +3":
+				damage victim by 1.5
+				#dodamage(victim, 3, "Frost")
+				set damage to final damage
+			if lore of attacker's tool contains "&eLegend +2":
+				damage victim by 1
+				set damage to final damage
+			if lore of attacker's tool contains "&aNovice +1":
+				damage victim by 0.5
+				set damage to final damage
+			if lore of attacker's tool contains "&7Lifesteal":
+				heal attacker by 1 heart
+	else:
+		push attacker backwards with force 1
+		apply slowness of tier 2 without any particles to attacker for 1 second
+		apply blindness of tier 1 without any particles to attacker for 1 second
+	
+#on craft:
+	#if event-item is iron sword or iron axe or diamond sword or diamond axe:
+		#set {_random} to a random number between 1 and 100
+		#set {_ya} to {furnace.%player%}
+		#if {_random} < {_ya}-12:
+			#play sound "block.anvil.use" with volume 2 at location of player for all players
+			#play sound "ambient.soul_sand_valley.mood" with volume 2 at location of player for all players
+			#set lore of event-slot to "&cMythic +3"
+			#set 2nd line of lore of event-slot to "&eCreated by: &7%player%"
+			#if event-item is a sword:
+				#set {_a} to "&c&l%random element out of {sprefix::*}%%random element out of {ssuffix::*}%"
+				#set name of event-item to {_a}
+			#if event-item is a axe:
+				#set {_a} to "&c&l%random element out of {aprefix::*}%%random element out of {ssuffix::*}%"
+				#set name of event-item to {_a}
+			#chance of 15%:
+				#set 2nd line of lore of event-slot to "&7%random element out of {wperks::*}%"
+				#set 3rd line of lore of event-slot to "&eCreated by: &7%player%"
+			#stop
+		#if {_random} < ({_ya}*1.8)-12:
+			#set lore of event-slot to "&eLegend +2"
+			#set 2nd line of lore of event-slot to "&eCreated by: &7%player%"
+			#stop
+		#if {_random} < ({_ya}*2.5)-12:
+			#set lore of event-slot to "&aNovice +1"
+			#set 2nd line of lore of event-slot to "&eCreated by: &7%player%"
+			#stop
+		#set lore of event-slot to "&7Adept"
+
+on craft:
+	if {furnace.%player%} < 12:
+		if event-item is iron tool or iron sword:
+			close player's inventory
+			send action bar "&7You need at least smithing level &c12 &7to do this!" to player
+			cancel event
+	if {furnace.%player%} < 17:
+		if event-item is chainmail armor:
+			close player's inventory
+			send action bar "&7You need at least smithing level &c17 &7to do this!" to player
+			cancel event
+	if {furnace.%player%} < 24:
+		if event-item is iron armor:
+			close player's inventory
+			send action bar "&7You need at least smithing level &c24 &7to do this!" to player
+			cancel event
+	if {furnace.%player%} < 28:
+		if event-item is diamond tool or diamond sword:
+			close player's inventory
+			send action bar "&7You need at least smithing level &c28 &7to do this!" to player
+			cancel event
+	if {furnace.%player%} < 38:
+		if event-item is diamond armor:
+			close player's inventory
+			send action bar "&7You need at least smithing level &c38 &7to do this!" to player
+			cancel event
+	if {furnace.%player%} < 50:
+		if event-item is netherite ingot:
+			close player's inventory
+			send action bar "&7You need at least smithing level &c50 &7to do this!" to player
+			cancel event

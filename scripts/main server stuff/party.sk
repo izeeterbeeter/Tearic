@@ -1,0 +1,116 @@
+ 
+ 
+ 
+command /resetparty:
+    trigger:
+        clear {party::*}
+        loop all players:
+            clear {party.%loop-player%}
+ 
+ 
+ 
+on rightclick on player:
+    set {_a::*} to get_party(player)
+    if {_a::1} is player:
+        {party.%player%} is not set
+        if {party::%player%::*} contains clicked entity:
+            if player is sneaking:
+                remove clicked entity from {party::%player%::*}
+                send action bar "&oYou kicked &c&o%clicked entity% &f&ofrom the party!" to player
+                send action bar "&oYou have been kicked from &c&o%player%'s &f&oparty!" to clicked entity
+            else:
+                loop {party::%player%::*}:
+                    send action bar "&oParty created!" to loop-value
+                    play sound "entity.player.levelup" with volume 1 at location of loop-value for loop-value
+                    set {party.%loop-value%} to true
+    if {party::%clicked player%::*} is set:
+        loop {party::%clicked player%::*}:
+            broadcast loop-value
+            if loop-value is player:
+                play sound "entity.player.levelup" with volume 1 at location of clicked entity for all players
+                send action bar "&oYou left &a&c%clicked entity%'s &f&oparty!" to player
+                remove player from {party::%clicked entity%::*}
+                stop
+        play sound "entity.player.levelup" with volume 1 at location of clicked entity for all players
+        size of {party::%clicked entity%::*} is less than 5
+        send action bar "&oYou joined &a&o%clicked entity%'s &f&oparty!" to player
+        add player to {party::%clicked entity%::*}
+    
+ 
+ 
+function get_party(p: player) :: objects:
+    loop {party::*}:
+        {party::%loop-value%::*} contains {_p}
+        return {party::%loop-value%::*}
+
+function teleport_party(p: player,l: location):
+    set {_a::*} to get_party({_p})
+    loop {_a::*}:
+        teleport loop-value to {_l}
+    
+
+
+command /wah:
+    trigger:
+        if player is not "Izlador":
+            broadcast "%player% is trying to use admin commands again."
+            stop
+        teleport_party(player,location 10 blocks above player)
+ 
+command /party <text="create">:
+    trigger:
+        if arg 1 is "create":
+            {party::%player%::*} is not set
+            send "&7Party created! Crouch to stop. To complete party making, rightclick a player who has joined your party." to player
+            add player to {party::*}
+            add player to {party::%player%::*}
+            play sound "entity.player.levelup" with volume 1 at location of player for all players
+            loop all players in radius 20 of player:
+                loop-player is not player
+                send action bar "&a&o%player% &f&ois creating a party! Rightclick them to join!" to loop-player
+            spawn armor stand at player
+            set {_entity} to last spawned entity
+            add "{Invisible:1}" to nbt of {_entity}
+            add "{NoGravity:1}" to nbt of {_entity}
+            while {_entity} exists:
+                set display name of {_entity} to "&6Party: %size of {party::%player%::*}%/4 &7(rightclick to join)"
+                teleport {_entity} to player
+                if {party.%player%} is not set:
+                    if player is sneaking:
+                        eject any passenger of {_entity}
+                        wait 2 ticks
+                        kill {_entity}
+                        delete {_entity}
+                        send action bar "&c&oParty Disbanded" to player
+                        clear {party::%player%::*}
+                        remove player from {party::*}
+                    wait 5 tick
+                else:
+                    eject any passenger of {_entity}
+                    wait 2 ticks
+                    kill {_entity}
+                    delete {_entity}
+        if arg 1 is "show":
+            send "&7%get_party(player)%" to player
+            stop
+        if arg 1 is "leave":
+            if {party::%player%::*} is set:
+                loop {party::%player%::*}:
+                    send action bar "&c&oParty Disbanded" to loop-value
+                    play sound "entity.player.levelup" with volume 1 at location of loop-value for loop-value
+                    clear {party.%loop-value%}
+                clear {party::%player%::*}
+                remove player from {party::*}
+                stop
+            loop {party::*}:
+                if {party::%loop-value%::*} contains player:
+                    send action bar "&c&oParty left" to player
+                    play sound "entity.player.levelup" with volume 1 at location of player for player
+                    clear {party.%player%}
+                    remove player from {party::%loop-value%::*}
+                    if size of {party::%loop-value%::*} is 1:
+                        clear {party::%loop-value%::*}
+                        send action bar "&c&oParty Disbanded" to loop-value
+                        play sound "entity.player.levelup" with volume 1 at location of loop-value for loop-value
+                        remove loop-value from {party::*}
+

@@ -1,0 +1,52 @@
+command /botanist <text>:
+	trigger:
+		if player's name is "Izlador":
+			set {botany.%player%} to arg 1 parsed as integer
+			send {botany.%player%} to player
+
+on rightclick:
+	if {botany.%player%} > 9:
+		if target is a player:
+			loop {diseases::*}:
+				loop {diseases::%loop-value-1%::players::*}:
+					if loop-value-2 is target:
+						send "&c&l%loop-value-1% >" to player
+						send "[ &f%{diseases::%loop-value-1%::cure::*}% ]" to player
+						stop
+			send "&aThis player is nice and healthy!" to player
+		
+                   
+on break of minecraft:grass:
+	if {botany.%player%} > 11:
+		chance of 1%:
+			drop glowing cactus named "&fAloe Vera"
+			stop
+		chance of 1%:
+			drop glowing allium named "&fEchinacea"
+			stop
+		chance of 1%:
+			drop glowing oxeye daisy named "&fFeverfew"
+			stop
+	if {botany.%player%} > 19:
+		chance of 1%:
+			drop glowing fern named "&fGingko"
+			stop
+		chance of 1%:
+			drop glowing hanging roots named "&fGinseng"
+			stop
+		chance of 1%:
+			drop glowing oxeye daisy named "&fChamomile"
+			stop
+	if {botany.%player%} > 29:
+		chance of 1%:
+			drop pink tulip named "&fMilk thistle"
+			stop
+		chance of 1%:
+			drop glowing allium named "&fLavender"
+			stop
+		chance of 1%:
+			drop glowing beetroot seeds named "&fFlax seed"
+			stop
+
+
+

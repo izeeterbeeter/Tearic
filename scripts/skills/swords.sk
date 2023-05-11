@@ -1,0 +1,156 @@
+#command /pee10 <text>:
+	#trigger:
+		#set {swords.%player%} to arg 1 parsed as integer
+		#send {swords.%player%} to player
+		
+on damage:
+	if attacker is holding a sword:
+		attacker's attack cooldown is 1
+		if {swords.%attacker%} > 9 and victim is not a player:
+			damage victim by 2
+			set damage to final damage
+		if {swords.%attacker%} > 19 and victim is a player: 
+			damage victim by 2
+			set damage to final damage
+			
+
+
+	
+
+on rightclick:
+	if player is sneaking:
+		player is holding any sword
+		{active.%player%} is not set
+		clear {choice::%player%::*}
+		set {active.%player%} to true
+		clear {choice::%player%::*}
+
+on rightclick:
+	player is holding any sword
+	if player is sneaking:
+		stop
+	if {active.%player%} is true:
+		cancel event
+		add "Right" to {choice::%player%::*}
+		play sound "item.crossbow.loading_end" with volume 1 with pitch 1.5 at player's location for player
+		send action bar "%bar(player)%" to player
+		#send action bar "%{choice::%player%::*}%" to player
+	if size of {choice::%player%::*} > 2:
+		if {choice::%player%::1} is "Right":
+			{choice::%player%::2} is "Right"
+			{choice::%player%::3} is "Right"
+			{swords.%player%} > 19
+			#send action bar "Dash selected!" to player
+			set {choice::%player%::*} to "Dash selected!"
+			send action bar "%bar(player)%" to player
+			dash(player)
+		if {choice::%player%::1} is "Right":
+			{choice::%player%::2} is "Left"
+			{choice::%player%::3} is "Right"
+			{swords.%player%} > 29
+			#send action bar "Swap selected!" to player
+			set {choice::%player%::*} to "Swap selected!"
+			send action bar "%bar(player)%" to player
+			swap(player)
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+
+on leftclick:
+	player is holding any sword
+	if {active.%player%} is true:
+		cancel event
+		add "Left" to {choice::%player%::*}
+		play sound "item.crossbow.loading_end" with volume 1 with pitch 1.5 at player's location for player
+		send action bar "%bar(player)%" to player
+		#send action bar "%{choice::%player%::*}%" to player
+	if size of {choice::%player%::*} > 2:
+		if {choice::%player%::1} is "Left":
+			{choice::%player%::2} is "Left"
+			{choice::%player%::3} is "Left"
+			{swords.%player%} > 9
+			send action bar "Stab selected!" to player
+			stab(player)
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+
+function swap(p: player):
+	{stamina.%{_p}%} >= 100
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 100)%"
+	set {_waited} to difference between {swap.%{_p}%} and now
+	if {_waited} is less than 5 seconds:
+		send action bar "&f&lYou can Swap after &e&l%difference between 2 minutes and {_waited}%" to {_p}
+		stop
+	play sound "entity.player.attack.sweep" with volume 1 at {_p} for all players
+	play sound "block.ender_chest.open" with volume 1 at {_p} for all players
+	set {_swapie} to {_p}'s target
+	if distance between {_p} and {_swapie} is less than 30:
+		loop all blocks between block 1 above {_p} and block 1 above {_swapie}:
+			if loop-block is not air:
+				if loop-block is not minecraft:grass:
+					send action bar "&f&lTarget is too far away!" to {_p}
+					stop
+		sphere_show(false,true,5,red,1,block at {_swapie})
+		wait 1 seconds
+		teleport {_p} to block behind {_swapie}
+		make {_p} look at {_swapie}
+		play sound "block.ender_chest.close" with volume 1 at {_p} for all players
+		loop all entities in radius 5 of {_p}:
+			loop-entity is not {_p}
+			apply blindness without any particles to loop-entity for 5 seconds
+			loop-entity is not {_swapie}
+			make {_p} damage loop-entity by 1
+	else:
+		send action bar "&f&lTarget is too far away!" to {_p}
+
+	
+            
+
+
+function dash(p: player):
+	{stamina.%{_p}%} >= 50
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 50)%"
+	set {_waited} to difference between {dash.%{_p}%} and now
+	if {_waited} is less than 2 seconds:
+		send action bar "&f&lYou can Dash after &e&l%difference between 10 seconds and {_waited}%" to {_p}
+		stop
+	play sound "entity.player.attack.sweep" with volume 1 at {_p} for all players
+	set {dash.%{_p}%} to now
+	set {_a} to {_p}'s yaw
+	set {_b} to {_p}'s pitch
+	wait 1 tick
+	loop all blocks between block at {_p}'s location and block 6 blocks in front of {_p}:
+		loop all entities in radius 1.5 of loop-block:
+			loop-entity is not {_p}
+			make {_p} damage loop-entity by 3
+		draw 40 of dust using dustOption(gray, 1) at loop-block with offset vector(0.2, 1, 0.2)
+	loop all blocks between block 1 above {_p}'s location and block 7 blocks in front of {_p}:
+		if loop-block is air:
+			add loop-block's location to {_a::*}
+	set {_loc} to {_a::%size of {_a::*}%}
+	set {_loc}'s yaw to {_a}
+	set {_loc}'s pitch to {_b}
+	teleport {_p} to {_loc}
+	loop all entities in radius 2 of {_p}:
+		loop-entity is not {_p}
+		make {_p} damage loop-entity by 3
+	clear {choice::%{_p}%::*}
+	play sound "block.ender_chest.close" with volume 1 at {_p} for all players
+
+
+function stab(p: player):
+	{stamina.%{_p}%} >= 20
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 20)%"
+	set {_waited} to difference between {stab.%{_p}%} and now
+	if {_waited} is less than 1 seconds:
+		send action bar "&f&lYou can Stab after &e&l%difference between 1 seconds and {_waited}%" to {_p}
+		stop
+	play sound "entity.player.attack.sweep" with volume 1 at {_p} for all players
+	set {stab.%{_p}%} to now
+	loop all blocks between block at {_p}'s location and block 3 blocks in front of {_p}:
+		loop all entities in radius 1.5 of loop-block:
+			loop-entity is not {_p}
+			make {_p} damage loop-entity by 2
+			set {shits.%loop-entity%} to 3
+		draw 40 of dust using dustOption(gray, 1) 1 above loop-block with offset vector(0.1, 0.1, 0.1)

@@ -1,0 +1,34 @@
+#command /pee6 <text>:
+	#trigger:
+		#set {jumping.%player%} to arg 1 parsed as integer
+		#send {jumping.%player%} to player
+		
+
+on flight toggle:
+	clear {yipi.%player%}
+	set {nfall.%player%} to false
+	player's gamemode is not creative:
+		cancel event
+		set player's flight state to false
+		{stamina.%player%} >= 20
+		set {amountreduced.%player%} to "&c-%reduce_stamina(player, 20)%"
+		wait a tick
+		if {jumping.%player%} < 15:
+			set {_jumplevel} to 0
+		else:
+			set {_jumplevel} to (({jumping.%player%}-15)*0.1)
+		push player upwards at speed 0.3+{_jumplevel}
+		push player forwards at speed 0.5+{_jumplevel}
+		draw 20 of cloud at player with offset vector(0.2, 0.2, 0.2) with extra 0.1
+		set {yipi.%player%} to true
+		play sound "entity.shulker.shoot" with volume 1.0 with pitch 5 to player
+		while {yipi.%player%} is true:
+			wait 1 tick
+			draw 1 of cloud at player with offset vector(0.2, 0.2, 0.2) with extra 0.1
+			set {nfall.%player%} to true
+			block below player is not air or minecraft:grass or any flower
+			wait 3 tick
+			clear {yipi.%player%}
+			set {nfall.%player%} to false
+on jump:
+    set player's flight state to true

@@ -1,0 +1,287 @@
+
+
+command /givecrimson:
+    trigger:
+        give player a ghast tear named "&c&lTear of Exposed Veins"
+        give player a ghast tear named "&c&lTear of Mars"
+        give player a ghast tear named "&c&lTear of Regret"
+        give player a ghast tear named "&c&lTear of Wild Soul"
+        give player a ghast tear named "&c&lTear of Frozen Core"
+        give player a ghast tear named "&c&lTear of Anivia"
+        give player a ghast tear named "&7&lTear of Manabullet"
+
+
+on load:
+    set {_i1} to glowing ghast tear named "&d&lTear of Study"
+    register new shaped recipe for {_i1} using glass, ender pearl, glass, ender pearl, heart of the sea, ender pearl, glass, ender pearl and glass with id "tear_study" in group "tears"
+
+
+
+on death:
+    attacker is player
+    loop all items in inventory of attacker:
+        loop-item is ghast tear named "&d&lTear of Study":
+            spawn armor stand at position of victim
+            set {_armorstand} to last spawned entity
+            set tag "Invisible" of nbt compound of {_armorstand} to true
+            while {_armorstand} is alive:
+                wait 1 tick
+                add 1 to {_pee}
+                if {_pee} > 120:
+                    kill {_armorstand}
+                draw 30 of dust using dustOption(rgb(50, 155, 168), 1) at block 1 above {_armorstand} with offset vector(0.1, 0.1, 0.1)
+                push {_armorstand} (direction from {_armorstand} to attacker) at speed 0.2
+                push {_armorstand} upwards at speed 0.08
+                loop all entities in radius 1.5 of {_armorstand}:
+                    loop-entity is attacker
+                    tos_increase(attacker,1)
+                    draw 30 of dust using dustOption(rgb(94, 57, 227), 1) at block 1 above {_armorstand} with offset vector(0.1, 0.1, 0.1)
+                    kill {_armorstand}
+                    play sound "block.chorus_flower.grow" at attacker for attacker
+            stop
+        
+
+    
+function tos_increase(p: player,a: number):
+    loop all items in inventory of {_p}:
+        loop-item is ghast tear named "&d&lTear of Study"
+        set {_tos} to loop-item
+        if line 1 of lore of loop-item is not set:
+            add "&70/100" to lore of loop-item
+    set {_x::*} to uncoloured line 1 of lore of {_tos} split at "/"
+    set {_num} to {_x::1} parsed as number + {_a}
+    loop all items in inventory of {_p}:
+        loop-item is {_tos}
+        delete lore of loop-item
+        add "&7%{_num}%/100" to lore of loop-item
+        if {_num} >= 100:
+            add 100 to {xpmagic.%{_p}%}
+            levelup({_p},"magic")
+            show_xp({_p},"magic",{xpmagic.%{_p}%},"Tearic")
+            remove 1 of loop-item from {_p}'s inventory
+            stop 
+    
+    
+
+
+function spellpower(p: player) :: number:
+    if {magic.%{_p}%} >= 12:
+        return {magic.%{_p}%}-12
+
+
+function bleedforme(p: player):
+    if manadeplete({_p},50):
+        if {amountclicked.%{_p}%} is not set:
+            set {amountclicked.%{_p}%} to 1
+            set {blocclicked.%{_p}%} to {_p}'s target block
+            while {amountclicked.%{_p}%} is 1:
+                wait 3 tick
+                draw 20 of dust using dustOption(red, 1) at {blocclicked.%{_p}%} with offset vector(1, 1, 1) to {_p}
+                draw 20 of dust using dustOption(red, 1) at {blocclicked.%{_p}%} with offset vector(2, 0.1, 2) to {_p}
+                draw 100 of dust using dustOption(red, 1) 1 above {blocclicked.%{_p}%} with offset vector(0.1, 2, 0.1) to {_p}
+        if {amountclicked.%{_p}%} is 1:
+            set {amountclicked.%{_p}%} to 2
+        if {amountclicked.%{_p}%} is 2:
+            spawn armor stand at block 20 blocks above {blocclicked.%{_p}%} with nbt nbt compound from "{Invisible:1b}"
+            set {_armorstand} to last spawned entity
+            clear {amountclicked.%{_p}%}
+        play sound "block.anvil.land" with volume 2 at {_armorstand} for all players
+        while {_armorstand} is alive:
+            wait 1 tick
+            draw 100 of dust using dustOption(gray, 1) at {_armorstand} with offset vector(0.5, 3, 0.5)
+            draw 100 of dust using dustOption(black, 1) at block 4 above {_armorstand} with offset vector(1, 0.1, 0.1)
+            draw 100 of dust using dustOption(rgb(79, 47, 23), 1) at block 7 above {_armorstand} with offset vector(0.3, 1.1, 0.3)
+            if block below {_armorstand} is not air or minecraft:grass:
+                play sound "entity.player.attack.crit" with volume 1 at {_armorstand} for all players
+                play sound "entity.player.attack.sweep" with volume 1 at {_armorstand} for all players
+                draw 100 of dust using dustOption(red, 1) at {_armorstand} with offset vector(3, 0.1, 3)
+                loop all entities in radius 10 of {_armorstand}:
+                    loop-entity is not an item
+                    loop-entity is not {_p}
+                    set {shits.%loop-entity%} to 3
+                    damage loop-entity by 3+spellpower({_p})
+                    make {_p} damage loop-entity by 0.1
+                    draw 1 of sweep_attack at loop-entity
+                kill {_armorstand}
+
+function frozenrain(p: player):
+    if manadeplete({_p},100):
+        make {_p} shoot a snowball at speed 3
+        wait 1 tick
+        loop all entities in radius 2 of {_p}:
+            loop-entity is a snowball
+            set {_ball} to loop-entity
+        apply invisibility of tier 1 without any particles to {_ball} for 5 seconds
+        while {_ball} is alive:
+            wait 1 tick
+            play sound "entity.wither_skeleton.step" with volume 1 with pitch 10 at location of {_ball} for all entities
+            play sound "block.soul_sand.place" with volume 1 with pitch 1.5 at location of {_ball} for all entities
+            play sound "block.ice.break" with volume 1 with pitch 1.5 at location of {_ball} for all entities
+            draw 20 of dust using dustOption(rgb(55, 230, 221), 1) at {_ball} with offset vector(1, 1, 1)
+            draw 20 of dust using dustOption(rgb(55, 230, 221), 1) at {_ball} with offset vector(0.2, 0.2, 0.2)
+            draw 20 of dust using dustOption(rgb(200, 232, 2303), 1) at {_ball} with offset vector(0.2, 0.2, 0.2)
+            draw 20 of dust using dustOption(rgb(200, 232, 2303), 1) at {_ball} with offset vector(1, 1, 1)
+            set {_block} to block at {_ball}
+        set {_block} to block above {_block}
+        play sound "entity.player.hurt_freeze" with volume 1 with pitch 0.1 at {_block} for all entities
+        loop all blocks in radius 5 of {_block}:
+            loop-block is air or tall grass
+            draw 20 of dust using dustOption(rgb(200, 232, 2303), 1) at loop-block with offset vector(0.5, 0.5, 0.5)
+            draw 2 of dust using dustOption(rgb(55, 230, 221), 1) at loop-block with offset vector(0.1, 0.1, 0.1)
+        loop all entities in radius 5 of {_block}:
+            apply slowness of tier 50 without any particles to loop-entity for 5 seconds
+            apply jump boost of tier 128 without any particles to loop-entity for 5 seconds
+    
+
+function manathrow(p: player):
+    if manadeplete({_p},10):
+        make {_p} shoot a snowball at speed 5
+        loop all entities in radius 2 of {_p}:
+            loop-entity is a snowball
+            set {_ball} to loop-entity
+        apply invisibility of tier 1 without any particles to {_ball} for 5 seconds
+        while {_ball} is alive:
+            wait 1 tick
+            play sound "block.soul_sand.place" with volume 1 with pitch 1.5 at location of {_ball} for all entities
+            #play sound "entity.wither_skeleton.step" with volume 1 with pitch 10 at location of {_ball} for all entities
+            draw 20 of dust using dustOption(rgb(43, 110, 70), 1) at {_ball} with offset vector(0.2, 0.2, 0.2)
+            draw 20 of dust using dustOption(rgb(52, 158, 153), 1) at {_ball} with offset vector(0.2, 0.2, 0.2)
+            loop all entities in radius 3 of {_ball}:
+                loop-entity is not {_ball}
+                loop-entity is not {_p}
+                damage loop-entity by 4+spellpower({_p})
+                make {_p} damage loop-entity by 0.1
+                play sound "block.soul_sand.place" with volume 1 at location of {_ball} for all entities
+
+
+function flyingblock(p: player):
+    {_p}'s target is set
+    if manadeplete({_p},100):
+        set {_target} to {_p}'s target
+        loop 4 times:
+            add 1 to {_amount}
+            play sound "entity.elder_guardian.hurt" with volume 1 at block ({_amount}*2)+1 above {_p} for all players
+            loop all blocks in radius {_amount}-0.5 of block ({_amount}*2)+1 above block ({_amount}*2) in front of {_p}:
+                draw 10 of smoke at loop-block with extra 0.1
+                draw 20 of dust using dustOption(rgb(102, 9, 20), 1) at loop-block with offset vector(0.5, 0.5, 0.5)
+            wait 1 second
+        spawn a armor stand at block ({_amount}*2)+1 above block ({_amount}*2) in front of {_p}
+        set {_armorstand} to last spawned entity
+        play sound "entity.snowball.throw" with volume 2 at {_armorstand} for all players
+        while {_armorstand} is alive:
+            add 1 to {_pee}
+            if {_pee} > 100:
+                kill {_armorstand}
+            wait 1 tick
+            play sound "entity.elder_guardian.hurt" with volume 2 with pitch 10 at {_armorstand} for all players
+            loop all blocks in radius {_amount}-0.5 of {_armorstand}:
+                draw 10 of smoke at loop-block with extra 0.1
+                draw 20 of dust using dustOption(rgb(102, 9, 20), 1) at loop-block with offset vector(0.5, 0.5, 0.5)
+            push {_armorstand} (direction from {_armorstand} to {_target}) at speed 0.5
+            push {_armorstand} upwards at speed 0.2
+            loop all entities in radius 3 of {_armorstand}:
+                if loop-entity is {_target}:
+                    kill {_armorstand}
+                    loop all entities in radius 5 of {_target}:
+                        damage loop-entity-2 by 10+spellpower({_p})
+                        make {_p} damage loop-entity-2 by 0.1
+
+
+
+
+function blackhole(p: player):
+    if distance between {_p}'s target block and {_p} <= 30:
+        if manadeplete({_p},100):
+            set {_suckyblock} to {_p}'s target block
+            while {_suckyblock} is set:
+                wait 1 tick
+                play sound "entity.elder_guardian.hurt" with volume 1 at {_suckyblock} for all players
+                draw 20 of dust using dustOption(purple, 1) at {_suckyblock} with offset vector(0.5, 2, 0.5)
+                loop all blocks in radius 5 of {_suckyblock}:
+                    draw 2 smoke at loop-block with extra 0.1
+                loop all entities in radius 5 of {_suckyblock}:
+                    loop-entity is not {_p}
+                    push loop-entity (direction from loop-entity to {_suckyblock}) at speed 0.2
+                add 1 to {_pee}
+                if {_pee} > 100:
+                    clear {_suckyblock}
+
+function dancingflame(p: player):
+    if distance between {_p}'s target entity and {_p} <= 30:
+        if manadeplete({_p},50):
+            set {_dancyflame} to {_p}'s target 
+            set {_la} to {_dancyflame}
+            ignite {_la} for 10 seconds
+            make {_p} damage {_la} by 0.1
+            play sound "entity.vex.charge" with volume 1 at location of {_la} for all entities
+            draw 20 flame 1 block above {_la} with offset vector(0.5, 1, 0.5) with extra 0.1
+            set {_flame.%{_la}%} to true
+            loop 5 times:
+                loop all entities in radius 10 of {_la}:
+                    if loop-entity is not {_p} or item or {_law}:
+                        add loop-entity to {_list::*}
+                set {_nearest} to first element of {_list::*}
+                loop all entities in radius 10 of {_la}:
+                    loop-entity is not {_p}
+                    loop-entity is not a item
+                    if {_flame.%loop-entity%} is not set:
+                        if distance between loop-entity and {_la} is less than distance between {_la} and {_nearest}:
+                            set {_nearest} to loop-entity
+                if {_flame.%{_nearest}%} is not set:
+                    {_la} is not {_p}
+                    loop all blocks between {_la} and {_nearest}:
+                        wait 2 ticks
+                        play sound "block.furnace.fire_crackle" with volume 1 at loop-block for all entities
+                        draw 20 flame 1 block above loop-block with offset vector(0.5, 0.5, 0.5) with extra 0 
+                set {_la} to {_nearest}
+                if {_flame.%{_la}%} is not set:
+                    {_la} is not {_p}
+                    draw 20 flame 1 block above {_la} with offset vector(0.5, 1, 0.5) with extra 0.1
+                    ignite {_la} for 10 seconds
+                    make {_p} damage {_la} by 0.1+spellpower({_p})
+                    set {_flame.%{_la}%} to true
+                    play sound "entity.vex.charge" with volume 1 at location of {_la} for all entities
+
+
+function raycast(p: player, length: number, dmg: number):
+    set {_x} to 0
+    set {_l} to 0
+    loop {_length} times:   #loops as many times as long as the length from the function input
+        add 1 to {_x}
+        add 0.25 to {_l}
+        set {_rg%{_x}%} to location {_l} meters infront of {_p}
+        set {_rg%{_x}%} to location 1.25 meters above {_rg%{_x}%} #aligns with where player is looking better
+    # all of the locations are saved as soon as the function is called, effects such as particles can be applied afterwards.
+    set {_x} to 0
+    loop {_length} times:
+        add 1 to {_x}
+        show 4 blue dust at {_rg%{_x}%} #change color or particle type
+        loop entities in radius 1 around {_rg%{_x}%}:
+            loop-entity is not {_p}
+            damage loop-entity by {_dmg}
+            stop #if you want your projectile to pierce entities, delete this line
+        loop blocks in radius 0.5 around {_rg%{_x}%}:
+            if loop-block is not tall grass, short grass, snow layer, air or water:
+                stop #projectile does not go through blocks, but passes through expected blocks 
+
+command /raycast:
+
+    permission: *
+
+    trigger:
+
+        raycast(player, 50, 1)
+
+on right click:
+
+    if name of player's tool contains "&7Rifle":
+
+        if {reloadrifle.%player's uuid%} is not set:
+
+            set {reloadrifle.%player's uuid%} to 1
+
+            raycast(player, 50, 10)
+
+            wait 1 second
+
+            clear {reloadrifle.%player's uuid%}

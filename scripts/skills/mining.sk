@@ -1,0 +1,55 @@
+#command /pee8 <text>:
+	#trigger:
+		#give player iron pickaxe named "&7Iron Hammer" with lore "&cUsed by the Dwarves of old."
+		#set {mine.%player%} to arg 1 parsed as integer
+		#send {mine.%player%} to player
+		
+on break:
+	if {mine.%player%} > 29:
+		if event-block is any stone or ore:
+			if player's tool is a pickaxe named "&7Iron Hammer":
+				loop all blocks in radius 2:
+					break loop-block
+					damage player's tool by 1
+				if durability of tool is max durability of tool: 
+					remove 1 of tool from player
+				
+on mining any stone or obsidian or iron ore or copper ore or deepslate:
+	if {serverage} < 1:
+		if event-block is iron ore:
+			cancel event
+			send action bar "&7Your feeble mind doesn't understand the use of this yet." to player
+			stop
+	if {serverage} < 1:
+		if event-block is copper ore:
+			cancel event
+			send action bar "&7Your feeble mind doesn't understand the use of this yet." to player
+			stop
+	wait 0.1 seconds
+	if {mine.%player%} > 19:
+		if player doesn't have haste:
+			apply haste of tier 2 without any particles to player for 3 second
+	if {mine.%player%} > 9:
+		if player doesn't have haste:
+			apply haste of tier 1 without any particles to player for 3 second
+
+on break:
+	event-block is diamond ore or deepslate diamond ore
+	if {mine.%player%} < 15:
+		cancel event
+		send action bar "&7You need at least mining level &c15 &7to do this!" to player
+
+on break:
+	event-block is iron ore or deepslate iron ore
+	if {mine.%player%} < 20:
+		chance of 20%
+		cancel drops
+		stop
+	if {mine.%player%} < 15:
+		chance of 40%
+		cancel drops
+		stop
+	if {mine.%player%} < 10:
+		chance of 66%
+		cancel drops
+		stop

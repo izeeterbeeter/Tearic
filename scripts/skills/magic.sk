@@ -1,0 +1,308 @@
+#command /pee13 <text>:
+	#trigger:
+		#clear {ya::*} 
+		#set {warped.%player%} to false
+		#set {crimson.%player%} to false
+		#set {magic.%player%} to arg 1 parsed as integer
+		#send {magic.%player%} to player
+		#play sound "ambient.warped_forest.mood" with volume 1 at player for all players
+		#give player glowing ghast tear named "&c&lTear of Regret" with lore "&7Upsetting the tree spirits may not be in your best interest..."
+		#give player glowing ghast tear named "&e&lTear of Equal Trade" with lore "&7Humankind cannot gain something without giving something up in return."#
+
+		
+on death:
+	loop all items in inventory of victim:
+		if name of loop-item is "&e&lTear of The Keeper":
+			play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 1 at location of victim for all players
+			play sound "ENTITY_ENDERMAN_TELEPORT" with volume 1 at location of victim for all players
+			remove 1 of loop-item from victim's inventory
+			keep inventory
+			clear drops
+			wait 1 seconds
+			force victim to respawn
+
+on chat:
+	if {cci.%player%} is true:
+		set {t.%player%} to message parsed as player
+		send "&7Tear of Constellations set to &e%{t.%player%}%"
+		set {cci.%player%} to false
+		cancel event
+
+every 1 second:
+	loop all players:
+		if {tog.%loop-player%} is true:
+			teleport all dropped items in radius 10 around loop-player to loop-player
+
+on damage:
+	if damage cause is suffocation:
+		if {.%victim%} is true:
+			cancel event
+	if damage cause is fall:
+		if {nfall.%victim%} is true:
+			cancel event
+
+on player move:
+	if {frozen.%player%} is true:
+		cancel event
+
+on portal enter:
+	if {magic.%player%} is 12:
+		stop
+	if {botany.%player%} is 12:
+		stop
+	push player backwards at speed 0.1
+	send action bar "&7You need at least magic or botany level &c12 &7to do this!" to player
+
+command /corruption <number>:
+	trigger:
+		clear {infection.%player%}
+		clear {vamp.%player%}
+		set {corruption.%player%} to arg 1 - 1
+		charge(player,"warped")
+
+
+function convert(p: player):
+	wait 10 seconds
+	send action bar "&aLook at this one! What a fool." to {_p}
+	apply potion of blindness of tier 10 without any particles to {_p} for 3 seconds
+	apply potion of nausea of tier 1 without any particles to {_p} for 3 seconds
+	apply potion of poison of tier 1 without any particles to {_p} for 3 seconds
+	wait 2.5 seconds
+	send action bar "&aFoolish mortals. They know no better." to {_p}
+	apply potion of blindness of tier 10 without any particles to {_p} for 5 seconds
+	apply potion of nausea of tier 1 without any particles to {_p} for 5 seconds
+	apply hunger of tier 10 without any particles to {_p} for 10 seconds
+	wait 10 seconds
+	send action bar "&cYou know... You deserve this." to {_p}
+	apply potion of blindness of tier 10 without any particles to {_p} for 5 seconds
+	apply potion of nausea of tier 1 without any particles to {_p} for 5 seconds
+	apply hunger of tier 10 without any particles to {_p} for 6 seconds
+	wait 6 seconds
+	send action bar "&eYou are now a Vampire!" to {_p}
+	set {vamp.%{_p}%} to true
+
+
+
+function charge(p: player, worp: text):
+	if {_worp} is "warped":
+		loop all items in {_p}'s inventory:
+			if loop-item is warped fungus:
+				remove 1 of loop-item from {_p}'s inventory
+				play sound "block.bubble_column.bubble_pop" with volume 4 at location of {_p} for {_p}
+				stop
+		play sound "entity.elder_guardian.ambient" with volume 4 at location of {_p} for {_p}
+		send action bar "&7Some warped fungus would be nice.." to {_p}
+		add 1 to {corruption.%{_p}%}
+		damage {_p} by 4 hearts
+	if {_worp} is "crimson":
+		loop all items in {_p}'s inventory:
+			if loop-item is crimson fungus:
+				remove 1 of loop-item from {_p}'s inventory
+				play sound "block.bubble_column.bubble_pop" with volume 4 at location of {_p} for {_p}
+				stop
+		play sound "entity.elder_guardian.ambient" with volume 4 at location of {_p} for {_p}
+		send action bar "&7Some crimson fungus would be nice.." to {_p}
+		add 1 to {corruption.%{_p}%}
+		damage {_p} by 4 hearts
+	if {infection.%{_p}%} is not set:
+		if {vamp.%{_p}%} is not set:
+			wait 3 seconds
+			if {corruption.%{_p}%} is 2:
+				send action bar "&7Something doesn't feel right..." to {_p}
+				apply potion of blindness of tier 1 without any particles to {_p} for 5 seconds
+				apply potion of nausea of tier 1 without any particles to {_p} for 5 seconds
+			if {corruption.%{_p}%} is 4:
+				send action bar "&7Something doesn't feel right..." to {_p}
+				apply potion of blindness of tier 1 without any particles to {_p} for 5 seconds
+				apply potion of nausea of tier 1 without any particles to {_p} for 5 seconds
+			if {corruption.%{_p}%} is 8:
+				send action bar "&chHAhha" to {_p}
+				apply potion of blindness of tier 10 without any particles to {_p} for 5 seconds
+				apply potion of nausea of tier 1 without any particles to {_p} for 5 seconds
+				set {infection.%{_p}%} to 1
+			title_reward({_p}, "Crybaby")
+	if {infection.%{_p}%} is 1:
+		convert({_p})
+		
+# ability tears
+on rightclick:
+	if {magic.%player%} < 12:
+		player is holding flint and steel or fire charge
+		if event-block is obsidian:
+			play sound "ENTITY_GUARDIAN_ATTACK" with volume 1 at location of event-block for all players
+			send action bar "&7You need at least magic or botany level &c12 &7to do this!" to player
+			cancel event
+	if player is holding ghast tear named "&d&lTear of Repel":
+		{selection.%player%} is not set
+		set {_waited} to difference between {rcd.%player%} and now
+		if {_waited} is less than 1 minute:
+			send action bar "&f&lYou must wait &e&l%difference between 1 minute and {_waited}%" to player
+			stop
+		set {rcd.%player%} to now
+		loop 4 times:
+			set {_b} to block at player
+			sphere_show(true,true,4,aqua,1,block below {_b})
+			loop all entities in radius 4 of {_b}:
+				if y coordinate of loop-entity is greater than or equal to y coordinate of block below {_b}:
+					if loop-entity is not player:
+						play sound "entity.iron_golem.attack" with volume 2 at {_b} for all players
+						loop-entity is alive
+						dodamage(player, loop-entity, 1, "Frost")
+						push loop-entity direction from {_b} to loop-entity with force 1.2
+						push loop-entity upwards with force 0.3
+			wait 1 second
+	#Crimson Tears
+	if {magic.%player%} > 4:
+		if player is holding ghast tear named "&c&lTear of Anivia":
+			{selection.%player%} is not set
+			set {_waited} to difference between {acd.%player%} and now
+			if {_waited} is less than 10 seconds:
+				send action bar "&f&lYou must wait &e&l%difference between 10 seconds and {_waited}%" to player
+				stop
+			if event-block is not air:
+				set {acd.%player%} to now
+				set {_b} to event-block
+				aoe_show(4,aqua,5,{_b})
+				loop 5 times:
+					draw 25 of dust using dustOption(white, 2) at {_b} with offset vector(2, 2, 2)
+					draw 25 of dust using dustOption(gray, 2) at {_b} with offset vector(2, 2, 2)
+					play sound "entity.ender_dragon.shoot" with volume 1 at {_b} for all players
+					play sound "block.beacon.deactivate" with volume 1 at {_b} for all players
+					loop all entities in radius 4 of {_b}:
+						if loop-entity is not player:
+							loop-entity is alive
+							dodamage(player, loop-entity, 2, "Frost")
+					wait 1 seconds
+		set {_spell} to name of player's tool
+		if {_spell} is "&c&lTear of Mars":
+			dancingflame(player)
+		if {_spell} is "&c&lTear of Regret":
+			blackhole(player)
+		if {_spell} is "&c&lTear of Frozen Core":
+			frozenrain(player)
+		if {_spell} is "&c&lTear of Exposed Veins":
+			bleedforme(player)
+		if {_spell} is "&c&lTear of Mars":
+			dancingflame(player)
+		if {_spell} is "&c&lTear of Wild Soul":
+			flyingblock(player)
+		if {_spell} is "&7&lTear of Manabullet":
+			manathrow(player)
+		#warped tears
+	if {magic.%player%} > 4:
+		if name of player's tool is "&e&lTear of Open Skies":
+			{selection.%player%} is not set
+			set {_waited} to difference between {occd.%player%} and now
+			if {_waited} is less than 10 minutes:
+				send action bar "&f&lYou must wait &e&l%difference between 10 minutes and {_waited}%" to player
+				stop
+			charge(player,"warped")
+			set {occd.%player%} to now
+			apply blindness without any particles to player for 2 seconds
+			play sound "block.ender_chest.open" with volume 4 at player
+			wait 1 second
+			set {_x} to x-coordinate of player
+			set {_y} to x-coordinate of player
+			execute console command "/spreadplayers %{_x}% %{_y}% 0 1 false %player%"
+			play sound "ENTITY_ENDERMAN_TELEPORT" with volume 4 at player
+		if name of player's tool is "&e&lTear of Jack":
+			{selection.%player%} is not set
+			set {_waited} to difference between {jcd.%player%} and now
+			if {_waited} is less than 10 seconds:
+				send action bar "&f&lYou must wait &e&l%difference between 10 seconds and {_waited}%" to player
+				stop
+			if event-block is water:
+				set event-block to ice
+				set {jcd.%player%} to now
+				stop
+			if block above event-block is water:
+				set block above event-block to ice
+				set {jcd.%player%} to now
+			
+		if name of player's tool is "&e&lTear of Greed":
+			{selection.%player%} is not set
+			if {tog.%player%} is not set:
+				set {tog.%player%} to false
+			if {tog.%player%} is false:
+				send action bar "&a&lItem magnet is now ON." to player
+				set {tog.%player%} to true
+				charge(player,"warped")
+			else:
+				send action bar "&c&lItem magnet is now OFF." to player
+				set {tog.%player%} to false
+				charge(player,"warped")
+		if name of player's tool is "&e&lTear of Constellations":
+			if event-block is crying obsidian:
+				stop
+			if player is sneaking:
+				send "&cPlease type in the username of the player you wish to go to."
+				set {cci.%player%} to true
+				stop
+			charge(player,"warped")
+			apply blindness without any particles to player for 3 second
+			set {_x} to x-coordinate of player
+			set {_y} to y-coordinate of player
+			set {_z} to z-coordinate of player
+			set {_world} to world of player
+			set {_yaw} to yaw of player
+			set {_pitch} to -90
+			set {_location} to location({_x}, {_y}, {_z}, {_world}, {_yaw}, {_pitch})
+			teleport player to {_location}
+			set {frozen.%player%} to true
+			play sound "block.ender_chest.open" with volume 4 at player
+			remove 1 of player's tool from player's inventory
+			wait 2 seconds
+			teleport player to location of {t.%player%}
+			set {_x} to x-coordinate of player
+			set {_y} to y-coordinate of player
+			set {_z} to z-coordinate of player
+			set {_world} to world of player
+			set {_yaw} to yaw of player
+			set {_pitch} to -90
+			set {_location} to location({_x}, {_y}, {_z}, {_world}, {_yaw}, {_pitch})
+			teleport player to {_location}
+			clear {t.%player%}
+			set {frozen.%player%} to false
+			play sound "block.ender_chest.close" with volume 4 at player
+			play sound "block.beehive.exit" with volume 4 at player
+			title_reward(player, "Alice")
+		
+		if player is holding ghast tear named "&e&lTear of Insect":
+			{selection.%player%} is not set
+			set {_waited} to difference between {oicd.%player%} and now
+			if {_waited} is less than 10 minutes:
+				send action bar "&f&lYou must wait &e&l%difference between 10 minutes and {_waited}%" to player
+				stop
+			charge(player,"warped")
+			set {nfall.%player%} to true
+			set {oicd.%player%} to now
+			play sound "block.chorus_flower.grow" with volume 10 at player
+			apply blindness without any particles to player for 1 second
+			send action bar "&a&lYour legs feel so strong.. This will only last a minute!" to player
+			wait 1 minute
+			set {nfall.%player%} to false
+			send action bar "&c&lYour legs begin to visibly shrink. You will now take fall damage!" to player
+			loop 4 times:
+				play sound "entity.hoglin.hurt" with volume 4 at player
+		if player is holding ghast tear named "&e&lTear of Equal Trade":
+			{selection.%player%} is not set
+			if player is sneaking:
+				set {b.%player%} to event-block's type
+				loop all items in inventory of player:
+					if loop-item's type is event-block's type:
+						set {_a} to item amount of loop-item
+				send action bar "&a%{b.%player%}%: &f%{_a}%" to player
+				stop
+			else:
+				loop all items in inventory of player:
+					if loop-item's type is {b.%player%}:
+						set {_a} to item amount of loop-item
+						set {_a2} to loop-item
+				if {_a} >= 1:
+					set event-block to {b.%player%}
+					remove 1 of {_a2} from player's inventory
+					send action bar "&a%{b.%player%}%: &f%{_a}%" to player
+					play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 1 at location of event-block for all players
+				
+				
+			

@@ -1,0 +1,29 @@
+on load:
+    set {quests::*} to ""
+    set {mobs::*} to "zombie","skeleton","creeper","enderman","blaze","wither skeleton","spider","magma cube","husk","hoglin","guardian","phantom","piglin","piglin brute"
+
+
+function gen_quest():
+    set {_r} to random integer between 1 and 2
+    if {_r} is 1:
+        add "%random integer between 1 and 20%,%random element of {mobs::*}%" to {quests::*}
+
+
+
+command /quests <text="show">:
+    trigger:
+        gen_quest()
+        if arg-1 is "show":
+            send "" to player
+            send "" to player
+            send "&7----------------------------------------------"
+            set {_num} to 0
+            send "" to player
+            loop {quests::*}:
+                set {_we::*} to loop-value split at ","
+                if {mobs::*} contains {_we::2}:
+                    add 1 to {_num}
+                    send "&7Quest &6##%{_num}% &7> Kill &6%{_we::1}% &c%{_we::2}%(s)&7.%nl%&d-- Reward -- %nl%&7  MY COCK" to player
+
+
+            send {quests::*} to player

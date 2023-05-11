@@ -1,0 +1,480 @@
+ 
+
+on load:
+	set {_fiber} to string named "&7Fiber"
+	set {_tof} to ghast tear named "&d&lTear of Study"
+	set {crafting::tearofrepel::*} to crying obsidian, blue ice block, slime block, tnt block
+	set {crafting::bandage::*} to {_fiber},{_fiber},{_fiber}, oxeye daisy
+	set {crafting::heatrepellent::*} to magma block, magma block, magma block, {_tof}
+
+#crafting
+
+on break of cauldron:
+	set {_loc} to location of event-block
+	loop {ya::%{_loc}%::*}:
+		drop loop-value
+	clear {ya::%{_loc}%::*}
+
+on rightclick on enchanting table:
+	if {magic.%player%} < 22:
+		cancel event
+		send action bar "&7You need at least magic level &c22 &7to do this!" to player
+
+on rightclick on brewing stand:
+	if {magic.%player%} < 32:
+		cancel event
+		send action bar "&7You need at least magic level &c32 &7to do this!" to player
+
+#putting items in cauldron and crafting
+on rightclick on cauldron:
+	block below event-block is minecraft:fire or campfire
+	if {magic.%player%} or {botany.%player%} > 11:
+		set {_loc} to location of event-block
+		if player is sneaking:
+			play sound "entity.item.pickup" with volume 1 at location of event-block for all players
+			set {_p} to last element of {ya::%{_loc}%::*} 
+			give 1 of {_p} to player
+			remove {_p} from {ya::%{_loc}%::*}
+			send action bar "&c%{ya::%{_loc}%::*}%" to player
+			stop
+		if player is not holding any bucket:
+			if player is holding item:
+				if player is holding diamond axe:
+					play sound "entity.item.pickup" with volume 1 at location of event-block for all players
+					send action bar "&c%{ya::%{_loc}%::*}%" to player
+					remove 1 of player's tool from player
+					add diamond axe to {ya::%{_loc}%::*}
+					cancel event
+					stop
+				cancel event
+				if size of {ya::%{_loc}%::*} is 4:
+					stop
+				play sound "entity.item.pickup" with volume 1 at location of event-block for all players
+				set {_item} to player's tool
+				add 1 of {_item} to {ya::%{_loc}%::*} 
+				send action bar "&c%{ya::%{_loc}%::*}%" to player
+				remove 1 of player's tool from player
+			if size of {ya::%{_loc}%::*} is 4:
+				if {magic.%player%} > 11:
+					#crimson tears
+					if block below event-block is minecraft:fire or campfire:
+						if {frostknowledge.%player%} is true:
+							if "%{ya::%{_loc}%::*}%" is "%{crafting::tearofrepel::*}%":
+								drop glowing ghast tear named "&d&lTear of Repel" with lore "&7Get outta my face!" above event-block
+								play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+								clear {ya::%{_loc}%::*}
+								add 8 to {xpmagic.%player%} 
+								set {_xp} to xp_req(player,"magic")
+								levelup(player,"magic")
+								send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+						if {crimson.%player%} is true:
+							broadcast "ya"
+							if {frostknowledge.%player%} is true:
+								if {ya::%{_loc}%::*} contains crimson fungus and blue ice block and amethyst shard and diamond block:
+									drop glowing ghast tear named "&c&lTear of Anivia" with lore "&7The great bird's tears will spawn the coldest of winds." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 29:
+								if {ya::%{_loc}%::*} contains crimson fungus and wither skeleton skull and fire charge and emerald:
+									drop glowing ghast tear named "&c&lTear of Regret" with lore "&7Upsetting the tree spirits may not be in your best interest..." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 19:
+								if {ya::%{_loc}%::*} contains crimson fungus and packed ice and snowball and fermented spider eye:
+									drop glowing ghast tear named "&c&lTear of Frozen Core" with lore "&7The cold is unforgiving." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 15:
+								if {ya::%{_loc}%::*} contains crimson fungus and flint and bone and spider eye:
+									drop glowing ghast tear named "&c&lTear of Exposed Veins" with lore "&7May your blood flow with vigor." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {ya::%{_loc}%::*} contains crimson fungus and firework charge and fire charge and charcoal:
+								drop glowing ghast tear named "&c&lTear of Mars" with lore "&7The condensed power of mars." above event-block
+								play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+								clear {ya::%{_loc}%::*}
+								add 8 to {xpmagic.%player%} 
+								set {_xp} to xp_req(player,"magic")
+								levelup(player,"magic")
+								send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {ya::%{_loc}%::*} contains crimson fungus and crimson fungus and amethyst shard and twisting vines:
+								drop glowing ghast tear named "&c&lTear of Asclepius" with lore "&7You are a monster." above event-block
+								play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+								clear {ya::%{_loc}%::*}
+								add 8 to {xpmagic.%player%} 
+								set {_xp} to xp_req(player,"magic")
+								levelup(player,"magic")
+								send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 24:
+								if {ya::%{_loc}%::*} contains crimson fungus and fishing rod and tnt block and egg:
+									drop glowing ghast tear named "&c&lTear of Wild Soul" with lore "&7Show your might and strike them down!" above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+									clear {ya::%{_loc}%::*}
+						
+						#warped tears
+						if {warped.%player%} is true:
+							if {frostknowledge.%player%} is true:
+								if {ya::%{_loc}%::*} contains warped fungus and blue ice block and lapis lazuli and snowball:
+									drop glowing ghast tear named "&e&lTear of Jack" with lore "&7Big brrrrrrrrrrrr." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 24:
+								if {ya::%{_loc}%::*} contains warped fungus and ender pearl and emerald and shulker shell:
+									drop glowing ghast tear named "&e&lTear of Equal Trade" with lore "&7Humankind cannot gain something without giving something up in return." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 16:
+								if {ya::%{_loc}%::*} contains warped fungus and feather and slimeball and emerald:
+									drop glowing ghast tear named "&e&lTear of Insect" with lore "&7Have you ever seen a insect die to fall damage?" above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 14:
+								if {ya::%{_loc}%::*} contains warped fungus and ender pearl and diamond and rotten flesh:
+									drop glowing ghast tear named "&e&lTear of Constellations" with lore "&7Follow the stars and you will find your friends." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 24:
+								if {ya::%{_loc}%::*} contains warped fungus and chest and ender pearl and trapdoor:
+									drop glowing ghast tear named "&e&lTear of The Keeper" with lore "&7You're lucky he's nice to you." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 14:
+								if {ya::%{_loc}%::*} contains warped fungus and hopper and ender pearl and glow ink sac:
+									drop glowing ghast tear named "&e&lTear of Greed" with lore "&7Do you REALLY need all of that?" above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+							if {magic.%player%} > 11:
+								if {ya::%{_loc}%::*} contains warped fungus and compass and ender pearl and sunflower:
+									drop glowing ghast tear named "&e&lTear of Open Skies" with lore "&7Humans do not belong deep below." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									add 8 to {xpmagic.%player%} 
+									set {_xp} to xp_req(player,"magic")
+									levelup(player,"magic")
+									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+						if {warped.%player%} is false:
+							if {crimson.%player%} is false:
+								send "&cCrimson: &7Destruction and cool mage shit." to player
+								send "&3Warped: &7Utility and general spells." to player
+								send "&3Warped: 1 &7| &cCrimson: 2" to player
+								set {cow.%player%} to true
+								stop
+					else:
+						play sound "block.redstone_torch.burnout" with volume 10 at location of event-block for all players
+						send action bar "&cThe Tear rejects the temperature." to player
+				if {magic.%player%} > 5:
+					if "%{ya::%{_loc}%::*}%" is "%{crafting::heatrepellent::*}%":
+						drop empty map named "&cHeat Repellent Seal" with lore "&7Apply to chestplate by rightclicking while wearing chestplate." above event-block
+						play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+						clear {ya::%{_loc}%::*}
+						add 8 to {xpmagic.%player%} 
+						set {_xp} to xp_req(player,"magic")
+						levelup(player,"magic")
+						send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+				if {botany.%player%} > 11:
+					if block below event-block is minecraft:fire or campfire:
+						if "%{crafting::bandage::*}%" is "%{ya::%{_loc}%::*}%":
+							drop glowing paper named "&aBandage" with lore "&7So much better then plain old fiber..." above event-block
+							play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+							clear {ya::%{_loc}%::*}
+							add 8 to {xpbotany.%player%} 
+							set {_xp} to xp_req(player,"botany")
+							levelup(player,"botany")
+							send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+						loop {diseases::*}:
+							set {_asd::*} to disease_info("%loop-value%","cure")
+							if {botany.%player%} > 11:
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Aloe":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Aloe":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing cactus named "&fAloe Vera"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing cactus named "&fAloe Vera"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Echi":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "&fEchinacea":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing allium named "&fEchinacea"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing allium named "&fEchinacea"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Fever":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Fever":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing oxeye daisy named "&fFeverfew"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing oxeye daisy named "&fFeverfew"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player														
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Cham":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Cham":
+												remove loop-value-2 from {_asd::*}
+												set {_asda} to glowing oxeye daisy named "&fChamomile"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing oxeye daisy named "&fChamomile"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player				
+														stop
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Ging":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Ging":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing fern named "&fGingko"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing fern named "&fGingko"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+														stop														
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Gins":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Gins":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing hanging root named "&fGinseng"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing hanging root named "&fGinseng"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+														stop	
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Milk":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Milk":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing pink tulip named "&fMilk thistle"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing pink tulip named "&fMilk thistle"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player	
+														stop
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Flax seed":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Flax seed":
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to glowing beetroot seeds named "&fFlax seed"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing beetroot seeds named "&fFlax seed"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}	
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player		
+														stop
+								loop {_asd::*}:
+									set {_asda} to loop-value-2
+									if {_asda} contains "Lavender":
+										loop {_asd::*}:
+											set {_asda} to loop-value-3
+											if {_asda} contains "Lavender":
+												remove loop-value-2 from {_asd::*}
+												set {_asda} to glowing allium named "&fLavender"
+												add {_asda} to {_asd::*}
+											else:
+												remove loop-value-3 from {_asd::*}
+												set {_asda} to loop-value-3 parsed as item
+												add {_asda} to {_asd::*}
+											if {ya::%{_loc}%::*} contains {_asd::*}:
+												set {_asda} to glowing allium named "&fLavender"
+												loop {ya::%{_loc}%::*}:
+													if loop-value-4 is {_asda}:
+														drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+														play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+														clear {ya::%{_loc}%::*}
+														clear {_asd::*}	
+														add 8 to {xpbotany.%player%} 
+														set {_xp} to xp_req(player,"botany")
+														levelup(player,"botany")
+														send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+														stop
+								if {ya::%{_loc}%::*} contains {_asd::1} parsed as item and {_asd::2} parsed as item and {_asd::3} parsed as item and {_asd::4} parsed as item:
+									drop glowing paper named "&a%loop-value-1% cure" with lore "&7So much better then plain old fiber..." above event-block
+									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
+									clear {ya::%{_loc}%::*}
+									clear {_asd::*}	
+									add 8 to {xpbotany.%player%} 
+									set {_xp} to xp_req(player,"botany")
+									levelup(player,"botany")
+									send action bar "&aBotany> &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+									stop
+									
+							else:
+								send action bar "&7You need at least botany &c12 &7to craft this!" to player
+								
+	else:
+		send action bar "&7You need at least magic or botany level &c12 &7to do this!" to player
+
+				
+			

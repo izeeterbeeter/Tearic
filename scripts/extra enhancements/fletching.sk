@@ -1,0 +1,61 @@
+on break of fletching table:
+    set {_loc} to location of event-block
+    if {fletching::%{_loc}%::*} is set:
+        loop {fletching::%{_loc}%::*}:
+            drop loop-value at event-block
+    clear {fletching::%{_loc}%::*}
+
+on rightclick on fletching table:
+    if {arch.%player%} > 6:
+        set {_loc} to location of event-block
+        cancel event
+        if player is sneaking:
+            set {_p} to last element of {fletching::%{_loc}%::*}
+            give 1 of {_p} to player
+            remove {_p} from {fletching::%{_loc}%::*}
+            send action bar "&c%{fletching::%{_loc}%::*}%" to player
+            stop
+        set {_} to 0
+        set {_item} to player's tool
+        if {_item} is diamond or iron ingot or string or stripped log:
+            if {fletching::%{_loc}%::*} contains iron ingot:
+                if {_item} is diamond:
+                    send action bar "&cYou have selected iron." to player
+                    stop
+            if {fletching::%{_loc}%::*} contains diamond:
+                if {_item} is iron ingot:
+                    send action bar "&cYou have selected diamond." to player
+                    stop
+            loop {fletching::%{_loc}%::*}:
+                if loop-value is {_item}'s type:
+                    add 1 to {_}
+            broadcast {_}
+            if {_} < 3:
+                add 1 of player's tool to {fletching::%{_loc}%::*}
+                remove 1 of player's tool from player's tool
+                play sound "item.crossbow.loading_start" with volume 1 at location of event-block for all players
+            else:
+                send action bar "&cCan't hold anymore iron!" to player
+        #entity.villager.work_fletcher
+        if {fletching::%{_loc}%::*} is not set:
+            send action bar "&c&lREQUIRED: &b3 Diamond/Iron, 3 String, 3 Stripped Logs" to player
+            stop
+        send action bar "%{fletching::%{_loc}%::*}%" to player
+        if size of {fletching::%{_loc}%::*} is 9:
+            loop {fletching::%{_loc}%::*}:
+                if loop-value is iron ingot:
+                    set {_type} to iron ingot
+                if loop-value is diamond:
+                    set {_type} to diamond
+            play sound "entity.villager.work_fletcher" with volume 1 at location of event-block for all players
+            title_reward(player, "Finn Fletcher")
+            set {_weapon} to bow
+            if {_type} is iron ingot:
+                add "&fIron +1" to {_weapon}'s lore
+            if {_type} is diamond:
+                add "&bDiamond +2" to {_weapon}'s lore
+            add "&eCreated by: &7%player%" to {_weapon}'s lore
+            set name of {_weapon} to "&fStripped Log Bow"
+            clear {fletching::%{_loc}%::*}
+            give player {_weapon}
+        # you need 3 of diamond or iron, and then 3 string and 3 stripped logs

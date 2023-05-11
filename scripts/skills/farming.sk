@@ -1,0 +1,91 @@
+#command /pee12 <text>:
+	#trigger:
+		#set {farm.%player%} to arg 1 parsed as integer
+		#send {farm.%player%} to player
+
+on break:
+	if event-block is wheat:
+		if {farm.%player%} < 10:
+			send action bar "&7You need at least farming level &c10 &7to do this!" to player
+			cancel event
+	if event-block is minecraft:potatoes:
+		if {farm.%player%} < 30:
+			send action bar "&7You need at least farming level &c30 &7to do this!" to player
+			cancel event
+	if event-block is minecraft:carrots:
+		if {farm.%player%} < 20:
+			send action bar "&7You need at least farming level &c20 &7to do this!" to player
+			cancel event
+	if event-block is farmland:
+		if block above event-block is wheat or carrot or potatoes:
+			cancel event
+
+on block interact:
+	if event-block is wheat:
+		if {farm.%player%} < 10:
+			send action bar "&7You need at least farming level &c10 &7to do this!" to player
+			cancel event
+	if event-block is minecraft:potatoes:
+		if {farm.%player%} < 30:
+			send action bar "&7You need at least farming level &c30 &7to do this!" to player
+			cancel event
+	if event-block is minecraft:carrots:
+		if {farm.%player%} < 20:
+			send action bar "&7You need at least farming level &c20 &7to do this!" to player
+			cancel event
+	if event-block is farmland:
+		if block above event-block is wheat or minecraft:carrots or minecraft:potatoes:
+			cancel event
+
+on rightclick:
+	if target is a pig:
+		if player is holding carrot:
+			if {farm.%player%} < 15:
+				send action bar "&7You need at least farming level &c20 &7to do this!" to player
+				cancel event
+	if target is a cow:
+		if player is holding wheat:
+			if {farm.%player%} < 15:
+				send action bar "&7You need at least farming level &c20 &7to do this!" to player
+				cancel event
+	if target is a sheep:
+		if player is holding wheat:
+			if {farm.%player%} < 15:
+				send action bar "&7You need at least farming level &c20 &7to do this!" to player
+				cancel event
+	if target is a chicken:
+		if player is holding seeds:
+			if {farm.%player%} < 15:
+				send action bar "&7You need at least farming level &c20 &7to do this!" to player
+				cancel event
+
+on rightclick on farmland:
+	if player is holding seed:
+		if {farm.%player%} < 10:
+			send action bar "&7You need at least farming level &c10 &7to do this!" to player
+			cancel event
+	if player is holding a pumpkin seed or melon seed:
+		if {farm.%player%} < 12:
+			send action bar "&7You need at least farming level &c12 &7to do this!" to player
+			cancel event
+	if player is holding carrot:
+		if {farm.%player%} < 20:
+			send action bar "&7You need at least farming level &c20 &7to do this!" to player
+			cancel event
+	if player is holding potato:
+		if {farm.%player%} < 30:
+			send action bar "&7You need at least farming level &c30 &7to do this!" to player
+			cancel event
+			
+on craft:
+	event-item is bonemeal
+	if {farm.%player%} < 30:
+		close player's inventory
+		send action bar "&7You need at least farming level &c30 &7to do this!" to player
+		cancel event
+		
+on rightclick on composter:
+	if {farm.%player%} < 15:
+		send action bar "&7You need at least farming level &c15 &7to do this!" to player
+		cancel event
+

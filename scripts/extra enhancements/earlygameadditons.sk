@@ -1,0 +1,6 @@
+on rightclick on sheep:
+    player's tool is empty bucket
+    remove 1 of player's tool from player's tool
+    wait 3 ticks
+    give player milk bucket
+    play sound "entity.cow.milk" with volume 1 at location of player for all players

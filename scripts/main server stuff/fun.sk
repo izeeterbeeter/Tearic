@@ -1,0 +1,83 @@
+
+
+effect make %entity% (face|look at) %entity%:
+    trigger:
+        set {_v} to vector from expr-1 to expr-2
+        set {_l} to expr-1's location
+        set {_l}'s yaw to {_v}'s yaw
+        set {_l}'s pitch to {_v}'s pitch
+        teleport expr-1 to {_l}
+
+command /unfair:
+    trigger:
+        if player's name is "Izlador":
+            give player blaze rod named "&c&lUnfair Advantage"
+        else:
+            kill player
+            broadcast "trolled lmao"
+
+command /unfair2:
+    trigger:
+        if player's name is "Izlador":
+            give player stick named "&clol"
+        else:
+            kill player
+            broadcast "trolled lmao"
+
+on rightclick:
+    set {_mob} to player's target
+    if {test.%{_mob}%} is true:
+        set {_a} to player's location
+        set {_b} to {_mob}'s location
+        teleport player to {_b}
+        teleport {_mob} to {_a}
+
+
+on rightclick:
+    player is holding stick named "&clol"
+    loop all mobs in radius 20 of player:
+        make player look at loop-mob
+        wait 5 tick
+        kill loop-mob
+        wait 2 tick
+
+
+on rightclick:
+    player is holding blaze rod named "&c&lUnfair Advantage"
+    set {_} to player's target
+    player's target is set
+    loop 20 times:
+        make player face {_}
+        apply slowness of tier 40 without any particles to the player
+        wait 2 ticks
+        loop all blocks between player and {_}:
+            play sound "block.tripwire.click_on" with volume 1 at loop-block for all players
+            draw 10 of dust using dustOption(red, 1) at loop-block with offset vector(0.2, 0.2, 0.2)
+    play sound "entity.dragon_fireball.explode" with volume 5 at player for all players
+    play sound "block.respawn_anchor.deplete" with volume 5 at player for all players
+    loop all blocks between block 1 above player and {_}:
+        chance of 3%:
+            wait 2 tick
+       # play sound "entity.guardian.attack" with volume 1 at loop-block for all players
+        play sound "block.tripwire.click_off" with volume 1 at loop-block for all players#block.respawn_anchor.deplete
+        draw 6 of dust using dustOption(red, 1) at loop-block with offset vector(0.2, 0.2, 0.2)
+        draw 6 of dust using dustOption(purple, 1) at loop-block with offset vector(0.2, 0.2, 0.2)
+        draw 6 of dust using dustOption(yellow, 1) at loop-block with offset vector(0.2, 0.2, 0.2)
+        draw 10 of dust using dustOption(black, 1) at loop-block with offset vector(0.2, 0.2, 0.2)
+    kill {_}
+    remove slowness from player
+
+
+on walking on grass:
+    set {_loc} to event-block's location
+    add 1 to {path.%{_loc}%}
+    if {path.%{_loc}%} > 8:
+        set block at {_loc} to dirt
+        clear {path.%{_loc}%}
+
+on walking on dirt:
+    set {_loc} to event-block's location
+    add 1 to {path.%{_loc}%}
+    if {path.%{_loc}%} > 4:
+        set block at {_loc} to dirt path
+        clear {path.%{_loc}%}

@@ -1,0 +1,89 @@
+every 1 second:
+    loop all players:
+        if {staminaregencooldown.%loop-player%} is set:
+            subtract 1 from {staminaregencooldown.%loop-player%}
+            if {staminaregencooldown.%loop-player%} <= 0:
+                clear {staminaregencooldown.%loop-player%}
+                clear {amountreduced.%loop-player%}
+                stop
+            stop
+        if {manaregencooldown.%loop-player%} is set:
+            subtract 1 from {manaregencooldown.%loop-player%}
+            if {manaregencooldown.%loop-player%} <= 0:
+                clear {manaregencooldown.%loop-player%}
+                clear {manadeplete.%loop-player%}
+                stop
+            stop
+        if {stamina.%loop-player%} is not set:
+            set {stamina.%loop-player%} to 5
+        if {maxmana.%loop-player%} is not set:
+            set {maxmana.%loop-player%} to {magic.%loop-player%}*10
+        if {mana.%loop-player%} is not set:
+            set {mana.%loop-player%} to 5
+        if {mana.%loop-player%} < {maxmana.%loop-player%}:
+            add 1 to {mana.%loop-player%}
+        else:
+            set {mana.%loop-player%} to {maxmana.%loop-player%}
+        if {stamina.%loop-player%} < {staminamax.%loop-player%}:
+            add 1 to {stamina.%loop-player%}
+        else:
+            set {stamina.%loop-player%} to {staminamax.%loop-player%}
+
+on death:
+    set {stamina.%victim%} to {staminamax.%victim%}
+
+function reduce_stamina(p: player, n: number) :: number:
+    if ({stamina.%{_p}%} - {_n}) is greater than or equal to 0:
+        set {stamina.%{_p}%} to ({stamina.%{_p}%} - {_n})
+        set {staminaregencooldown.%{_p}%} to 3
+        return {_n}
+    set {stamina.%{_p}%} to 0
+    set {staminaregencooldown.%{_p}%} to 3
+    return {_n}
+
+function manadeplete(p: player, amount: number) :: boolean:
+    if ({mana.%{_p}%}-{_amount}) >= 0:
+        set {mana.%{_p}%} to {mana.%{_p}%}-{_amount}
+        set {manaregencooldown.%{_p}%} to 3
+        set {manadeplete.%{_p}%} to "&c-%{_amount}%"
+        send action bar "%bar({_p})%" to {_p}
+        return true
+    apply blindness of tier 1 without any particles to {_p} for 0.95 second
+    draw 40 of smoke 1 blocks above {_p} with offset vector(0.1, 1, 0.1) with extra 0.1
+    play sound "block.redstone_torch.burnout" with volume 0.2 with pitch 0.1 at {_p} for all players
+    send action bar "%bar({_p})%" to {_p}
+    return false
+
+on consume:
+    increase_stamina(player,20)
+
+on drink:
+    increase_mana(player,20)
+
+function increase_mana(p: player, amount: number):
+    if {maxmana.%{_p}%} is {mana.%{_p}%}:
+        stop
+    if ({_amount}+{mana.%{_p}%}) > {maxmana.%{_p}%}:
+        set {mana.%{_p}%} to {maxmana.%{_p}%}
+        stop
+    add {_amount} to {mana.%{_p}%}
+    set {manaregencooldown.%{_p}%} to 3
+    set {manadeplete.%{_p}%} to "&a+%{_amount}%"
+    send action bar "%bar({_p})%" to {_p}
+    play sound "block.brewing_stand.brew" with volume 1 at {_p} for {_p}
+    draw 40 of dust using dustOption(rgb(116, 198, 204), 1) 1 blocks above {_p} with offset vector(0.5, 1, 0.5)
+
+
+function increase_stamina(p: player, amount: number):
+    if {staminamax.%{_p}%} is {stamina.%{_p}%}:
+        stop
+    if ({_amount}+{stamina.%{_p}%}) > {staminamax.%{_p}%}:
+        set {stamina.%{_p}%} to {staminamax.%{_p}%}
+        stop
+    add {_amount} to {stamina.%{_p}%}
+    set {staminaregencooldown.%{_p}%} to 3
+    set {amountreduced.%{_p}%} to "&a+%{_amount}%"
+    send action bar "%bar({_p})%" to {_p}
+    play sound "block.brewing_stand.brew" with volume 1 at {_p} for {_p}
+    draw 40 of dust using dustOption(rgb(105, 240, 98), 1) 1 blocks above {_p} with offset vector(0.5, 1, 0.5)
+    

@@ -1,0 +1,207 @@
+options:
+    decline: "entity.villager.no"
+    accept: "entity.experience_orb.pickup"
+ 
+on rightclick:
+    {claimed.%chunk at player's location%} is set
+    event-block is chest or barrel or dispenser or dropper or hopper or trapped chest or door or trapdoor
+    loop {tribes::*}:
+        if {tribes::%loop-value%::chunks::*} contains chunk at player's location:
+            if {tribes::%loop-value%::*} contains player or "&dChieften &6> %player%":
+                stop
+    cancel event
+    send action bar "&7A tribe owns this block." to player
+
+on break:
+    {claimed.%chunk at player's location%} is set
+    event-block is chest or barrel or dispenser or dropper or hopper or trapped chest or door or trapdoor
+    loop {tribes::*}:
+        if {tribes::%loop-value%::chunks::*} contains chunk at player's location:
+            if {tribes::%loop-value%::*} contains player or "&dChieften &6> %player%":
+                stop
+    cancel event
+    send action bar "&7A tribe owns this block." to player
+
+
+command /tribes <text="show"> [<text>]:
+    trigger:
+        if arg-1 is "create":
+            loop {tribes::*}:
+                if {tribes::%loop-value%::1} contains player or "&dChieften &6> %player%":
+                    send "&7You are already in a tribe! Use &d/tribes leave &7to leave!"
+                    play sound {@decline} with volume 1 at player for player
+                    stop
+            if arg-2 is set:
+                {tribes::*} does not contain arg-2:
+                    send "&7Tribe &6%arg-2% &7created!"
+                    add arg-2 to {tribes::*}
+                    add "&dChieften &6> %player%" to {tribes::%arg-2%::*}
+                    play sound {@accept} with volume 1 at player for player
+                    stop
+                else:
+                    send "&cTribe name is already in use!"
+                    play sound {@decline} with volume 1 at player for player
+                    stop
+        if arg-1 is "show":
+            loop {tribes::*}:
+                if {tribes::%loop-value-1%::*} contains player or "&dChieften &6> %player%":
+                    send ""
+                    send "&7-------------&6%loop-value-1% Tribe&7-------------"
+                    send ""
+                    loop {tribes::%loop-value-1%::*}:
+                        send "<light green>%loop-value-2%" to player
+                    send ""
+                    send "&7----------------------------------"
+                    stop
+            send "&cYou aren't in a tribe!"
+            play sound {@decline} with volume 1 at player for player
+            stop
+        if arg-1 is "list":
+            loop {tribes::*}:
+                send "&7--------------------"
+                send " "
+                send "&6%loop-value% &7tribe."
+                send " "
+                send "  &7- %{tribes::%loop-value%::1}%"
+                send "  &7- &6%size of {tribes::%loop-value%::*}% &7member(s)"
+                send "  &7- &6%size of {tribes::%loop-value%::chunks::*}% &7chunks claimed"
+                send " "
+                send "&7--------------------"
+        if arg-1 is "claim":
+            loop {tribes::*}:
+                if {tribes::%loop-value-1%::1} contains "&dChieften &6> %player%":
+                    if {averagelevel.%player%}*2 <= size of {tribes::%loop-value-1%::chunks::*}:
+                        send "&cYou need a higher average level to claim more chunks!" to player
+                        play sound {@decline} with volume 1 at player for player
+                        stop
+                    {tribes::%loop-value-1%::chunks::*} does not contain chunk at player's location:
+                        if {tribes::%loop-value-1%::chunks::*} is set:
+                            loop chunks_in_radius(player's location, 1):
+                                if {tribes::%loop-value-1%::chunks::*} contains loop-value-2:
+                                    send "&6Chunk claimed!" to player
+                                    play sound {@accept} with volume 1 at player for player
+                                    add chunk at player's location to {tribes::%loop-value-1%::chunks::*}
+                                    set {claimed.%chunk at player's location%} to true
+                                    stop
+                            send "&cYou need to be near a previously claimed chunk!" to player
+                            play sound {@decline} with volume 1 at player for player
+                            stop
+                        send "&6Chunk claimed!" to player
+                        play sound {@accept} with volume 1 at player for player
+                        add chunk at player's location to {tribes::%loop-value%::chunks::*}
+                        set {claimed.%chunk at player's location%} to true
+                        stop
+                    else:
+                        send "&cYou've already claimed this chunk!" to player
+                        play sound {@decline} with volume 1 at player for player
+                        stop
+            send "&cYou are not the chieften of a tribe!" to player
+            play sound {@decline} with volume 1 at player for player
+        if arg-1 is "unclaim":
+            loop {tribes::*}:
+                if {tribes::%loop-value%::1} contains "&dChieften &6> %player%":
+                    {tribes::%loop-value%::chunks::*} contains chunk at player's location:
+                        send "&6Chunk unclaimed!" to player
+                        play sound {@accept} with volume 1 at player for player
+                        remove chunk at player's location from {tribes::%loop-value%::chunks::*}
+                        clear {claimed.%chunk at player's location%}
+                        stop
+                    else:
+                        send "&cYou haven't claimed this chunk!" to player
+                        play sound {@decline} with volume 1 at player for player
+        if arg-1 is "leave":
+            loop {tribes::*}:
+                if {tribes::%loop-value-1%::*} contains player or "&dChieften &6> %player%":
+                    send "&7You have left &6%loop-value-1%'s &7group!" to player
+                    play sound {@accept} with volume 1 at player for player
+                    if {tribes::%loop-value-1%::1} contains player or "&dChieften &6> %player%":
+                        loop {tribes::%loop-value-1%::chunks::*}:
+                            clear {claimed.%loop-value-2%}
+                        clear {tribes::%loop-value-1%::*}
+                        remove loop-value from {tribes::*}
+                        send "&cGroup deleted!" to player
+                    remove player or "&dChieften &6> %player%" from {tribes::%loop-value-1%::*}
+        if arg-1 is "invite":
+            loop {tribes::*}:
+                if {tribes::%loop-value%::1} contains "&dChieften &6> %player%":
+                    if arg-2 is set:
+                        send "&6%player% &7has invited you to their tribe %loop-value%! Do &d/tribe join &7to join!" to arg-2 parsed as player
+                        send "&7Invite sent." to player
+                        play sound {@accept} with volume 1 at player for player
+                        add loop-value to {invitedt::%arg-2 parsed as player%::*}
+                        play sound {@accept} with volume 1 at arg-2 parsed as player for arg-2 parsed as player
+                        stop
+                    send "&cYou are not the leader of this tribe!" to player
+                    play sound {@decline} with volume 1 at player for player
+        if arg-1 is "join":
+            if arg-2 is set:
+                if {invitedt::%player%::*} contains arg-2:
+                    add player to {tribes::%arg-2%::*}
+                    send "&7You have joined &6%{tribes::%arg-2%::1}%'s &7tribe!" to player
+                    remove arg-2 from {invitedt::%arg-2%::*}
+                    stop
+                else:
+                    play sound {@decline} with volume 1 at player for player
+                    send "&cYou haven't been invited to that tribe!" to player
+            else:
+                play sound {@decline} with volume 1 at player for player
+                send "&cPlease provide a Tribe to join!" to player
+        if arg-1 is "map":
+            if {showmap.%player%} is not set:
+                set {showmap.%player%} to true
+                send "&eTribe map enabled!" to player
+            else:
+                clear {showmap.%player%}
+                send "&cTribe map disabled!" to player
+            while {showmap.%player%}:
+                loop chunks_in_radius(player's location, 1):
+                    if {claimed.%loop-value%} is set:
+                        loop all blocks in loop-value:
+                            loop-block is not air
+                            block above loop-block is air
+                            block 2 above loop-block is air
+                            show dust at the block above loop-block to the player
+                wait 1 second
+                #if player is in loop-chunk:
+
+function chunks_in_radius(center: location, radius: number) :: chunks:
+    set {_pos} to {_center}
+    set z-coordinate of {_pos} to z-coordinate of {_center} - 16 * {_radius}
+    loop 2 * {_radius} + 1 times:
+        set x-coordinate of {_pos} to x-coordinate of {_center} - 16 * {_radius}
+        loop 2 * {_radius} + 1 times:
+            add chunk at {_pos} to {_chunks::*}
+            add 16 to x-coordinate of {_pos}
+        add 16 to z-coordinate of {_pos}
+    return {_chunks::*}
+
+
+command /resettribes:
+    trigger:
+        loop {tribes::*}:
+            loop {tribes::%loop-value-1%::chunks::*}:
+                clear {claimed.%loop-value-2%}
+        clear {tribes::*}
+        loop all players:
+            clear {interritory.%loop-player%}
+
+on player move:
+    #if (!event.getFrom().getChunk().equals(event.getTo().getChunk())):
+    if {claimed.%chunk at player's location%} is set:
+        loop {tribes::*}:
+            if {tribes::%loop-value%::chunks::*} contains chunk at player's location:
+                {interritory.%player%} is not set
+                set {interritory.%player%} to loop-value
+                send title "" to player
+                send subtitle "&7[now entering &7&n%loop-value%&7 tribe]" to player 
+                stop
+    if {interritory.%player%} is set:
+        if {tribes::%{interritory.%player%}%::chunks::*} does not contain chunk at player's location:
+            send title "" to player
+            send subtitle "&7[now leaving &7&n%{interritory.%player%}%&7 tribe]" to player 
+            clear {interritory.%player%}
+            stop
+
+
+
+            

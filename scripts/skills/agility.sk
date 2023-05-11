@@ -1,0 +1,18 @@
+#command /pee5 <text>:
+	#trigger:
+		#set {agility.%player%} to arg 1 parsed as integer
+		#send {agility.%player%} to player
+
+on player move:
+	if player is sprinting:
+		if {agility.%player%} > 29:
+			set the player's walk speed to 0.35
+			stop
+		if {agility.%player%} > 19:
+			set the player's walk speed to 0.3
+			stop
+		if {agility.%player%} > 9:
+			set the player's walk speed to 0.25
+			stop
+	else:
+		set the player's walk speed to 0.2

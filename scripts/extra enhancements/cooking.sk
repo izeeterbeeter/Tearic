@@ -1,0 +1,308 @@
+on load:
+    set {foodtypes::*} to "grain","vegetable","fish","meat","fruit","dairy"
+
+
+on rightclick:
+    name of player's tool is "&fCheese"
+    cancel event #entity.player.burp
+    event-block is not smoker
+    play sound "entity.player.burp" with volume 1 at player for all players
+    add 1.5 to {nutrition.%player%.dairy}
+    loop {foodtypes::*}:
+        if {nutrition.%player%.%loop-value%} > 10:
+            set {nutrition.%player%.%loop-value%} to 10
+    loop {foodtypes::*}:
+        if "dairy" is not loop-value:
+            {nutrition.%player%.%loop-value%} > 0
+            remove 1 from {nutrition.%player%.%loop-value%}
+    remove 1 of player's tool from player's tool
+
+on consume:
+    if event-item is milk:
+        add 2 to {nutrition.%player%.dairy}
+        loop {foodtypes::*}:
+            if "dairy" is not loop-value:
+                {nutrition.%player%.%loop-value%} > 0
+                remove 1 from {nutrition.%player%.%loop-value%}
+
+on break of barrel:
+    set {_loc} to event-block's location
+    if {milkamount::%{_loc}%::1} is set:
+        clear {milkamount::%{_loc}%::*}
+        remove {_loc} from {milkamount::*}
+        remove {_loc} from {cheeseamount::*}
+
+
+every 2 minutes:
+    loop {milkamount::*}:
+        set {_loc} to loop-value
+        {cheeseamount::%{_loc}%::1} < 11
+        {milkamount::%{_loc}%::1} > 9
+        remove 10 from {milkamount::%{_loc}%::1}
+        play sound "item.bucket.fill" with volume 1 at {_loc} for all players
+        add 1 to {cheeseamount::%{_loc}%::1}
+
+on break of smoker:
+    set {_loc} to event-block's location
+    if {stove::%{_loc}%::*} is set:
+        loop {stove::%{_loc}%::*}:
+            drop loop-value
+        clear {stove::%{_loc}%::*}
+
+on rightclick on cauldron:
+    {farm.%player%} > 10
+    player's tool is milk
+    play sound "item.bucket.fill" with volume 1 at event-block for all players
+    set player's tool to bucket
+    give player yellow dye named "&fButter"
+
+#item.bucket.empty
+on rightclick on barrel:
+    block below event-block's location is minecraft:composter
+    cancel event
+    if {farm.%player%} > 14:
+        set {_loc} to event-block's location
+        if {milkamount::%{_loc}%::1} is not set:
+            add {_loc} to {milkamount::*}
+            set {milkamount::%{_loc}%::1} to 0
+        if {cheeseamount::%{_loc}%::1} is not set:
+            set {cheeseamount::%{_loc}%::1} to 0
+        if player is sneaking:
+            {cheeseamount::%{_loc}%::1} > 0
+            give player sponge named "&fCheese"
+            remove 1 from {cheeseamount::%{_loc}%::1}
+            title_reward(player, "rat")
+        if player is holding milk bucket:
+            if {milkamount::%{_loc}%::1} < 100:
+                add 10 to {milkamount::%{_loc}%::1}
+                play sound "item.bucket.empty" with volume 1 at location of event-block for all players
+                set player's tool to bucket
+                send action bar "&d%{milkamount::%{_loc}%::1}%/100ml &7of &fMilk &7| &d%{cheeseamount::%{_loc}%::1}%/10 &7wheels of &eCheese" to player
+                stop
+        if player is holding a empty bucket:
+            if {milkamount::%{_loc}%::1} > 9:
+                remove 10 from {milkamount::%{_loc}%::1}
+                play sound "item.bucket.fill" with volume 1 at location of event-block for all players
+                set player's tool to milk bucket
+        send action bar "&d%{milkamount::%{_loc}%::1}%/100ml &7of &fMilk &7| &d%{cheeseamount::%{_loc}%::1}%/10 &7wheels of &eCheese" to player
+
+
+function cook_food(b: item, i: item, i2: item) :: item:
+    set {_dairy} to 0
+    set {_grain} to 0
+    set {_vegetable} to 0
+    set {_meat} to 0
+    set {_fruit} to 0
+    set {_fish} to 0
+    if {_b} is bread:
+        set {_item} to bread with name "&6Grilled Sandwich"
+        add 3 to {_grain}
+    if {_b} is any raw meat or any raw fish:
+        set {_item} to "cooked %{_b}%" parsed as item
+        set {_item} to {_item} with name "&6Cooked %{_b}%"
+        if {_b} is any raw meat:
+            add 3 to {_meat}
+        if {_b} is any raw fish:
+            add 3 to {_fish}
+    if {_i} is any raw meat:
+        add 3 to {_meat}
+    if {_i2} is any raw meat:
+        add 3 to {_meat}
+    if {_i} is any raw fish:
+        add 3 to {_fish}
+    if {_i2} is any raw fish:
+        add 3 to {_fish}
+    if {_i} is any fruit:
+        add 2 to {_fruit}
+    if {_i2} is any fruit:
+        add 2 to {_fruit}
+    if {_i} is carrot:
+        add 2 to {_vegetable}
+    if {_i2} is carrot:
+        add 2 to {_vegetable}
+    if {_i} is potato:
+        add 2 to {_vegetable}
+    if {_i2} is potato:
+        add 2 to {_vegetable}
+    if {_i} is beetroot:
+        add 2 to {_vegetable}
+    if {_i2} is beetroot:
+        add 2 to {_vegetable}
+    if {_i} is bread:
+        add 3 to {_grain}
+    if {_i2} is bread:
+        add 3 to {_grain}
+    if {_i} is sponge named "&fCheese":
+        set {_i} to "Cheese"
+        add 2 to {_dairy}
+    if {_i2} is sponge named "&fCheese":
+        set {_i2} to "Cheese"
+        add 2 to {_dairy}
+    if {_i} is yellow dye named "&fButter":
+        set {_i} to "Butter"
+        add 1 to {_dairy}
+    if {_i2} is yellow dye named "&fButter":
+        set {_i2} to "Butter"
+        add 1 to {_dairy}
+    add "&7--------------" to lore of {_item}
+    add "&6> &d%{_b}%, %{_i}%, %{_i2}% &6<" to lore of {_item} 
+    if {_dairy} is not 0:
+        add "&fDairy &7> %{_dairy}%" to lore of {_item} 
+    if {_grain} is not 0:
+        add "&eGrain &7> %{_grain}%" to lore of {_item} 
+    if {_vegetable} is not 0:
+        add "&aVegetable &7> %{_vegetable}%" to lore of {_item} 
+    if {_meat} is not 0:
+        add "&4Meat &7> %{_meat}%" to lore of {_item} 
+    if {_fruit} is not 0:
+        add "&cFruit &7> %{_fruit}%" to lore of {_item}
+    if {_fish} is not 0:
+        add "&1Fish &7> %{_fish}%" to lore of {_item} 
+    add "&7--------------" to lore of {_item}
+    return {_item}
+
+on consume:
+    lore of event-item is not set
+    if event-item is any meat:
+        add 2 to {nutrition.%player%.meat}
+        add "meat" to {_fart::*}
+    if event-item is any fruit:
+        add 3 to {nutrition.%player%.fruit}
+        add "fruit" to {_fart::*}
+    if event-item is any fish:
+        add 1 to {nutrition.%player%.fish}
+        add "fish" to {_fart::*}
+    if event-item is bread:
+        add 2.5 to {nutrition.%player%.grain}
+        add "grain" to {_fart::*}
+    if event-item is carrot or potato or beetroot:
+        add 2.5 to {nutrition.%player%.vegetable}
+        add "vegetable" to {_fart::*}
+    if event-item is mushroom stew or beetroot stew:
+        add 3.5 to {nutrition.%player%.vegetable}
+        add "vegetable" to {_fart::*}
+    if event-item is rabbit stew:
+        add 2.5 to {nutrition.%player%.vegetable}
+        add 3 to {nutrition.%player%.meat}
+        add "vegetable" to {_fart::*}
+        add "meat" to {_fart::*}
+    loop {foodtypes::*}:
+        if {_fart::*} does not contain loop-value:
+            {nutrition.%player%.%loop-value%} > 0
+            remove 1 from {nutrition.%player%.%loop-value%}
+    loop {foodtypes::*}:
+        if {nutrition.%player%.%loop-value%} > 10:
+            set {nutrition.%player%.%loop-value%} to 10
+    loop {_fart::*}:
+        show_nutrition_bar(player,loop-value)
+
+every 2 second:
+    loop all players:
+        loop {foodtypes::*}:
+            if {nutrition.%loop-player%.%loop-value-2%} is 0:
+                add 1 to {_a}
+        if {_a} > 1:
+            apply slowness of tier 2 without any particles to loop-player for 2 seconds
+            apply weakness of tier 1 without any particles to loop-player for 2 seconds
+
+on rightclick:
+    event-item is any meat
+    {vegan.%player%} is true
+    cancel event
+    send action bar "&7i can't eat this..." to player
+
+on consume:
+    lore of event-item is set
+    cancel event
+    set {_food} to 0
+    loop lore of event-item:
+        loop-value contains "&7>"
+        set {_a::*} to loop-value split at " &7> "
+        loop {foodtypes::*}:
+            if {_a::1} contains loop-value-2:
+                if {nutrition.%player%.%loop-value-2%} < 11:
+                    add loop-value-2 to {_fart::*}
+                    add {_a::2} parsed as number to {nutrition.%player%.%loop-value-2%}
+        add {_a::2} parsed as number to {_food} 
+    loop {foodtypes::*}:
+        if {nutrition.%player%.%loop-value%} > 10:
+            set {nutrition.%player%.%loop-value%} to 10
+    loop {foodtypes::*}:
+        if {_fart::*} does not contain loop-value:
+            {nutrition.%player%.%loop-value%} > 0
+            remove 1 from {nutrition.%player%.%loop-value%}
+    loop {_fart::*}:
+        show_nutrition_bar(player,loop-value)
+    #broadcast {_food}
+    remove 1 of player's tool from player's tool
+    apply potion of saturation of tier 1 without any particles to player for "%{_food}*2% ticks" parsed as timespan
+
+
+function show_nutrition_bar(p: player,t: text):
+    if {_t} is "dairy":
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&fDairy"
+        set boss bar color of {_bar.%{_p}%} to bar white
+    if {_t} is "grain":
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&eGrain"
+        set boss bar color of {_bar.%{_p}%} to bar yellow
+    if {_t} is "vegetable":
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&aVegetable"
+        set boss bar color of {_bar.%{_p}%} to bar green
+    if {_t} is "meat":
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&4Meat"
+        set boss bar color of {_bar.%{_p}%} to bar red
+    if {_t} is "fish":
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&1Fish"
+        set boss bar color of {_bar.%{_p}%} to bar blue
+    if {_t} is "fruit":
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&cFruit"
+        set boss bar color of {_bar.%{_p}%} to bar red
+    set boss bar style of {_bar.%{_p}%} to segmented 6
+    set bossbar progress of {_bar.%{_p}%} to ({nutrition.%{_p}%.%{_t}%}/10)*100
+    add {_p} to bossbar players of {_bar.%{_p}%}
+
+command /nutrition:
+    trigger:
+        send "&7-----> &6Nutrition &7<-----"
+        send "&fDairy > %{nutrition.%player%.dairy}%" to player
+        send "&eGrain > %{nutrition.%player%.grain}%" to player
+        send "&aVegetable > %{nutrition.%player%.vegetable}%" to player
+        send "&4Meat > %{nutrition.%player%.meat}%" to player
+        send "&1Fish > %{nutrition.%player%.fish}%" to player
+        send "&cFruit > %{nutrition.%player%.fruit}%" to player
+        send  "&7--------------------"
+
+    
+
+on rightclick on smoker:
+    block below event-block is campfire
+    cancel event
+    if {farm.%player%} > 7:
+        set {_loc} to event-block's location
+        if player is sneaking:
+            set {_p} to last element of {stove::%{_loc}%::*}
+            give 1 of {_p} to player
+            remove {_p} from {stove::%{_loc}%::*}
+            send action bar "&dStove &7> &6%{stove::%{_loc}%::*}%" to player
+            stop
+        if size of {stove::%{_loc}%::*} < 3:
+            if player's tool is not air:
+                if name of player's tool is "&fCheese" or "&fButter":
+                    add 1 of player's tool to {stove::%{_loc}%::*} #block.lava.extinguish
+                    play sound "block.beehive.enter" with volume 1 at location of event-block for all players
+                    remove 1 of player's tool from player's tool
+                if player's tool is any food:
+                    if name of player's tool contains "&6":
+                        stop
+                    if player's tool is any soup:
+                        stop
+                    add 1 of player's tool to {stove::%{_loc}%::*} #block.lava.extinguish
+                    play sound "block.beehive.enter" with volume 1 at location of event-block for all players
+                    remove 1 of player's tool from player's tool
+        if size of {stove::%{_loc}%::*} is 3:
+            if cook_food({stove::%{_loc}%::1},{stove::%{_loc}%::2},{stove::%{_loc}%::3}) is set:
+                give player cook_food({stove::%{_loc}%::1},{stove::%{_loc}%::2},{stove::%{_loc}%::3})
+                play sound "block.lava.extinguish" with volume 1 at location of event-block for all players
+                clear {stove::%{_loc}%::*}
+        send action bar "&dStove &7> &6%{stove::%{_loc}%::*}%" to player
+ 

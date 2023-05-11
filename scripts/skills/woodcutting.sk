@@ -1,0 +1,48 @@
+#command /pee7 <text>:
+	#trigger:
+		#set {woodcut.%player%} to arg 1 parsed as integer
+		#send {woodcut.%player%} to player
+		
+function chain(b: block, n: number, p: player):
+    wait 1 tick
+    if {_n} is less than 85:
+        add 1 to {_n}
+        loop blocks in radius 1 around {_b}:
+            if loop-block is any log:
+                if block below loop-block is air or any leaves or any log:
+                    set block below loop-block to air
+                    chain(loop-block,{_n}, {_p})
+                    break loop-block naturally
+                    play sound "BLOCK_WOOD_BREAK" with volume 1 at location of loop-block for all players
+                    wait 10 tick
+					
+on leftclick on log:
+	if {woodcut.%player%} > 19:
+		if player doesn't have haste:
+			apply haste of tier 2 without any particles to player for 3 second
+	if {woodcut.%player%} > 9:
+		if player doesn't have haste:
+			apply haste of tier 1 without any particles to player for 3 second
+
+on rightclick on log:
+	player's tool is any axe
+	if {woodcut.%player%} < 12:
+		cancel event
+		send action bar "&7You need at least woodcutting level &c12 &7to do this!" to player
+	else:
+		title_reward(player, "skin carver")
+
+                   
+on break:
+	if gamemode of player is survival:
+		if {woodcut.%player%} > 29:
+			player is sneaking
+			if event-block is any log:
+				set {_tree} to false
+				loop blocks above event-block:
+					if loop-block is any leaves:
+						set {_tree} to true
+				if {_tree} is true:
+					chain(event-block, 0, player)
+
+

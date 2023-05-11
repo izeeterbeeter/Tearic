@@ -1,0 +1,104 @@
+clan 1:
+	vegan, vegetables give more food but you can only eat veggies
+clan 2:
+	animals run towards you when you crouch
+clan 3:
+	can right click tall grass, chance of dropping random food item or trash. 
+clan 4:
+	gains resistance 1 when around other players, gives strength 1 to near by players
+
+skills: 
+###blacksmithing
+	#can cook food in furnace - can smelt iron and make iron tools - can make iron armor - can make diamond tools - can make diamond armor - can make netherite 
+#m#agic
+	can use ability tears - can make ability tears and make nether portal - can use enchantment table - can use brewing stand
+###agility
+	sprint 1 - speed 2 - speed 3
+###jumping
+	take reduced fall damage - crouch jump 2 blocks - crouch jump 3 blocks
+###woodcutting
+	mine logs faster - mine logs even faster - tree feller
+###mining
+	mine stone faster - can craft hammers - mine stone faster
+###archery
+	bows do 1 more heart of damage - bows 1.5 more heart of damage - can dash backwards with bows
+###swords
+	swords do 1 more heart of damage if enemy is a mob - swords do 1 more heart of damage if enemy is player- can dash forwards with swords
+###axes
+	yeah
+##farming
+	can plant/harvest wheat seeds - can plant melons and pumpkins - can plant/harvest carrots - can plant/harvest potatos
+##botanist
+	
+
+ability tears:
+
+crimson >>
+20
+#freeze: freeze enemy when their health is below a certain point - crimson stem, packed ice, snowball, fermented spider eye
+16
+#bleed: bleed in radius - crimson stem, flint, bone, spider eye
+12
+#fireball: basic ass fireball - crimson stem, firework star, fire charge, charcoal
+30
+#regret: chance of setting nearby trees to flames - crimson stem, wither skull, fire charge, emerald
+25
+#big slam: throws nearby enemies up and slams them down with lightning - crimson stem, fishing rod, diamond axe, egg
+magic tdisease: infect a player with a magical disease - crimson stem, crimson fungus, amethyst shard, twisting vines
+
+neutral
+blink: blink forward 10 blocks - soulsand, ender pearl, glowstone, redstone
+
+warped>>
+25
+#equal trade: replace block with chosen block - warped stem, ender pearl, emerald, shulker shell
+17
+#ghoji: take no fall damage - warped stem, feather, slimeball, emerald
+15
+#warp: warp to another player - warped stem, ender pearl, diamond, rotten flesh
+25
+#death keeper: keeps inventory after death - warped stem, chest, ender pearl, trapdoor
+15
+# item magnet: yeah - warped stem, hopper, ender pearl, glow ink sac
+12
+#surface: teleport to surface - warped stem, compass, ender pearl, sunflower
+
+
+Aloe vera: cactus
+Echinacea: allium
+Feverfew: oxeye daisy
+
+Chamomile: oxeye daisy
+Gingko: fern
+Ginseng: hanging root
+
+Milk thistle: pink tulip
+Flax seed: beetroot seeds
+Lavender: allium
+---------------------------------------------
+Drusha level requirements:
+level 15: make totems #
+level 20: will of the spirits #
+level 21: heal self #
+level 23: chain heal #
+level 25: call fire, strikes foe with fire #
+level 27: eathquake, aoe attack on ground #
+level 30: can use enhancement
+
+
+
+
+damage types:
+frost: slows
+fire: ignites
+lightning: small chain attack, like statik shiv in league
+blunt: basic damage type
+tearic: all magic damage, enderdragon, wither
+natural: drusha kind of shit. enderman, blaze, etc..
+
+
+
+
+
+
+

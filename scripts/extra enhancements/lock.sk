@@ -1,0 +1,63 @@
+on load:
+	set {_i1} to iron nugget named "&7Key"
+	register new shaped recipe for {_i1} using air, iron nugget, air, iron nugget, air, iron nugget, air, iron nugget and air with id "chest_key" in group "chest_key"
+
+
+on chat:
+	if {pinas.%player%} is true:
+		set {_pinkay} to message parsed as number
+		if {_pinkay} is set:
+			send "&7key set to &e%{_pinkay}%"
+			set name of player's tool to "&7%{_pinkay}%"
+			add name of player's tool to {lll::*}
+			set {pinas.%player%} to false
+			cancel event
+			stop
+		else:
+			send "nvm i guess"
+
+on rightclick on chest:
+	set {_loc} to event-block's location
+	if player is not holding iron nugget:
+		if {chest::%{_loc}%::*} is set:
+			loop all items in inventory of player:
+				if {chest::%{_loc}%::*} is loop-item's name:
+					stop
+		if {chest::%{_loc}%::*} is set:
+			cancel event
+			send "This chest has been locked!"
+	if player is holding iron nugget:
+		title_reward(player, "Capitalist")
+		set {_loc} to event-block's location
+		if {chest::%{_loc}%::*} is not set:
+			if name of player's tool contains "&7":
+				if {lll::*} does not contain name of player's tool:
+					cancel event
+					send "type pin in chat" to player
+					set {pinas.%player%} to true
+					stop
+				else:
+					set {chest::%{_loc}%::*} to name of player's tool
+		else:
+			if {chest::%{_loc}%::*} is name of player's tool:
+				play sound "block.anvil.hit" with volume 1 at location of event-block for all players
+				stop
+			if {chest::%{_loc}%::*} is set:
+				cancel event
+				send "This chest has been locked!"
+				stop
+
+on rightclick on chest:
+	player is sneaking
+	if player is holding iron nugget:
+		set {_loc} to event-block's location
+		if {chest::%{_loc}%::*} is set:
+			if {chest::%{_loc}%::*} is name of player's tool:
+				clear {chest::%{_loc}%::*}
+				send "Chest no longer locked." to player
+
+on break of chest:
+	set {_loc} to event-block's location
+	if {chest::%{_loc}%::*} is set:
+		clear {chest::%{_loc}%::*}
+			

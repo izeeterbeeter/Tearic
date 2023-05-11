@@ -1,0 +1,14 @@
+command /profile <text="show"> <offline player=%player%>:
+    trigger:
+        if arg 1 is "show":
+            send "" to player
+            send "&7--------%arg 2's display name%&6's Profile&7---------"
+            send "" to player
+            send "&6Average Level &7>> %{averagelevel.%arg 2%}%"
+            send "&6Deaths &7>> %{deathcount.%arg 2%}%"
+            send "&6Titles Accumulated &7>> %size of {titles.%arg 2%::*}%"
+            send "" to player
+            send "&7---------------------------------"
+            send "" to player
+            
+        

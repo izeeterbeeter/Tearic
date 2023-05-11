@@ -1,0 +1,163 @@
+#command /pee11 <text>:
+	#trigger:
+		#set {axes.%player%} to arg 1 parsed as integer
+		#send {axes.%player%} to player
+		
+on damage:
+	if attacker is holding a axe:
+		attacker's attack cooldown is 1
+		if {axes.%attacker%} > 9 and victim is not a player:
+			damage victim by 1 hearts
+			set damage to final damage
+		if {axes.%attacker%} > 19 and victim is a player:
+			damage victim by 1 hearts
+			set damage to final damage
+
+on spawn of wolf:
+	chance of 50%:
+		spawn fox
+			
+on rightclick:
+	if player is sneaking:
+		player is holding any axe
+		{active.%player%} is not set
+		clear {choice::%player%::*}
+		set {active.%player%} to true
+		clear {choice::%player%::*}
+
+on rightclick:
+	player is holding any axe
+	if player is sneaking:
+		stop
+	if {active.%player%} is true:
+		cancel event
+		add "Right" to {choice::%player%::*}
+		play sound "item.crossbow.loading_end" with volume 1 with pitch 1.5 at player's location for player
+		send action bar "%bar(player)%" to player
+		#send action bar "%{choice::%player%::*}%" to player
+	if size of {choice::%player%::*} > 2:
+		if {choice::%player%::1} is "Right":
+			{choice::%player%::2} is "Right"
+			{choice::%player%::3} is "Right"
+			{axes.%player%} > 19
+			#send action bar "Axe Spin selected!" to player
+			set {choice::%player%::*} to "Axe Spin selected!"
+			send action bar "%bar(player)%" to player
+			spin(player)
+		if {choice::%player%::1} is "Right":
+			{choice::%player%::2} is "Left"
+			{choice::%player%::3} is "Right"
+			{axes.%player%} > 9
+			set {choice::%player%::*} to "Grab selected!"
+			send action bar "%bar(player)%" to player
+			grab(player)
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+
+command /clearchoice:
+	trigger:
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+on leftclick:
+	player is holding any axe
+	if {active.%player%} is true:
+		cancel event
+		add "Left" to {choice::%player%::*}
+		play sound "item.crossbow.loading_end" with volume 1 with pitch 1.5 at player's location for player
+		send action bar "%bar(player)%" to player
+		#send action bar "%{choice::%player%::*}%" to player
+	if size of {choice::%player%::*} > 2:
+		if {choice::%player%::1} is "Left":
+			{choice::%player%::2} is "Left"
+			{choice::%player%::3} is "Left"
+			{axes.%player%} > 29
+			set {choice::%player%::*} to "Rage selected!"
+			send action bar "%bar(player)%" to player
+			rage(player)
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+
+function rage(p: player):
+	{stamina.%{_p}%} >= 100
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 100)%"
+	set {_waited} to difference between {acd.%{_p}%} and now
+	set {acd.%{_p}%} to 2 minutes
+	if {_waited} is less than 2 minutes:
+		send action bar "&f&lYou can rage after &e&l%difference between 2 minutes and {_waited}%" to {_p}
+		stop
+	play sound "BLOCK_CHAIN_FALL" with volume 1 at {_p} for all players
+	play sound "ENTITY_HOGLIN_ANGRY" with volume 1 at location of {_p} for all players
+	apply blindness without any particles to {_p} for 1 seconds
+	apply potion of strength of tier 3 without any particles to {_p} for 20 seconds
+	apply potion of resistance of tier 3 without any particles to {_p} for 20 seconds
+	loop all blocks in radius 3 of {_p}:
+		loop-block is not air
+		draw 30 of dust using dustOption(red, 1) 2 above loop-block with offset vector(0.3, 2, 0.3)
+	set {acd.%{_p}%} to now
+	clear {choice::%{_p}%::*}
+
+function spin(p: player):
+	{stamina.%{_p}%} >= 50
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 50)%"
+	set {_waited} to difference between {spin.%{_p}%} and now
+	if {_waited} is less than 3 seconds:
+		send action bar "&f&lYou can spin after &e&l%difference between 10 seconds and {_waited}%" to {_p}
+		stop
+	set {spin.%{_p}%} to now
+	loop 45 times:
+		if {_a} is 5:
+			make {_p} swing their main hand
+			wait 1 tick
+			play sound "entity.player.attack.sweep" with volume 1 at {_p} for all players
+			clear {_a}
+		add 1 to {_a}
+		set {_loc} to location of {_p}
+		set pitch of {_loc} to 0
+		add 8 to yaw of {_loc}
+		teleport {_p} to {_loc}
+		draw 40 of dust using dustOption(gray, 1) 1 blocks above and 3 in front of {_p} with offset vector(0.1, 0, 0.1)
+		draw 40 of dust using dustOption(white, 1) 1 blocks above and 2 in front of {_p} with offset vector(0.4, 0, 0.4)
+		distance between {_p} and {_p}'s target is less than 4
+		{_hurt::*} does not contain {_p}'s target
+		add {_p}'s target to {_hurt::*}
+		#enchant.thorns.hit
+		play sound "enchant.thorns.hit" with volume 1 at {_p}'s target for all players
+		make {_p} damage {_p}'s target by 6.5
+		push {_p}'s target upward at speed 0.6
+	clear {choice::%{_p}%::*}
+
+	#block.chain.break
+#block.chain.fall
+#block.chain.hit
+#block.chain.place
+#block.chain.step#
+
+function grab(p: player):
+	{stamina.%{_p}%} >= 50
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 50)%"
+	set {_waited} to difference between {grab.%{_p}%} and now
+	if {_waited} is less than 2 seconds:
+		send action bar "&f&lYou can Grab after &e&l%difference between 1 seconds and {_waited}%" to {_p}
+		stop
+	set {grab.%{_p}%} to now
+	play sound "block.chain.break" with volume 1 at {_p} for all players
+	play sound "block.chain.fall" with volume 1 at {_p} for all players
+	play sound "block.chain.hit" with volume 1 at {_p} for all players
+	play sound "block.chain.place" with volume 1 at {_p} for all players
+	play sound "entity.player.attack.sweep" with volume 1 at {_p} for all players
+	loop all blocks between block 1 below {_p}'s location and block 6 blocks in front of {_p}:
+		loop all blocks in radius 2 of loop-block:
+			loop-block-2 is air or minecraft:grass
+			draw 40 of dust using dustOption(gray, 1) at loop-block-2 with offset vector(0.1, 0, 0.1)
+		loop all entities in radius 2 of loop-block:
+			loop-entity is not {_p}
+			play sound "enchant.thorns.hit" with volume 1 at {_p} for all players
+			make loop-entity look at {_p}
+			make {_p} damage loop-entity by 1
+			make loop-entity look at {_p}
+			push loop-entity forwards at speed 1
+			push loop-entity upwards at speed 0.3	
+	clear {choice::%{_p}%::*}

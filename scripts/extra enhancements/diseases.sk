@@ -1,0 +1,189 @@
+on load:
+	set {bitems::*} to "dandelion", "pumpkin", "oxeye daisy", "poppy", "sea pickle", "cornflower", "golden apple", "glowstone dust", "feather", "crimson fungus", "warped fungus", "brown mushroom", "red mushroom", "sunflower", "amethyst shard", "ghast tear", "ink sac", "glow ink sac", "ender pearl", "blaze rod", "nether wart", "cactus", "leather", "carrot", "sweet berries", "cocoa beans", "glow berries", "dried kelp", "kelp", "snowball", "gunpowder", "wheat", "flint", "water lily", "vines", "glow lichen", "sand", "red sand"
+	set {symptomslist::*} to "mining fatigue", "weakness", "slowness", "nausea", and "hunger"
+	set {citems1::*} to "&fAloe Vera", "&fFeverfew", "&fEchinacea"
+	set {citems2::*} to "&fAloe Vera", "&fFeverfew", "&fEchinacea", "&fGingko", "&fGinseng", "&fChamomile"
+	set {citems3::*} to "&fAloe Vera", "&fFeverfew", "&fEchinacea", "&fGingko", "&fGinseng", "&fChamomile", "&fMilk thistle", "&fFlax seed", "&fLavender"
+
+every 10 seconds:
+	loop {diseases::*}:
+		loop {diseases::%loop-value-1%::players::*}:
+			loop {diseases::%loop-value-1%::symptoms::*}:
+				set {_p} to loop-value-3 parsed as a potiontype
+				set {_p2} to loop-value-2
+				apply {_p} of tier {diseases::%loop-value-1%::tier} without any particles to {_p2} for 10 seconds
+
+command /biome:
+  trigger:
+    send " Biome: %biome at location of player%" to player
+	
+command /cheese:
+  trigger:
+    send "%player's held item%" to player
+	
+on consume:
+	if event-item is any raw meat or rotten flesh:
+		chance of 15%:
+			infect(player)
+	
+function infect(p: player):
+	if {vamp.%{_p}%} is true:
+		stop
+	loop {diseases::*}:
+		if {infected.%{_p}%} is true:
+			stop
+		if {serverage} < 1:
+			stop
+		chance of 50%:
+			set {infected.%{_p}%} to true
+			create_disease()
+			set {_n} to last element of {diseases::*}
+			add {_p} to {diseases::%{_n}%::players::*}
+			play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 4 at location of {_p} for all players
+			play sound "entity.zombie_villager.cure" with volume 4 at location of {_p} for all players
+			send action bar "&aYou have been infected with &c%{_n}%!" to {_p}
+			stop
+		set {infected.%{_p}%} to true
+		set {_n} to random element of {diseases::*}
+		add {_p} to {diseases::%{_n}%::players::*}
+		play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 4 at location of {_p} for all players
+		play sound "entity.zombie_villager.cure" with volume 4 at location of {_p} for all players
+		send action bar "&aYou have been infected with &c%{_n}%!" to {_p}
+		stop
+		
+			
+every 10 seconds:
+	loop all players:
+		If block at loop-player is water:
+			if biome at loop-player is swamp:
+				if loop-player is not riding:
+					chance of 10%:
+						infect(loop-player)
+							
+							
+
+every 1 minute:
+	loop {diseases::*}:
+		loop {diseases::%loop-value-1%::players::*}:
+			set {_p} to {diseases::%loop-value-1%::infectivity}
+			chance of {_p}%:
+				loop all players in radius 7 of loop-value-2:
+					if {infected.%loop-player%} is false:
+						if {diseases::%loop-value-1%::players::*} does not contain loop-player:
+							add loop-player to {diseases::%loop-value-1%::players::*}
+							play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 4 at location of loop-player for all players
+							play sound "entity.zombie_villager.cure" with volume 4 at location of loop-player for all players
+							send action bar "&aYou have been infected with &c%loop-value-1%!" to loop-player
+							stop
+						
+every 2 minutes:
+	loop {diseases::*}:
+		loop {diseases::%loop-value-1%::players::*}:
+			set {_p} to {diseases::%loop-value-1%::tier}
+			set {_p2} to loop-value-2
+			apply poison of tier {_p} without any particles to {_p2} for 6 seconds
+	
+	
+		
+
+		
+#command /dp <text> <text>:
+	#trigger:
+	#	if arg-1 is "join":
+	#		add player to {diseases::%arg-2%::players::*}
+	#		broadcast {diseases::%arg-2%::players::*}
+	#	if arg-1 is "leave":
+	#		remove player from {diseases::%arg-2%::players::*}
+	#		broadcast {diseases::%arg-2%::players::*}
+
+command /dp <player>:
+	trigger:
+		if player's name is "Izlador":
+			loop {diseases::*}:
+				loop {diseases::%loop-value-1%::players::*}:
+					if loop-value-2 is arg-1:	
+						remove arg-1 from {diseases::%loop-value-1%::players::*}
+						broadcast {diseases::%loop-value-1%::players::*}
+		set {infected.%arg-1%} to false
+
+every 5 seconds:
+	loop all players:
+		if {shits.%loop-player%} is 3:
+			chance of 2%:
+				infect(loop-player)
+		
+		
+		
+function disease_info(name: text, c: text) :: texts:
+	if {_c} is "cure":
+		set {_c2::*} to {diseases::%{_name}%::cure::*}
+		return {_c2::*}
+		
+on damage:
+	attacker is zombie
+	victim is player
+	if victim is not blocking:
+		chance of 5%:
+			infect(victim)
+			
+			
+on right click:
+	if player is holding paper:
+		loop {diseases::*}:
+			if name of player's tool contains loop-value:
+				if {diseases::%loop-value%::players::*} contains player's name:
+					set {infected.%player%} to false
+					remove player from {diseases::%loop-value%::players::*}
+					play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 4 at location of player for all players
+					play sound "entity.zombie_villager.cure" with volume 4 at location of player for all players
+					remove 1 of player's tool from player's inventory
+					send action bar "&aYou have been cured of &c%loop-value%!" to player
+					title_reward(player, "Obamacare")
+	
+	
+	#loop {diseases::*}:
+				#loop {diseases::%loop-value-1%::cure::*}:
+					#if loop-value-2 is {_var}:
+						#clear {diseases::%{_v}%}
+						#stop
+
+function create_disease():
+	set {_v} to disease_name()
+	add {_v} to {diseases::*}
+	#broadcast {diseases::*}
+	if {serverage} is 1:
+		loop 4 times:
+			set {_var} to random element out of {bitems::*}
+			add {_var} to {diseases::%{_v}%::cure::*}
+	if {serverage} > 1:
+		loop 3 times:
+			set {_var} to random element out of {bitems::*}
+			add {_var} to {diseases::%{_v}%::cure::*}
+		if {serverage} is 2:
+			set {_var} to random element out of {citems1::*}
+			add {_var} to {diseases::%{_v}%::cure::*}
+		if {serverage} is 3:
+			set {_var} to random element out of {citems2::*}
+			add {_var} to {diseases::%{_v}%::cure::*}
+		if {serverage} > 4:
+			set {_var} to random element out of {citems3::*}
+			add {_var} to {diseases::%{_v}%::cure::*}
+	set {diseases::%{_v}%::infectivity} to random integer between 1 and 50
+	set {diseases::%{_v}%::tier} to random integer between 1 and {serverage}
+	loop 2 times:
+		set {_var} to random element out of {symptomslist::*}
+		if {diseases::%{_v}%::symptoms::*} contains {_var}:
+			set {_var} to random element out of {symptomslist::*}
+			add {_var} to {diseases::%{_v}%::symptoms::*}
+		else:
+			add {_var} to {diseases::%{_v}%::symptoms::*}
+	#broadcast {diseases::%{_v}%::cure::*}
+	#broadcast {diseases::%{_v}%::symptoms::*}
+		
+
+function disease_name() :: text:
+	set {_d::*} to "virus", "fever", "flu", "tear", "cylosis", "gue", "thrax", "trifil", "vapori", "neptune", "spore", "crimson", "warped", "fungus", "rotten", "magma", "jipli", "phalan", "reano", and "xacy"
+	set {_dp} to random element out of {_d::*}
+	set {_dp1} to random element out of {_d::*}
+	set {_s} to "%{_dp}%%{_dp1}%"
+	return {_s}

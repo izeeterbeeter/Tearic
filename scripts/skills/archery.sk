@@ -1,0 +1,204 @@
+#command /pee9 <text>:
+	#trigger:
+		#set {arch.%player%} to arg 1 parsed as integer
+		#send {arch.%player%} to player
+		
+on damage:
+	attacker is holding bow
+	if lore of attacker's weapon contains "&fIron +1":
+		damage victim by 0.5 heart
+		set damage to final damage
+	if lore of attacker's weapon contains "&bDiamond +2":
+		damage victim by 1 heart
+		set damage to final damage
+	if {arch.%attacker%} > 9:
+		damage victim by 1 heart
+		set damage to final damage
+	if {arch.%attacker%} > 19:
+		damage victim by 1.5 heart
+		set damage to final damage
+		
+function evade(p: entity):
+	{stamina.%{_p}%} >= 50
+	set {amountreduced.%{_p}%} to "&c-%reduce_stamina({_p}, 50)%"
+	loop 6 times:
+		set {pissmypant.%{_p}%} to true
+		if {_p}'s inventory contains arrow:
+			wait 2 tick
+			shoot an arrow from {_p}
+			remove 1 arrow from {_p}'s inventory
+			push {_p} backwards at speed 0.3
+			play sound "entity.arrow.shoot" with volume 1 at {_p} for all players
+		else:
+			if {_p} is not a player:
+				wait 2 tick
+				clear {pissmypant.%{_p}%}
+				make {_p} look at {_p}'s target
+				shoot an arrow from {_p}
+				play sound "entity.arrow.shoot" with volume 1 at {_p} for all players
+	clear {pissmypant.%{_p}%}
+	set {bcd.%{_p}%} to now	
+
+
+
+on leftclick:
+	player is holding a bow
+	player is sneaking
+	{active.%player%} is not set
+	clear {choice::%player%::*}
+	set {active.%player%} to true
+	clear {choice::%player%::*}
+
+on rightclick:
+	player is holding a bow
+	if player is sneaking:
+		stop
+	if {active.%player%} is true:
+		cancel event
+		add "Right" to {choice::%player%::*}
+		play sound "item.crossbow.loading_end" with volume 1 with pitch 1.5 at player's location for player
+	if size of {choice::%player%::*} > 2:
+		if {choice::%player%::1} is "Right":
+			{choice::%player%::2} is "Right"
+			{choice::%player%::3} is "Right"
+			{arch.%player%} > 9
+			#send action bar "Quick shot selected! (shoot an arrow)" to player
+			set {choice::%player%::*} to "Quick shot selected! (shoot an arrow)"
+			send action bar "%bar(player)%" to player
+			set {qs.%player%} to true
+		if {choice::%player%::1} is "Right":
+			{choice::%player%::2} is "Left"
+			{choice::%player%::3} is "Right"
+			{arch.%player%} > 19
+			#send action bar "Grapple selected! (shoot an arrow)" to player
+			set {choice::%player%::*} to "Grapple selected! (shoot an arrow)"
+			send action bar "%bar(player)%" to player
+			set {grappling.%player%} to 1
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+on shoot:
+	projectile is an arrow
+	if {qs.%shooter%} is true: #item.crossbow.shoot
+		{stamina.%shooter%} >= 25
+		set {amountreduced.%shooter%} to "&c-%reduce_stamina(shooter, 25)%"
+		play sound "item.crossbow.shoot" with volume 1 at shooter
+		while {grounded.%projectile%} is not true:
+			draw 1 of dust using dustOption(gray, 1) at projectile
+			wait 1 tick
+		projectile.setVelocity(projectile.getVelocity().multiply(200))
+	clear {qs.%shooter%}
+
+
+on damage:
+	damage cause is fall:
+		{grappling.%victim%} is 2
+		cancel event
+		clear {grappling.%victim%}
+
+on projectile hit:
+	projectile is an arrow
+	if {grappling.%shooter%} is 2:
+		set {grounded.%projectile%} to true
+	if {qs.%shooter%} is true:
+		set {grounded.%projectile%} to true
+		play sound "item.trident.hit" with volume 1 at projectile
+		play sound "item.shield.break" with volume 1 at projectile
+	if {pissmypant.%shooter%} is true:
+		victim is not a player
+		set victim's invulnerability ticks to 0
+		wait 1 second
+		set victim's invulnerability ticks to 0.5
+	shooter is a player
+	add 1 to {arrows.%victim%}
+
+on death:
+	{arrows.%victim%} is set
+	drop {arrows.%victim%} of arrow at event-location
+
+
+on shoot:
+	projectile is arrow
+	{grappling.%shooter%} is 1
+	set {grappling.%shooter%} to 2
+	wait 3 tick
+	{stamina.%shooter%} >= 50
+	set {amountreduced.%shooter%} to "&c-%reduce_stamina(shooter, 50)%"
+	while projectile is alive:
+		if {grounded.%projectile%} is not set:
+			play sound "entity.leash_knot.place" with volume 1 at projectile
+		wait 1 tick
+		chance of 50%:
+			push projectile downwards at speed 0.1
+		if distance between shooter and projectile is greater than 50:
+			kill projectile
+			#block.wool.break
+			play sound "entity.leash_knot.break" with volume 1 at shooter
+			send action bar "The rope snapped!" to shooter
+		loop all blocks between projectile and shooter:
+			chance of 20%:
+				draw 5 of dust using dustOption(gray, 1) at loop-block
+			chance of 1%:
+				if {grounded.%projectile%} is true:
+					push shooter upwards at speed 0.3
+			chance of 25%:
+				if {grounded.%projectile%} is true:
+					push shooter (direction from shooter to projectile) at speed 0.1
+					play sound "entity.fishing_bobber.throw" with volume 1 at shooter
+			distance between shooter and projectile is less than 4
+			kill projectile
+	wait 5 seconds
+	clear {grappling.%shooter%}
+
+on leftclick:
+	if player is sneaking:
+		stop
+	player is holding a bow
+	if {active.%player%} is true:
+		cancel event
+		add "Left" to {choice::%player%::*}
+		play sound "item.crossbow.loading_end" with volume 1 with pitch 1.5 at player's location for player
+	if size of {choice::%player%::*} > 2:
+		if {choice::%player%::1} is "Left":
+			{choice::%player%::2} is "Left"
+			{choice::%player%::3} is "Left"
+			{arch.%player%} > 29
+			#send action bar "Evade selected!" to player
+			set {choice::%player%::*} to "Evade selected!"
+			send action bar "%bar(player)%" to player
+			evade(player)
+		clear {choice::%player%::*}
+		clear {active.%player%}
+
+
+	
+	
+#entity.arrow.shoot
+#on shoot:
+    #shooter is player
+    #"%projectile%" is "arrow"
+    #{nospam::%shooter%} is not set
+    #set {nospam::%shooter%} to true
+    #cancel event
+    #loop 3 times:
+        #play sound "entity.arrow.shoot" with volume 1 at shooter for all players
+        #shooter has an arrow
+        #remove arrow from shooter
+        #make shooter shoot a arrow
+        #wait a tick
+    #delete {nospam::%shooter%}
+
+on projectile hit:
+	projectile is arrow
+	shooter is player
+	set {_waited} to difference between {bowdraw.%shooter%} and now
+	if {_waited} is less than 1 second:
+		stop
+	if event.getHitBlock() is target:
+		add 1 to {xparch.%shooter%} 
+		set {_xp} to xp_req(shooter,"arch")
+		levelup(shooter,"arch")
+		send action bar "&aArchery > &7%{xparch.%shooter%}%/%{_xp}% xp" to shooter
+		set {bowdraw.%shooter%} to now
+
+		

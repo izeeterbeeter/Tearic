@@ -1,0 +1,324 @@
+on server list ping:
+	set the motd to "                          &d&lTearic %newline%              &eBruh this shit is WACK!"
+
+options:
+	namecolour: &e                         # The default name colour of the item name
+	amountcolour: &7                       # The colour of the amount (e.g. "(1x)")
+	chatcolour: &f                         # The colour of the chat message
+	left: &6[                            # The symbol to the left of the chat display
+	right: &6]
+	code: [i]
+	decline: "entity.villager.no"
+	accept: "entity.experience_orb.pickup"
+ 
+
+script options:
+    $ use permissions
+	
+on item spawn:
+	event-entity.setCustomNameVisible(true)
+	event-entity.setCustomName(event-entity.getItemStack().getItemMeta().getDisplayName() ? "%event-entity.getItemStack()%")
+
+
+on rightclick:
+	event-block is any bed
+	set {bosshome.%player%} to player's location
+
+every 2 minutes:
+	loop all mobs:
+		if loop-mob's display name is set:
+			if loop-mob's display name is not "&c&lVladimir" or "&b&lFrost Guard" or "&c&lFire Warden":
+				loop-mob.setCustomNameVisible(false)
+
+on damage:
+	wait 5 ticks
+	victim is not a player
+	attacker is entity
+	victim.setCustomNameVisible(true)
+	if victim's name is set:
+		wait 1 tick
+		if victim's name does not contain " > &c":
+			set {_} to victim's display name
+			set the victim's display name to "%{_}% > &c%victim's health%/%victim's max health%"
+			wait 4 seconds
+			set the victim's display name to {_}
+		else:
+			set {_ayo::*} to split victim's display name at " >"
+			set {_} to {_ayo::1}
+			set the victim's display name to "%{_}% > &c%victim's health%/%victim's max health%"
+			wait 4 seconds
+			set the victim's display name to {_}
+	else:
+		set the victim's display name to "&a%victim% > &c%victim's health%/%victim's max health%"
+		wait 4 seconds
+		reset the victim's display name 
+	
+every 2 second:
+	#broadcast {infected}
+	loop all players:
+		loop all entities in radius 3 of loop-player:
+			if loop-entity-2 is bat:
+				play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 1 at location of loop-entity-2 for all players
+				wait 2 seconds
+				create an explosion of force 2 at loop-entity-2
+	
+
+# first joining
+
+on first join:
+	if player is "Izlador":
+		set {serverage} to 0
+	clear {titles.%player%::*}
+	loop {foodtypes::*}:
+		set {nutrition.%player%.%loop-value%} to 7
+	loop {possiblesettings::*}:
+		add loop-value to {settings::%player%::*}
+	clear {title.%player%}
+	clear {sit.%player%}
+	set {crepfear.%player%} to false
+	set {support.%player%} to false
+	set {vegan.%player%} to false
+	set {woodcut.%player%} to 1
+	set {farm.%player%} to 1
+	set {agility.%player%} to 1
+	set {magic.%player%} to 1
+	set {swords.%player%} to 1
+	set {arch.%player%} to 1
+	set {axes.%player%} to 1
+	set {defense.%player%} to 1
+	set {furnace.%player%} to 1
+	set {botany.%player%} to 1
+	set {jumping.%player%} to 1
+	set {mine.%player%} to 1
+	set {xpwoodcut.%player%} to 0
+	set {xpfarm.%player%} to 0
+	set {xpagility.%player%} to 0
+	set {xpmagic.%player%} to 0
+	set {xpswords.%player%} to 0
+	set {xparch.%player%} to 0
+	set {xpaxes.%player%} to 0
+	set {xpfurnace.%player%} to 0
+	set {xpbotany.%player%} to 0
+	set {xpjumping.%player%} to 0
+	set {xpmine.%player%} to 0
+	set {xpdefense.%player%} to 0
+	broadcast "&eWelcome &a%player% &eto Tearic!"
+	set {_x} to round(random number between -200 and 200)
+	set {_z} to round(random number between -200 and 200)
+	set {_block} to block at location at ({_x}, 290, {_z}) in world event-world
+	apply blindness without any particles to player for 5 seconds
+	wait 3 seconds
+	loop all blocks below {_block}:
+		if loop-block is air:
+			block below loop-block is not minecraft:lava
+			if block above loop-block is air:
+				teleport player to loop-block
+				set {nfall.%player%} to true
+	play sound "entity.player.levelup" with volume 15 at location of player for all players
+	send "&7You wake up in an unknown location..." to player
+	set {_n} to random integer between 1 and 4
+	if {_n} is 1:
+		set {vegan.%player%} to true
+		set {farm.%player%} to 5
+	if {_n} is 2:
+		set {crepfear.%player%} to true
+	if {_n} is 3:
+		set {support.%player%} to true
+	wait 8 seconds
+	set {nfall.%player%} to false
+
+command /msg <player> <text>:
+	trigger:
+		arg-1 is set:
+			arg-2 is set:
+				send "&6%player% &7(message) » &f%arg-2%" to arg-1
+				send "&6%player% &7to &6%arg-1% &7» &f%arg-2%" to player
+				play sound {@accept} with volume 1 at arg-1 for arg-1
+				set {reply.%arg-1%} to player
+			else:
+				play sound {@decline} with volume 1 at player for player
+				send "&cYou need a message to send!" to player
+
+command /r <text>:
+	trigger:
+		arg-1 is set:
+			{reply.%player%} is set:
+				send "&6%player% &7(message) » &f%arg-1%" to {reply.%player%}
+				send "&6%player% &7to &6%{reply.%player%}% &7» &f%arg-1%" to player
+				play sound {@accept} with volume 1 at {reply.%player%} for {reply.%player%}
+			else:
+				play sound {@decline} with volume 1 at player for player
+				send "&cNo one to reply to!" to player
+		else:
+			play sound {@decline} with volume 1 at player for player
+			send "&cYou need a message to send!" to player
+
+# server ageblock.lava.extinguish
+every 2 minutes:
+	loop all players:
+		loop all blocks in radius 8 of loop-player:
+			if loop-block is campfire:
+				add 1 to {_p.%loop-player%}
+		if {_p.%loop-player%} is greater than 20:
+			send action bar "&cIt's too hot here to gain any xp for blacksmithing!" to loop-player
+			loop all blocks in radius 6 of loop-player:
+				if loop-block is water block:
+					set loop-block to air
+					play sound "block.lava.extinguish" with volume 1 at location of loop-block for all players
+					stop
+		if {_p.%loop-player%} is greater than 0:
+			add 1 to {xpfurnace.%loop-player%} 
+			set {_xp} to xp_req(loop-player,"furnace")
+			levelup(loop-player,"furnace")
+			send action bar "&aBlacksmithing> &7%{xpfurnace.%loop-player%}%/%{_xp}% xp" to loop-player
+			#ignite loop-player
+			
+on place:
+	if {serverage} < 3:
+		if event-block is redstone wire or rail or repeater or hopper or piston or sticky piston:
+			title_reward(player, "average vapor fan")
+			cancel event
+			send action bar "&cYour feeble brain has no knowledge of how to use this." to player
+
+	
+on rightclick on animal:
+	loop all animals in radius 1 of event-entity:
+		add 1 to {_b.%player%}
+	if {_b.%player%} > 3:
+		cancel event
+
+on right click:
+	event-block is end portal frame
+	if {serverage} < 3:
+		cancel event
+		send action bar "&cYour feeble brain has no knowledge of how to use this." to player
+		
+on right click:
+	target is villager
+	if {serverage} < 4:
+		cancel event
+		send action bar "&cYour feeble brain has no knowledge of how to use this." to player
+
+on death of player:
+	wait 5 ticks
+	broadcast "%victim's display name% &cgot whacked. &7(%{deathcount.%victim%}% deaths)"
+
+command /age <number>:
+	trigger:
+		if player's name is "Izlador":
+			set {serverage} to arg 1
+			broadcast {serverage}
+		else:
+			broadcast "%player's name% has a problem"
+
+on spawn of zombie:
+	if {serverage} is 1:
+		chance of 10%
+		spawn wither skeleton
+	if {serverage} is 2:
+		chance of 20%
+		spawn wither skeleton
+		set tool of last spawned wither skeleton to iron sword
+		set max health of last spawned wither skeleton to 15
+		set health of last spawned wither skeleton to 15
+	if {serverage} is 3:
+		chance of 30%
+		spawn wither skeleton
+		set tool of last spawned wither skeleton to iron sword
+		equip last spawned wither skeleton with iron chestplate
+		set max health of last spawned wither skeleton to 20
+		set health of last spawned wither skeleton to 20
+	if {serverage} is 4:
+		chance of 40%
+		set tool of last spawned wither skeleton to iron sword
+		equip last spawned wither skeleton with iron helmet
+		equip last spawned wither skeleton with iron chestplate
+		set max health of last spawned wither skeleton to 25
+		set health of last spawned wither skeleton to 25
+
+on spawn of skeleton:
+	if {serverage} > 1:
+		chance of 25%:
+			spawn witch
+			
+
+
+every 5 second:
+	loop all players:
+		if {serverage} is not set:
+			set {serverage} to 0
+		if {serverage} is 0:
+			if {furnace.%loop-player%} is 12:
+				set {serverage} to 1
+				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
+				play sound "block.enchantment_table.use" with volume 100 at loop-player for all players
+		if {serverage} is 1:
+			if {magic.%loop-player%} is 12:
+				set {serverage} to 2
+				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
+				play sound "block.enchantment_table.use" with volume 100 at loop-player for all players
+		if {serverage} is 2:
+			if {furnace.%loop-player%} is 38:
+				set {serverage} to 3
+				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
+				play sound "block.enchantment_table.use" with volume 100 at loop-player for all players
+		if {serverage} is 3:
+			if {magic.%loop-player%} is 22:
+				set {serverage} to 4
+				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
+				play sound "block.enchantment_table.use" with volume 10000 at loop-player for all players
+		
+on chat:
+	replace "rape" with "grape" in message
+	replace "tit" with "boob" in message
+	replace "fuck" with "sexy" in message
+	replace "shit" with "fart" in message
+	replace "bitch" with "ballslover69" in message
+	replace "ass" with "booty" in message
+	replace "dick" with "balls" in message
+	replace "cum" with "ball juice" in message
+	replace "piss" with "pee" in message
+	replace "kys" with "live laugh love!" in message
+	if {pinas.%player%} is true:
+		set {_pinkay} to message parsed as number
+		if {_pinkay} is set:
+			send "&7key set to &e%{_pinkay}%"
+			set name of player's tool to "&7%{_pinkay}%"
+			add name of player's tool to {lll::*}
+			set {pinas.%player%} to false
+			cancel event
+			stop
+		else:
+			send "nvm i guess"
+	if message contains "[i]":
+		if held item is not air:
+			cancel event
+			set {_messages::*} to message split at "{@code}"
+			set {_message1} to {_message::1}
+			remove {_message::1} from {_messages::*}
+			set {_message2} to "%{_message::*}%"
+			replace all ", " in {_message2} with ""
+			replace all " and " in {_message2} with ""
+
+			set {_name} to name of held item
+			if {_name} is not set:
+				set {_name} to held item's type
+
+			loop the enchantments of player's held item:
+				add "&7%loop-value%" to {_enchants::*}
+			if {_enchants::*} is set:
+				set {_enchants} to "%{_enchants::*}%%nl%"
+				replace all ", " in {_enchants} with new line
+				replace all " and " in {_enchants} with new line
+			else:
+				set {_enchants} to "&7"
+
+			set {_lore} to "&7"
+			if line 1 of lore of held item is set:
+				set {_lore} to "%lore of held item%%nl%"
+				replace all "||" in {_lore} with new line
+
+			send formatted "&6%player's display name% &7» &f%colored {_messages::1}%<tooltip:&f%{_name}%%nl%%{_enchants}%&7%colored {_lore}%%nl%&8%held item's type%>{@left}{@namecolour}%{_name}% &7({@amountcolour}%amount of player's held item in player's inventory%x&7){@right}<reset>{@chatcolour}%colored {_messages::2}%" to all players
+	else:
+		cancel event
+		broadcast "&6%player's display name% &7» &f%message%"

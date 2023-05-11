@@ -1,0 +1,239 @@
+command /master:
+    trigger:
+        set {players.online} to number of all players
+        send "" to player
+        send "" to player
+        send "&7----------------------------------------------"
+        send "" to player
+        send "&7Hello, &c%player%!                &7Server Age: &c%{serverage}%" to player
+        send "&7Online: &c%{players.online}%" to player
+        send "" to player
+        send formatted "<tooltip:&7View the settings list!><cmd:/settings>&9[SETTINGS]<r> <tooltip:&7View your profile!><cmd:/profile>&6[PROFILE]<r> <tooltip:&7View your titles!><cmd:/titles show>&d[TITLES]<r> <tooltip:&7View your skills!><cmd:/xp>&3[SKILLS]<r> <tooltip:&7View your nutrition!><cmd:/nutrition>&a[NUTRITION]<r> <tooltip:&7Create a party!><cmd:/party>&6[PARTY]<r>" to player 
+        send "" to player
+        send "&7----------------------------------------------"
+        send "" to player
+
+on join:
+    wait 1 second
+    make player execute command "/master"
+
+command /guide <text="show">: 
+    trigger:
+        if arg-1 is "show":
+            send "" to player
+            send "" to player
+            send "&7----------------------------------------------"
+            send "" to player
+            send "&dTearicpedia!"
+            send "" to player
+            Send " &7Tearic is a custom made minecraft server created by &6Izlador&7. The reason it exists is to prolong the life of minecraft servers by adding more things to do, and prevent players from becoming 'overpowered' early."
+            send "" to player
+            send "&7Let this be your guide."
+            send "" to player
+            send formatted "<tooltip:&7- &6View the skills section &7-><cmd:/guide woodcutting>&6[SKILLS]<r>" to player
+        if arg-1 is "woodcutting":
+            send "" to player
+            send "&7----------------> &6Woodcutting&7 <----------------"
+            send "" to player
+            send "&7Woodcutting is a skill that lets you cut logs faster, and eventually lets you 'feller' trees which takes down the whole tree at once." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 10: Log breaking speed increases"
+            send "&aLevel 12: Can strip logs"
+            send "&aLevel 20: Log breaking speed increases"
+            send "&aLevel 30: Can 'fell' trees (Crouch while chopping a tree to insta mine it.)"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Axes skill><cmd:/guide axes>&6[Axes]<r>&7 <--------"
+        if arg-1 is "axes":
+            send "" to player
+            send "&7----------------> &6Axes&7 <----------------"
+            send "" to player
+            send "&7Axes is all about doing damage with axes." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 10: +1 Damage done with axes"
+            send "&e  - Unlocked: Axe grab. (Right, left, right)"
+            send "&aLevel 20: +1 Damage done with axes"
+            send "&e  - Unlocked: Axe spin. (Right, right, right)"
+            send "&eLevel 30: Unlocked: Rage (Left, left, left)"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Woodcutting skill><cmd:/guide woodcutting>&6[Woodcutting]<r>&7  <tooltip:&7View the Swords skill><cmd:/guide swords>&6[Swords]<r>&7<--------"
+        if arg-1 is "swords":
+            send "" to player
+            send "&7----------------> &6Swords&7 <----------------"
+            send "" to player
+            send "&7Swords is all about doing damage with swords." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 10: +1 Damage done with swords"
+            send "&e  - Unlocked: Stab. (Left, left, left)"
+            send "&aLevel 20: +1 Damage done with swords"
+            send "&e  - Unlocked: Dash. (Right, right, right)"
+            send "&eLevel 30: Can 'Swap' (Right, left, right)"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Axes skill><cmd:/guide axes>&6[Axes]<r>&7  <tooltip:&7View the Mining skill><cmd:/guide mining>&6[Mining]<r>&7<--------"
+        if arg-1 is "mining":
+            send "" to player
+            send "&7----------------> &6Mining&7 <----------------"
+            send "" to player
+            send "&7Mining is a skill that increases" to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&cBefore level 10, 34 chance of getting iron ore from iron ore."
+            send "&aLevel 10: Mining speed increased."
+            send "&aLevel 10: Iron ore chance icreased to 60%%"
+            send "&aLevel 20: Mining speed increased."
+            send "&aLevel 20: Iron ore chance icreased to 100%%"
+            send formatted "&aLevel 30: <tooltip:&7View Gem Cutting><cmd:/guide gemcutting>&6Gem Cutting<r>&7 &aunlocked!" to player
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Swords skill><cmd:/guide swords>&6[Swords]<r>&7  <tooltip:&7View the Archery skill><cmd:/guide archery>&6[Archery]<r>&7<--------"
+        if arg-1 is "archery":
+            send "" to player
+            send "&7----------------> &6Archery&7 <----------------"
+            send "" to player
+            send "&7Archery is all about dealing damage with the bow and arrow." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 6: Can use the fletching table to make stronger bows (can be enhanced bu drusha)"
+            send "&aLevel 10: +1 Damage done with bows"
+            send "&e  - Unlocked: Quick Shot. (Right, right, right)"
+            send "&aLevel 20: +1.5 Damage done with bows"
+            send "&e  - Unlocked: Grapple. (Right, left, right)"
+            send "&eLevel 30: Can 'Volley'. (Left, left, left)"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Mining skill><cmd:/guide mining>&6[Mining]<r>&7  <tooltip:&7View the Jumping skill><cmd:/guide jumping>&6[Jumping]<r>&7<--------"
+        if arg-1 is "jumping":
+            send "" to player
+            send "&7----------------> &6Jumping&7 <----------------"
+            send "" to player
+            send "&7Jumping is all about Jumping (on my dick)" to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 10: Can crouch jump 2 blocks, less fall damage"
+            send "&aLevel 20: Can crouch jump 3 blocks"
+            send "&aLevel 30: Can crouch jump 4 blocks"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Archery skill><cmd:/guide archery>&6[Archery]<r>&7  <tooltip:&7View the Agility skill><cmd:/guide agility>&6[Agility]<r>&7<--------"
+        if arg-1 is "agility":
+            send "" to player
+            send "&7----------------> &6Agility&7 <----------------"
+            send "" to player
+            send "&7Agility is all about being quick and nimble (on my dick)" to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 10: Can sprint faster"
+            send "&aLevel 20: Can sprint FASTERER"
+            send "&aLevel 30: Can be usain bolt"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Jumping skill><cmd:/guide jumping>&6[Jumping]<r>&7  <tooltip:&7View the Blacksmithing skill><cmd:/guide blacksmithing>&6[Blacksmithing]<r>&7<--------"
+        if arg-1 is "blacksmithing":
+            send "" to player
+            send "&7----------------> &6Blacksmithing&7 <----------------"
+            send "" to player
+            send "&7The Blacksmithing skill is all about creating tools, armor, and weapons. This is one of the 3 main skills." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 7: Can cook food in furnaces"
+            send "&aLevel 12: Can smelt iron and make iron tools. (smelting kelp no longer gives XP)"
+            send "&aLevel 17: Can make chainmail armor using chains"
+            send "&aLevel 25: Can make iron armor"
+            send "&aLevel 27: Can build an &d&nAdvanced Furnace&a which allows the player to make stronger weapons which can be enhanced by a Drusha."
+            send "&aLevel 28: Can make diamond tools"
+            send "&aLevel 38: Can make diamond armor"
+            send "&aLevel 50: Can make netherite tools and armor"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Agility skill><cmd:/guide agility>&6[Agility]<r>&7  <tooltip:&7View the Farming skill><cmd:/guide farming>&6[Farming]<r>&7<--------"
+        if arg-1 is "farming":
+            send "" to player
+            send "&7----------------> &6Farming&7 <----------------"
+            send "" to player
+            send "&7The Farming skill is all about crops and cooking. This skill allows the player to make high quality food items and engage in AGRICULTUUUUREEE." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 5: Can craft a saddle"
+            send "&6-> Saddle crafting recipe"
+            send formatted "|<tooltip:&7stick>&0■<r> <tooltip:&7leather>&6■<r> <tooltip:&7stick>&0■<r>|"
+            send formatted "|<tooltip:&7string>&f■<r> <tooltip:&7leather>&6■<r> <tooltip:&7string>&f■<r>|"
+            send formatted "|<tooltip:&7stick>&0■<r> <tooltip:&7leather>&6■<r> <tooltip:&7stick>&0■<r>|"
+            send "&aLevel 8: Can make a stove by placing a smoker on top of a campfire."
+            send "  &a- Right click stove with either meat, fish, or bread, and then add 2 extra foods."
+            send "&aLevel 10: Can plant and harvest wheat"
+            send "&aLevel 12: Can plant pumpkins and melons"
+            send "&aLevel 15: Can make bonemeal using composters"
+            send "&aLevel 20: Can plant and harvest carrots"
+            send "&aLevel 30: Can plant and harvest potatoes, can make bonemeal using bones."
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Blacksmithing skill><cmd:/guide blacksmithing>&6[Blacksmithing]<r>&7  <tooltip:&7View the Tearic skill><cmd:/guide tearic>&6[Tearic]<r>&7<--------"
+        if arg-1 is "tearic":
+            send "" to player
+            send "&7----------------> &6Tearic&7 <----------------"
+            send "" to player
+            send "&7Shadow wizard money gang (we love casting spells)" to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 5: Can use ability tears"
+            send "&aLevel 12: Can make and use nether portals. You can also make ability tears."
+            send "  &a- You will be prompted in chat to select either crimson or warped style."
+            send "    &a- Crimson: destruction and magic shit. (Use crimson fungus as fuel)"
+            send "    &a- Warped: Utility and general use spells. (Use warped fungus as fuel)"
+            send "&aLevel 22: Can use enchanting tables"
+            send "&aLevel 32: Can use brewing stands"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Farming skill><cmd:/guide farming>&6[Farming]<r>&7  <tooltip:&7View the Botany skill><cmd:/guide botany>&6[Botany]<r>&7<--------"
+        if arg-1 is "botany":
+            send "" to player
+            send "&7----------------> &6Botany&7 <----------------"
+            send "" to player
+            send "&7Botany is all about curing diseases, talking to tree spirits, and being united with nature." to player
+            send "" to player
+            send "&7Level requirements -> "
+            send "&aLevel 10: Right click sick players to get information on their disease."
+            send "&aLevel 12: Can go to the nether. You can break grass to get:"
+            send "  &a- Aloe Vera"
+            send "  &a- Echinacea"
+            send "  &a- Feverfew"
+            send "&aLevel 20:"
+            send "  &a- Gingko"
+            send "  &a- Ginseng"
+            send "  &a- Chamomile"
+            send "&aLevel 30:"
+            send "  &a- Milk Thistle"
+            send "  &a- Lavender"
+            send "  &a- Flax seed"
+            send "&aLevel 32: Can use brewing stands"
+            send "" to player
+            send formatted "&7--------> <tooltip:&7View the Tearic skill><cmd:/guide tearic>&6[Tearic]<r>&7 <--------"
+        if arg-1 is "gemcutting":
+            send "" to player
+            send "&7----------------> &6Gemcutting&7 <----------------"
+            send "" to player
+            send formatted "&7Gemcutting is an ability unlocked by reaching level 30 in the <tooltip:&7View the Mining skill><cmd:/guide tearic>&aMining<r>&7 skill." 
+            send "&7It allows you to create rings that give unique perks. Kind of like baubles. Little trinkets and doodads if you will." to player
+            send "" to player
+            send "&7In order to create a gem, you have to rightclick a stonecutter with either a diamond or an emerald." to player
+            send "" to player
+            send "&7You also need a ring, and a gemcutting table. Ring crafting recipe:"
+            send formatted "|<tooltip:&7golden nugget>&6■<r> <tooltip:&7gold ingot>&6■<r> <tooltip:&7golden nugget>&6■<r>|"
+            send formatted "|<tooltip:&7gold ingot>&6■<r> <tooltip:&7nothing>&f■<r> <tooltip:&7gold ingot>&6■<r>|"
+            send formatted "|<tooltip:&7golden nugget>&6■<r> <tooltip:&7gold ingot>&6■<r> <tooltip:&7golden nugget>&6■<r>|"
+            send "" to player
+            send "&7Each gem does something different!" to player
+            send "" to player
+            send "&7-------------------------------------------------"
+        if arg-1 is "tearic staff":
+            send "" to player
+            send "&7----------------> &6Tearic Staff&7 <----------------"
+            send "" to player
+            send formatted "&6The Tearic Staff allows you to put spells in one place. It stores tears and switches through them. <tooltip:&7View the Tearic skill><cmd:/guide tearic>&aTearic<r>&7 skill." 
+            send "&7It allows you to create rings that give unique perks. Kind of like baubles. Little trinkets and doodads if you will." to player
+            send "" to player
+            send "&7In order to create a gem, you have to rightclick a stonecutter with either a diamond or an emerald." to player
+            send "" to player
+            send "&7You also need a ring, and a gemcutting table. Ring crafting recipe:"
+            send formatted "|<tooltip:&7golden nugget>&6■<r> <tooltip:&7gold ingot>&6■<r> <tooltip:&7golden nugget>&6■<r>|"
+            send formatted "|<tooltip:&7gold ingot>&6■<r> <tooltip:&7nothing>&f■<r> <tooltip:&7gold ingot>&6■<r>|"
+            send formatted "|<tooltip:&7golden nugget>&6■<r> <tooltip:&7gold ingot>&6■<r> <tooltip:&7golden nugget>&6■<r>|"
+            send "" to player
+            send "&7Each gem does something different!" to player
+            send "" to player
+            send "&7-------------------------------------------------"

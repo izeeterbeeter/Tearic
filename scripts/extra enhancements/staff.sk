@@ -1,0 +1,72 @@
+on load:
+    set {_ts} to glowing bowl named "&7Tear Slot"
+    set {_i6} to glowing stick named "&dTearic Staff"
+    set {_a} to copper block
+    register new shaped recipe for {_ts} using {_a}, chain, {_a}, chain, bowl, chain, {_a}, chain and {_a} with id "tear_slot"
+    register new shaped recipe for {_i6} using {_ts}, crimson fungus, air, crimson fungus, {_ts}, warped fungus, air, warped fungus and stick with id "tearic_staff"
+
+on right click:
+    if {selection.%player%} is set:
+        set {_name} to name of player's tool
+        if {_name} contains "Tear of":
+            loop player's inventory:
+                if loop-value is {staff.%player%}:
+                    add "%{_name}%" to lore of loop-value
+            send action bar "%{_name}% &eadded!" to player
+            clear {selection.%player%}
+            clear {staff.%player%}
+    else:
+        player's tool is a stick named "&dTearic Staff"
+        set {_a} to line 1 of lore of player's tool
+        delete line 1 of lore of player's tool
+        add {_a} to lore of player's tool
+        play sound "item.crossbow.loading_end" with volume 1 with pitch 2 at player's location for player
+        displaystaff(player,"&7< %line 1 of lore of player's tool% &7>")
+            
+
+
+on player's tool change:
+    player's tool is a stick named "&dTearic Staff"
+    while player's tool is a stick named "&dTearic Staff":
+        wait 1 tick
+        player's tool is a stick named "&dTearic Staff"
+        displaystaff(player,"&7< %line 1 of lore of player's tool% &7>")
+
+
+
+on left click:
+    player's tool is a stick named "&dTearic Staff"
+    player is sneaking:
+        if {selection.%player%} is not set:
+            set {selection.%player%} to true
+            send title "" to player
+            send subtitle "&eTear selection enabled." to player
+            set {staff.%player%} to player's held item
+        else:
+            clear {selection.%player%}
+            clear {staff.%player%}
+            send title "" to player
+            send subtitle "&cTear selection disabled." to player
+    else:
+        set {_spell} to line 1 of lore of player's tool
+        if {_spell} is "&c&lTear of Mars":
+            dancingflame(player)
+        if {_spell} is "&c&lTear of Regret":
+            blackhole(player)
+        if {_spell} is "&c&lTear of Frozen Core":
+            frozenrain(player)
+        if {_spell} is "&c&lTear of Exposed Veins":
+            bleedforme(player)
+        if {_spell} is "&c&lTear of Mars":
+            dancingflame(player)
+        if {_spell} is "&c&lTear of Wild Soul":
+            flyingblock(player)
+        if {_spell} is "&7&lTear of Manabullet":
+            manathrow(player)
+
+function displaystaff(p: player, t: text):
+	set {_staffbar.%{_p}%} to bossbar named "%{_p}%staff" with title {_t}
+	set boss bar color of {_staffbar.%{_p}%} to bar red
+	set boss bar style of {_staffbar.%{_p}%} to solid
+	set bossbar progress of {_staffbar.%{_p}%} to 99
+	add {_p} to bossbar players of {_staffbar.%{_p}%}

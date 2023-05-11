@@ -1,0 +1,589 @@
+command /trelate <number>:
+	trigger:
+		if player is not "Izlador":
+			broadcast "%player% is trying to use admin commands again."
+			stop
+		set {trelate.%player%} to arg-1
+		clear {craftingtime.%player%} 
+		clear {crafting.%player%}
+		broadcast {trelate.%player%}
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 10 at location of player for player
+
+command /pees:
+	trigger:
+		if player is not "Izlador":
+			broadcast "%player% is trying to use admin commands again."
+			stop
+		broadcast {totem::*}
+
+command /giveprayer:
+	trigger:
+		drop glowing scute named "&9Prayer: Life Leech" with lore "&7We wish for you to be healthy."
+		drop glowing scute named "&9Prayer: Chain Heal" with lore "&7We shall grace all of you with our kindness."
+		drop glowing phantom membrane named "&9Prayer: Call Fire" with lore "&7Use this wisely Drusha."
+		drop glowing phantom membrane named "&9Prayer: Call Lightning Bolt" with lore "&7We don't like this one Drusha"
+		drop glowing phantom membrane named "&9Prayer: Imbue Lightning" with lore "&7Use this wisely Drusha."
+		drop glowing phantom membrane named "&9Prayer: Imbue Frost" with lore "&7Use this wisely Drusha."
+		drop glowing phantom membrane named "&9Prayer: Imbue Fire" with lore "&7Use this wisely Drusha."
+		drop glowing phantom membrane named "&9Prayer: Leeching Curse" with lore "&7Use this wisely Drusha."
+	
+
+command /pees2:
+	trigger:
+		if player is not "Izlador":
+			broadcast "%player% is trying to use admin commands again."
+			stop
+		clear {totem::*}
+
+function treetalk(gorb: number) :: text:
+	set {_g::*} to "Why hello there!", "This one gets it.", "Praise be to you human!", "We know many secrets.", "This one's kind of cute", "Why do you come to us?", "Is this the one you speak of?", "The extent of your knowledge of the natural world is intriguing.", "Your brethren, they torture our souls. You do not. We thank you.", "Your prayer, it's soothing.", "Hm..", "Those humans that call themselves users of tearic... they know nothing.", "Your soul.. it's quite soothing.", "You have a beautiful form.", "Do you have a romantic partner?"
+	set {_b::*} to "You disgust us.", "Is it really trying to communicate with us?", "Your soul is covered in thorns.", "Your feeble mind cannot even begin to comprehend us.", "*******", "There is a cavern between us.", "Stop trying already, it's embarassing.", "Your kind is nothing without us!", "We created you, why do you torture us?", "Your kind disrupts the natural order.", "We shed those tears.", "oh just fuck off.", "We don't even want to look at you.", "please... go away.", "There is a special place in the nether just for you"
+	if {_gorb} is 1:
+		return random element out of {_g::*}
+	if {_gorb} is 2:
+		set {_n::*} to {_g::*}
+		add {_b::*} to {_n::*}
+		return random element out of {_n::*}
+	if {_gorb} is 3:
+		return random element out of {_b::*}
+
+function crafting_time(p: player) :: number:
+	if {trelate.%{_p}%} is 3:
+		return 2
+	if {trelate.%{_p}%} is 2:
+		return 5
+	if {trelate.%{_p}%} is 1:
+		return 10
+
+every 1 second:
+	loop all players:
+		if {sit.%loop-player%} is true:
+			chance of 2%:
+				add random integer between 1 and 13 to {xpbotany.%loop-player%}
+			chance of 2%:
+				ts_relate(loop-player,"add",1)
+			if block below loop-player is not hay bale:
+				set {sit.%loop-player%} to false
+			play sound "block.conduit.ambient" with volume 1 at location of loop-player for loop-player
+			play sound "block.beacon.ambient" with volume 1 at location of loop-player for loop-player
+			if {crafting.%loop-player%} is true:
+				if {craftingtime.%loop-player%} is not set:
+					set {craftingtime.%loop-player%} to crafting_time(loop-player)*60
+				play sound "block.conduit.ambient.short" with volume 1 at location of loop-player for loop-player
+				subtract 1 from {craftingtime.%loop-player%}
+				broadcast {craftingtime.%loop-player%}
+				if {craftingtime.%loop-player%} is 0:
+					clear {craftingtime.%loop-player%}
+					clear {crafting.%loop-player%}
+					# This is all the results of crafting
+					# Totems
+					if {prayer::%loop-player%::1} is sunflower:
+						drop glowing scute named "&6&lTotem of Repel Activator" with lore "&7It has been willed." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is golden apple:
+						drop glowing scute named "&6&lTotem of Recollection" with lore "&7It has been willed." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is bone meal:
+						drop glowing scute named "&6&lTotem of Growth" with lore "&7It has been willed." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is any stripped log:
+						drop glowing scute named "&6&lTotem of Forgiveness" with lore "&7It has been willed." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					# Spells
+					if {prayer::%loop-player%::1} is golden carrot:
+						drop glowing scute named "&9Prayer: Life Leech" with lore "&7We wish for you to be healthy." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is gold melon:
+						drop glowing scute named "&9Prayer: Chain Heal" with lore "&7We shall grace all of you with our kindness." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is fire charge:
+						drop glowing phantom membrane named "&9Prayer: Call Fire" with lore "&7Use this wisely Drusha." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is blackstone:
+						drop glowing phantom membrane named "&9Prayer: Call Lightning Bolt" with lore "&7We don't like this one Drusha" 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is gilded blackstone:
+						drop glowing phantom membrane named "&9Prayer: Imbue Lightning" with lore "&7Use this wisely Drusha." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is magma block:
+						drop glowing phantom membrane named "&9Prayer: Imbue Fire" with lore "&7Use this wisely Drusha." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is packed ice:
+						drop glowing phantom membrane named "&9Prayer: Imbue Frost" with lore "&7Use this wisely Drusha." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					if {prayer::%loop-player%::1} is nether wart:
+						drop glowing phantom membrane named "&9Prayer: Leeching Curse" with lore "&7Use this wisely Drusha." 5 blocks above loop-player
+						clear {prayer::%loop-player%::*}
+						play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+			#Particle color and the way the tree spirits talk to you based on your trelate
+			if {trelate.%loop-player%} is 3:
+				draw 20 of dust using dustOption(green, 10) at location of loop-player
+				draw 20 of dust using dustOption(lime, 2) at location 1 north and 1 west of loop-player
+				draw 20 of dust using dustOption(lime, 2) at location 1 north and 1 east of loop-player
+				draw 20 of dust using dustOption(lime, 2) at location 1 south and 1 west of loop-player
+				draw 20 of dust using dustOption(lime, 2) at location 1 south and 1 east of loop-player
+				chance of 3%:
+					play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					apply blindness without any particles to loop-player for 5 second
+					send action bar "&a%treetalk(1)%" to loop-player
+			if {trelate.%loop-player%} is 2:
+				draw 20 of dust using dustOption(orange, 10) at location of loop-player
+				draw 20 of dust using dustOption(yellow, 2) at location 1 north and 1 west of loop-player
+				draw 20 of dust using dustOption(yellow, 2) at location 1 north and 1 east of loop-player
+				draw 20 of dust using dustOption(yellow, 2) at location 1 south and 1 west of loop-player
+				draw 20 of dust using dustOption(yellow, 2) at location 1 south and 1 east of loop-player
+				chance of 2%:
+					play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					apply blindness without any particles to loop-player for 5 second
+					send action bar "&a%treetalk(2)%" to loop-player
+			if {trelate.%loop-player%} is 1:
+				draw 20 of dust using dustOption(red, 10) at location of loop-player
+				draw 20 of dust using dustOption(red, 2) at location 1 north and 1 west of loop-player
+				draw 20 of dust using dustOption(red, 2) at location 1 north and 1 east of loop-player
+				draw 20 of dust using dustOption(red, 2) at location 1 south and 1 west of loop-player
+				draw 20 of dust using dustOption(red, 2) at location 1 south and 1 east of loop-player
+				chance of 1%:
+					play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of loop-player for loop-player
+					apply blindness without any particles to loop-player for 5 second
+					send action bar "&a%treetalk(3)%" to loop-player
+
+
+
+
+
+on rightclick:
+	set {crafting.%player%} to false
+	{sit.%player%} is true
+	cancel event
+	if {crafting.%player%} is not set:
+		set {crafting.%player%} to false
+	if {crafting.%player%} is false:
+		if size of {prayer::%player%::*} is less than 1:
+			if player's tool is not air:
+				add 1 of player's tool to {prayer::%player%::*}
+				remove 1 of player's tool from player's inventory
+				send action bar "&a%{prayer::%player%::*}%" to player
+	if size of {prayer::%player%::*} is 1:
+		wait 2 seconds
+		if {botany.%player%} > 14:
+			if {prayer::%player%::1} is sunflower:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&6&lTotem of Repel" to player
+				set {crafting.%player%} to true
+			if {prayer::%player%::1} is golden apple:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&6&lTotem of Recollection" to player
+				set {crafting.%player%} to true
+			if {prayer::%player%::1} is bone meal:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&6&lTotem of Growth" to player
+				set {crafting.%player%} to true
+			if {prayer::%player%::1} is any stripped log:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&6&lTotem of Forgiveness" to player
+				set {crafting.%player%} to true
+		if {botany.%player%} > 19:
+			if {prayer::%player%::1} is any sapling:
+				set {_random} to a random number between 1 and 100
+				set {_waited} to difference between {offeringcooldown.%player%} and now
+				if {_waited} is less than 5 seconds:
+					send action bar "&aPatience, human." to player
+					wait 1 second
+					stop
+				set {offeringcooldown.%player%} to now
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&aI think it's offering something to us..." to player
+				if {_random} < ({trelate.%player%}*10):
+					wait 5 seconds
+					send action bar "&aWe accept your offering Drusha!" to player
+					play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+					clear {prayer::%player%::*}
+					wait 5 seconds
+					drop glowing scute named "&aTree Spirit's Will" with lore "&7do you think they can hear us?" 5 blocks above player
+				else:
+					wait 5 seconds
+					send action bar "&cWe do not accept your offering." to player
+					apply blindness without any particles to player for 5 second
+					give {prayer::%player%::1} to player
+					clear {prayer::%player%::*}
+					play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+		if {botany.%player%} > 20:
+			if {prayer::%player%::1} is golden carrot:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&6&lSelf Heal" to player
+				set {crafting.%player%} to true
+		if {botany.%player%} > 22:
+			if {prayer::%player%::1} is gold melon:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&6&lChain Heal" to player
+				set {crafting.%player%} to true
+		if {botany.%player%} > 24:
+			if {prayer::%player%::1} is fire charge:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&9&lCall Fire" to player
+				set {crafting.%player%} to true
+		if {botany.%player%} > 26:
+			if {prayer::%player%::1} is blackstone:
+				play sound "entity.firework_rocket.large_blast_far" with volume 3 at location of player for player
+				play sound "block.respawn_anchor.charge" with volume 1 at location of player for player
+				send action bar "&9&lCall Earthquake" to player
+				set {crafting.%player%} to true
+	
+on leftclick:
+	set {crafting.%player%} to false
+	{sit.%player%} is true
+	cancel event
+	set {_p} to last element of {prayer::%player%::*}
+	give 1 of {_p} to player
+	remove {_p} from {prayer::%player%::*}
+	send action bar "&a%{prayer::%player%::*}%" to player
+
+
+every 5 seconds:
+	loop {totem::*}:
+		if {totem::%loop-value%::1} is "Repel":
+			set {_lv} to location of block 2 block above loop-value's location
+			loop all monsters in radius 40 of loop-value's location:
+				set {_foe} to loop-monster's location
+				loop all blocks between {_foe} and {_lv}:
+					draw 5 of dust using dustOption(red, 1) 1 block above loop-block
+				play sound "block.respawn_anchor.deplete" with volume 1 at location of loop-mob for all players
+				if loop-monster is not a witch:
+					damage loop-monster by 2 hearts
+					ignite loop-monster for 5 seconds
+		if {totem::%loop-value%::1} is "Recollection":
+			loop all players in radius 32 of loop-value's location:
+				loop all blocks in radius 4 of loop-player:
+					if loop-block is campfire:
+						send action bar "&7The campfire provides warmth and comfort." to loop-player
+						heal loop-player by 0.5 heart
+		if {totem::%loop-value%::1} is "Growth":
+			#broadcast loop-value's location
+			chance of 50%:
+				loop all blocks in radius 24 of loop-value's location:
+					if loop-block is grass:
+						block above loop-block is air
+						add block above loop-block's location to {_piss::*}
+				set {_ya} to random element out of {_piss::*}
+				loop all blocks in radius 3 of {_ya}:
+					if loop-block is any sapling or any log:
+						set block at {_ya} to any flower or minecraft:grass
+						stop
+				loop all players in radius 8 of {_ya}:
+					ts_relate(loop-player,"add",0.5)
+					broadcast {trnum.%loop-player%}
+				set block at {_ya} to any sapling or any flower or minecraft:grass
+
+on rightclick on any stripped log:
+	if {botany.%player%} > 11:
+		set {_x} to location of event-block
+		if block above {_x} is any stripped log:
+			if block 1 meter north 1 above {_x} is any stripped log:
+				if block 1 meter north 2 above {_x} is any stripped log:
+					if block 1 meter north 3 above {_x} is any stripped log:
+						if block 2 meter north 3 above {_x} is any stripped log:
+							if block 1 meter south 1 above {_x} is any stripped log:
+								if block 1 meter south 2 above {_x} is any stripped log:
+									if block 1 meter south 3 above {_x} is any stripped log:
+										if block 1 meter south 4 above {_x} is any stripped log:
+											if block 2 meter south 4 above {_x} is any stripped log:
+												if block 2 meter south 3 above {_x} is spore blossom:
+													if block 2 meter north 2 above {_x} is spore blossom:
+														if player's tool's name contains "&6&lTotem":
+															set {_name} to player's tool's name
+															if {totem::%event-location%::1} is not set:
+																if {_name} contains "Repel":
+																	remove 1 of player's tool from player's inventory
+																	add event-location to {totem::*}
+																	set {totem::%event-location%::1} to "Repel"
+																if {_name} contains "Recollection":
+																	remove 1 of player's tool from player's inventory
+																	add event-location to {totem::*}
+																	set {totem::%event-location%::1} to "Recollection"
+																if {_name} contains "Forgiveness":
+																	remove 1 of player's tool from player's inventory
+																	add event-location to {totem::*}
+																	set {totem::%event-location%::1} to "Forgiveness"
+																if {_name} contains "Growth":
+																	remove 1 of player's tool from player's inventory
+																	add event-location to {totem::*}
+																	set {totem::%event-location%::1} to "Growth"
+														if {totem::%event-location%::1} is set:
+															send action bar "&6Totem of %{totem::%event-location%::1}%" to player
+
+
+on break:
+	if {totem::%event-location%::1} is set:
+		if {totem::%event-location%::1} contains "Repel":
+			drop glowing scute named "&6&lTotem of Repel Activator" with lore "&7It has been willed." at event-location
+		if {totem::%event-location%::1} contains "Recollection":
+			drop glowing scute named "&6&lTotem of Recollection" with lore "&7It has been willed." at event-location
+		if {totem::%event-location%::1} contains "Forgiveness":
+			drop glowing scute named "&6&lTotem of Forgiveness" with lore "&7It has been willed." at event-location
+		if {totem::%event-location%::1} contains "Growth":
+			drop glowing scute named "&6&lTotem of Growth" with lore "&7It has been willed." at event-location
+		clear {totem::%event-location%::*}
+		remove event-location from {totem::*}
+
+on rightclick on hay bale:
+	if {botany.%player%} > 11:
+		set {_x} to location of event-block
+		if block 1 meter north of {_x} is any log:
+			if block 1 meter south of {_x} is any log:
+				if block 1 meter east of {_x} is any log:
+					if block 1 meter west of {_x} is any log:
+						if block 2 meter north of {_x} is any log:
+							if block 2 meter south of {_x} is any log:
+								if block 2 meter east of {_x} is any log:
+									if block 2 meter west of {_x} is any log:
+										if block 1 west 1 north of {_x} is moss block:
+											if block 1 east 1 north of {_x} is moss block:
+												if block 1 west 1 south of {_x} is moss block:
+													if block 1 east 1 south of {_x} is moss block:
+														if block below player is hay bale:
+															spawn armor stand at location of event-block
+															set {_entity} to last spawned entity
+															add "{Invisible:1}" to nbt of {_entity}
+															make player ride {_entity}
+															set {sit.%player%} to true
+															while {_entity} exists:
+																if player is sneaking:
+																	set {sit.%player%} to false
+																	eject any passenger of {_entity}
+																	wait 2 ticks
+																	kill {_entity}
+																	delete {_entity}
+																wait 5 tick
+	else:
+		send action bar "&7wtf is this" to player
+
+
+on rightclick:
+	if name of player's tool is "&cTear of Draining":
+		loop all blocks in radius 20 of player:
+			if loop-block is grass:
+				set loop-block to coarse dirt
+			if loop-block is minecraft:grass:
+				set loop-block to dead bush
+			if loop-block is minecraft:fern:
+				set loop-block to dead bush
+			if loop-block is minecraft:vine:
+				set loop-block to air
+			if loop-block is any leaves:
+				spawn falling block of loop-block at loop-block
+				set loop-block to air
+		wait 3 seconds
+		loop all blocks in radius 20 of event-location:
+			if loop-block is any leaves:
+				set loop-block to air
+
+# Spells
+
+on rightclick:
+	name of player's tool is "&6Prayer: Chain Heal"
+	{botany.%player%} > 22
+	player's target is a animal
+	set {_waited} to difference between {chcd.%player%} and now
+	if {_waited} is less than 2 minutes:
+		send action bar "&f&lYou must wait &e&l%difference between 2 minutes and {_waited}%" to player
+		stop
+	if {trelate.%player%} is 2:
+		chance of 30%
+		send action bar "&cWe do not bless you with our power." to player
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+		set {chcd.%player%} to now
+		stop
+	if {trelate.%player%} is 1:
+		chance of 70%
+		send action bar "&cWe do not bless you with our power." to player
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+		set {chcd.%player%} to now
+		stop
+	set {_la} to player's target
+	heal {_la} by 6 hearts
+	draw 20 of dust using dustOption(green, 10) 1 block above {_la}
+	set {chcd.%player%} to now
+	set {_healed.%{_la}%} to true
+	play sound "block.composter.ready" with volume 2 at location of {_la} for all players
+	loop 7 times:
+		set {_nearest} to first element of all players in radius 10 of {_la}
+		if {_nearest} is {_la}:
+			set {_nearest} to random element of all players in radius 10 of {_la}
+		loop all players in radius 10 of {_la}:
+			if {_healed.%loop-player%} is not set:
+				if distance between loop-player and {_la} is less than distance between {_la} and {_nearest}:
+					set {_nearest} to loop-player
+		if {_healed.%{_nearest}%} is not set:
+			loop all blocks between {_la} and {_nearest}:
+				wait 1 tick
+				draw 20 of dust using dustOption(lime, 2) 1 block above loop-block
+		set {_la} to {_nearest}
+		if {_healed.%{_la}%} is not set:
+			draw 20 of dust using dustOption(green, 10) 1 block above {_la}
+			draw 20 of dust using dustOption(green, 10) 2 block above {_la}
+			heal {_la} by 6 hearts
+			set {_healed.%{_la}%} to true
+			play sound "block.composter.ready" with volume 1 at location of {_la} for all players
+
+on rightclick:
+	name of player's tool is "&6Prayer: Self Heal"
+	{botany.%player%} > 20
+	set {_waited} to difference between {shcd.%player%} and now
+	if {_waited} is less than 1 minutes:
+		send action bar "&f&lYou must wait &e&l%difference between 1 minutes and {_waited}%" to player
+		stop
+	if {trelate.%player%} is 2:
+		chance of 30%
+		send action bar "&cWe do not bless you with our power." to player
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+		set {shcd.%player%} to now
+		stop
+	if {trelate.%player%} is 1:
+		chance of 70%
+		send action bar "&cWe do not bless you with our power." to player
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+		set {shcd.%player%} to now
+		stop
+	heal player by 6 hearts
+	draw 20 of dust using dustOption(green, 10) at player
+	draw 20 of dust using dustOption(green, 10) 1 block above player
+	draw 20 of dust using dustOption(green, 10) 2 block above player
+	play sound "block.composter.ready" with volume 1 at location of player for all players
+	set {shcd.%player%} to now
+
+on rightclick:
+	name of player's tool is "&9Prayer: Call Fire"
+	player's target is an entity
+	set {_foe} to player's target
+	{botany.%player%} > 24
+	set {_waited} to difference between {cfcd.%player%} and now
+	if {_waited} is less than 2 minutes:
+		send action bar "&f&lYou must wait &e&l%difference between 2 minutes and {_waited}%" to player
+		stop
+	if {trelate.%player%} is 2:
+		chance of 30%
+		send action bar "&cWe do not bless you with our power." to player
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+		set {cfcd.%player%} to now
+		stop
+	if {trelate.%player%} is 1:
+		chance of 70%
+		send action bar "&cWe do not bless you with our power." to player
+		play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player 	
+		set {cfcd.%player%} to now
+		stop
+	damage {_foe} by 4 hearts
+	ignite {_foe} for 7 seconds
+	loop 4 times:
+		draw 10 of dust using dustOption(white, 5) at {_foe}
+		draw 10 of dust using dustOption(orange, 5) 1 block above {_foe}
+		draw 15 of dust using dustOption(orange, 5) 2 block above {_foe}
+		draw 17 of dust using dustOption(orange, 5) 3 block above {_foe}
+		draw 18 of dust using dustOption(orange, 5) 4 block above {_foe}
+		draw 20 of dust using dustOption(red, 5) 5 block above {_foe}
+	play sound "entity.dragon_fireball.explode" with volume 2 at location of {_foe} for all players
+	set {cfcd.%player%} to now
+
+on rightclick:
+	name of player's tool is "&9Prayer: Call Earthquake"
+	if event-block is not air:
+		set {_waited} to difference between {cecd.%player%} and now
+		if {_waited} is less than 7 minutes:
+			send action bar "&f&lYou must wait &e&l%difference between 7 minutes and {_waited}%" to player
+			stop
+		if {trelate.%player%} is 2:
+			chance of 30%
+			send action bar "&cWe do not bless you with our power." to player
+			play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player
+			set {cecd.%player%} to now
+			stop
+		if {trelate.%player%} is 1:
+			chance of 70%
+			send action bar "&cWe do not bless you with our power." to player
+			play sound "ambient.underwater.loop.additions.ultra_rare" with volume 20 at location of player for player 	
+			set {cecd.%player%} to now
+			stop
+		set {cecd.%player%} to now
+		set {_b} to event-block
+		loop all blocks in radius 5 of {_b}:
+			if loop-block is not air:
+				if loop-block is not water:
+					add loop-block to {_a::*}
+		wait 0.1 seconds
+		loop 6 times:
+			loop all blocks in radius 5 of {_b}:
+				if loop-block is not air or water:
+					spawn falling block of loop-block at loop-block
+					push last spawned entity upwards with force 0.2
+					set loop-block to air
+			wait 1 seconds
+
+# Relationship
+
+function ts_relate(p: player, aors: text, n: number):
+	if {_aors} is "add":
+		add {_n} to {trnum.%{_p}%}
+		if {trnum.%{_p}%} > 90:
+			set {trnum.%{_p}%} to 90
+	if {_aors} is "sub":
+		subtract {_n} from {trnum.%{_p}%}
+		if {trnum.%{_p}%} < 0:
+			set {trnum.%{_p}%} to 0
+
+on break:
+	if event-block is minecraft:grass:
+		ts_relate(player,"sub",0.1)
+	if event-block is any sapling:
+		ts_relate(player,"sub",1)
+	if event-block is any log:
+		if {BlockByPlayer::%event-location%} is not set:
+			ts_relate(player,"sub",0.2)
+	#broadcast {trnum.%player%}
+
+on place:
+	if event-block is any sapling:
+		ts_relate(player,"add",1)
+	if event-block is any sapling:
+		ts_relate(player,"add",1)
+	#broadcast {trnum.%player%}
+
+
+	#loop {_a::*}:
+		#broadcast loop-value
+		#broadcast loop-value's location
+		#set block at loop-value's location to sand
+
+
+
+#on rightclick:
+	#loop all blocks in radius 5 of event-block:
+	#	add location of loop-block to {yeezy::*}
+	#loop {yeezy::*}:
+	#	if block at loop-value is air:
+	#		remove loop-value from {yeezy::*}
+	#loop 200 times:
+	#	wait 1 tick
+	#	set {_v} to random element out of {yeezy::*}
+	#	play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of {_v} for all players
+	#	broadcast {_v}
+	#	set block at {_v} to crimson stem
+	#	remove {_v} from {yeezy::*}

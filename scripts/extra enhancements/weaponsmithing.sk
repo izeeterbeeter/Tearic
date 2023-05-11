@@ -1,0 +1,98 @@
+on break:
+    event-block is blast furnace
+    block below event-block is campfire
+    block above event-block is polished blackstone wall
+    block 2 above event-block is polished blackstone wall
+    if {material::%{_loc}%::*} is set:
+        loop {num::%{_loc}%::1} times:
+            drop {material::%{_loc}%::1} at event-block
+        clear {material::%{_loc}%::1}
+        clear {num::%{_loc}%::1}
+
+on rightclick:
+    event-block is blast furnace
+    block below event-block is campfire
+    block above event-block is polished blackstone wall
+    block 2 above event-block is polished blackstone wall
+    cancel event
+    #broadcast {material::%{_loc}%::1}
+    if {weapon::%{_loc}%::*} is not set:
+        if player is holding iron sword or diamond sword:
+            set {weapon::%{_loc}%::1} to "sword"
+        if player is holding diamond axe or iron axe:
+            set {weapon::%{_loc}%::1} to "axe"
+    if {weapon::%{_loc}%::*} is not set:
+        send "&7Weapon not set! Right click the furnace with either a sword or axe (diamond or iron) to set the weapon type!"
+        stop
+    if {material::%{_loc}%::*} is not set:
+        if player is sneaking:
+            clear {weapon::%{_loc}%::*}
+            send "&7Weapon type reset."
+        if player is holding iron ingot or diamond:
+            set {material::%{_loc}%::1} to type of player's tool
+            set {num::%{_loc}%::1} to 1
+            remove 1 of player's tool from player's inventory
+    if {material::%{_loc}%::*} is set:
+        if player is sneaking:
+            subtract 1 from {num::%{_loc}%::1}
+            give 1 of {material::%{_loc}%::1} to player
+            if {num::%{_loc}%::1} <= 0:
+                clear {material::%{_loc}%::1}
+                clear {num::%{_loc}%::1} #item.firecharge.use
+        if player's tool's type is {material::%{_loc}%::1}:
+            play sound "item.firecharge.use" with volume 1 at location of player for all players
+            play sound "block.anvil.hit" with volume 2 at location of player for all players
+            #broadcast "yea"
+            if {num::%{_loc}%::1} < 18:
+                add 1 to {num::%{_loc}%::1}
+                remove 1 of player's tool from player's inventory
+            if {num::%{_loc}%::1} is 18:
+                set {_random} to a random number between 1 and 100
+                set {_ya} to {furnace.%player%}
+                if {weapon::%{_loc}%::1} is "sword":
+                    if {material::%{_loc}%::1} is iron ingot:
+                        set {_weapon} to a iron sword
+                    if {material::%{_loc}%::1} is diamond:
+                        set {_weapon} to a diamond sword
+                if {weapon::%{_loc}%::1} is "axe":
+                    if {material::%{_loc}%::1} is iron ingot:
+                        set {_weapon} to a iron axe
+                    if {material::%{_loc}%::1} is diamond:
+                        set {_weapon} to a diamond axe
+                clear {material::%{_loc}%::1}
+                clear {num::%{_loc}%::1}
+                #broadcast {_weapon}
+                if {_random} < {_ya}-16:
+                    play sound "block.anvil.use" with volume 2 at location of player for all players
+                    play sound "ambient.soul_sand_valley.mood" with volume 2 at location of player for all players
+                    set lore of {_weapon} to "&cMythic +3"
+                    set 2nd line of lore of {_weapon}  to "&eCreated by: &7%player%"
+                    if {weapon::%{_loc}%::1} is "sword":
+                        clear {weapon::%{_loc}%::1}
+                        set {_a} to "&c&l%random element out of {sprefix::*}%%random element out of {ssuffix::*}%"
+                        set name of {_weapon} to {_a}
+                    if {weapon::%{_loc}%::1} is "axe":
+                        set {_a} to "&c&l%random element out of {aprefix::*}%%random element out of {ssuffix::*}%"
+                        clear {weapon::%{_loc}%::1}
+                        set name of {_weapon} to {_a}
+                    chance of 15%:
+                        set 2nd line of lore of {_weapon} to "&7%random element out of {wperks::*}%"
+                        set 3rd line of lore of {_weapon} to "&eCreated by: &7%player%"
+                    give player {_weapon}
+                    stop
+                clear {weapon::%{_loc}%::1}
+                play sound "block.anvil.use" with volume 2 at location of player for all players
+                if {_random} < ({_ya}*1.8)-16:
+                    set lore of {_weapon} to "&eLegend +2"
+                    set 2nd line of lore of {_weapon} to "&eCreated by: &7%player%"
+                    give player {_weapon}
+                    stop
+                if {_random} < ({_ya}*2.5)-16:
+                    set lore of {_weapon} to "&aNovice +1"
+                    set 2nd line of lore of {_weapon} to "&eCreated by: &7%player%"
+                    give player {_weapon}
+                    stop
+                set lore of {_weapon} to "&7Adept"
+                give player {_weapon}   
+
+    send action bar "&b%{material::%{_loc}%::1}%: %{num::%{_loc}%::1}%/18" to player

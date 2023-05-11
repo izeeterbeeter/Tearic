@@ -1,0 +1,261 @@
+command /givecool:
+    trigger:
+        give player a stick named "&6Test Wand"
+
+
+on rightclick:
+    player's tool's name is "&6Test Wand"
+    lifeleech(player)
+
+
+
+function shadowcurse(p: player):
+    set {_target} to {_p}'s target
+    distance between {_p} and {_target} is less than or equal to 30:
+        if depletehealth(3.5,{_p}):
+            set {_curse.%{_target}%} to true
+            loop 6 times:
+                if {_curse.%{_target}%} is set:
+                    {_target} is alive
+                    play sound "entity.elder_guardian.curse" with volume 0.3 with pitch 2 at {_target} for all players
+                    damage {_target} by 1
+                    make {_p} damage {_target} by 0.1
+                    draw 20 of dust using dustOption(purple, 1) at {_target} with offset vector(0.3, 0.3, 0.3)
+                    spawn armor stand at {_target}
+                    set {_armorstand} to last spawned entity
+                    set tag "Invisible" of nbt compound of {_armorstand} to true
+                    while {_armorstand} is alive:
+                        wait 1 tick
+                        add 1 to {_pee}
+                        if {_pee} > 120:
+                            kill {_armorstand}
+                        draw 30 of dust using dustOption(rgb(50, 155, 168), 1) at block 1 above {_armorstand} with offset vector(0.3, 0.3, 0.3)
+                        push {_armorstand} (direction from {_armorstand} to {_p}) at speed 0.2
+                        push {_armorstand} upwards at speed 0.08
+                        loop all entities in radius 1.5 of {_armorstand}:
+                            loop-entity is {_p}
+                            increase_mana({_p},1)
+                            draw 30 of dust using dustOption(rgb(94, 57, 227), 1) at block 1 above {_armorstand} with offset vector(0.3, 0.3, 0.3)
+                            kill {_armorstand}
+                    wait 2 ticks
+            clear {_curse.%{_target}%}
+            aoe_show(6, purple, 1, block 1 below {_target})
+            loop all entities in radius 6 of {_target}:
+                loop-entity is not a dropped item
+                loop-entity is not {_target}
+                loop-entity is not {_p}
+                play sound "entity.elder_guardian.curse" with volume 0.3 with pitch 2 at loop-entity for all players
+                damage loop-entity by 5.9
+                make {_p} damage loop-entity by 0.1
+                draw 20 of dust using dustOption(purple, 1) at loop-entity with offset vector(0.3, 0.3, 0.3)
+                spawn armor stand at loop-entity
+                set {_armorstand.%loop-entity%} to last spawned entity
+                set tag "Invisible" of nbt compound of {_armorstand.%loop-entity%} to true
+                while {_armorstand.%loop-entity%} is alive:
+                    wait 1 tick
+                    add 1 to {_pee}
+                    if {_pee} > 120:
+                        kill {_armorstand.%loop-entity%}
+                    draw 30 of dust using dustOption(rgb(50, 155, 168), 1) at block 1 above {_armorstand.%loop-entity%} with offset vector(0.3, 0.3, 0.3)
+                    push {_armorstand.%loop-entity%} (direction from {_armorstand.%loop-entity%} to {_p}) at speed 0.2
+                    push {_armorstand.%loop-entity%} upwards at speed 0.08
+                    loop all entities in radius 1.5 of {_armorstand.%loop-entity%}:
+                        loop-entity-2 is {_p}
+                        increase_mana({_p},6)
+                        draw 30 of dust using dustOption(rgb(94, 57, 227), 1) at block 1 above {_armorstand.%loop-entity-1%} with offset vector(0.3, 0.3, 0.3)
+                        kill {_armorstand.%loop-entity-1%}
+
+function firespirit(p: player):
+    set {_target} to {_p}'s target
+    distance between {_p} and {_target} is less than or equal to 30:
+        if depletehealth(3.5,{_p}):
+            loop 10 times:
+                wait 5 ticks
+                draw 20 flame 3 block above {_target} with offset vector(0.3, 0.3, 0.3) with extra 0
+            dodamage({_p},{_target},5,"Fire")
+            wait 1 second
+            loop all entities in radius 8 of {_target}:
+                loop-entity is not {_p}
+                loop all blocks between {_target} and loop-entity:
+                    wait 1 tick
+                    draw 20 flame 1 block above loop-block with offset vector(0.3, 0.3, 0.3) with extra 0
+                dodamage({_p},loop-entity,5,"Fire")
+    
+
+function lightningbolt(p: player):
+    set {_target} to {_p}'s target
+    distance between {_p} and {_target} is less than or equal to 30:
+        if depletehealth(3.5,{_p}):
+            spawn armor stand at block 2 above {_p}
+            set {_armorstand} to last spawned entity
+            set tag "Invisible" of nbt compound of {_armorstand} to true
+            while {_armorstand} is alive:
+                wait 1 tick
+                add 1 to {_pee}
+                if {_pee} > 120:
+                    kill {_armorstand}
+                draw 30 of dust using dustOption(rgb(94, 57, 227), 1) at block 1 above {_armorstand} with offset vector(0.3, 0.1, 0.3)
+                push {_armorstand} (direction from {_armorstand} to {_target}) at speed 0.2
+                push {_armorstand} upwards at speed 0.08
+                play sound "entity.lightning_bolt.thunder" with volume 0.3 at {_armorstand} for all players
+                loop all entities in radius 1.5 of {_armorstand}:
+                    loop-entity is {_target}
+                    dodamage({_p},{_target},5,"Lightning")
+                    draw 30 of dust using dustOption(rgb(94, 57, 227), 1) at block 1 above {_armorstand} with offset vector(0.3, 1, 0.3)
+                    kill {_armorstand}
+                
+
+
+function lifeleech(p: player):
+    set {_target} to {_p}'s target
+    distance between {_p} and {_target} is less than or equal to 30:
+        if manadeplete({_p},20):
+            damage {_target} by 4.9
+            make {_p} damage {_target} by 0.1
+            spawn armor stand at {_target}
+            set {_armorstand} to last spawned entity
+            set tag "Invisible" of nbt compound of {_armorstand} to true
+            while {_armorstand} is alive:
+                wait 1 tick
+                add 1 to {_pee}
+                if {_pee} > 120:
+                    kill {_armorstand}
+                push {_armorstand} (direction from {_armorstand} to {_p}) at speed 0.2
+                push {_armorstand} upwards at speed 0.1
+                draw 30 of dust using dustOption(red, 1) at block 1 above {_armorstand} with offset vector(0.3, 0.3, 0.3)
+                play sound "block.soul_sand.place" with volume 1 with pitch 1.5 at {_armorstand} for all entities
+                loop all players in radius 1.5 of {_armorstand}:
+                    loop-player is {_p}
+                    kill {_armorstand}
+                    loop 10 times:
+                        heal {_p} by 0.5
+                        wait 2 tick
+                        play sound "particle.soul_escape" with volume 2 at {_p} for all entities
+                        draw 30 of dust using dustOption(green, 1) at block 1 above {_p} with offset vector(0.5, 1, 0.5)
+
+on damage:
+    if {imbuelightning.%attacker%} is set:
+        set name of attacker's held item to "&aDrusha Staff"
+        dodamage({_p},victim,5,"Lightning")
+        wait 5 tick
+        clear {imbuelightning.%attacker%}
+    if {imbuefrost.%attacker%} is set:
+        set name of attacker's held item to "&aDrusha Staff"
+        dodamage({_p},victim,5,"Frost")
+        wait 5 tick
+        clear {imbuefrost.%attacker%}
+    if {imbuefire.%attacker%} is set:
+        set name of attacker's held item to "&aDrusha Staff"
+        dodamage({_p},victim,5,"Fire")
+        wait 5 tick
+        clear {imbuefire.%attacker%}
+
+
+function depletehealth(amount: number, p: player) :: boolean:
+    if {_p}'s health - {_amount} is less than or equal to 0:
+        return false
+    damage {_p} by {_amount}
+    return true
+
+
+function imbuelightning(p: player):
+    if depletehealth(3,{_p}):
+        {imbuelightning.%{_p}%} is not set
+        set {imbuelightning.%{_p}%} to true
+        set name of {_p}'s held item to "&aDrusha Staff &9Lightning"
+        play sound "particle.soul_escape" with volume 2 at {_p} for all entities
+        while {imbuelightning.%{_p}%} is set:
+            wait 1 tick
+            draw 30 of dust using dustOption(rgb(94, 57, 227), 1) at block 1 above {_p} with offset vector(0.3, 0.8, 0.3)
+
+function imbuefire(p: player):
+    if depletehealth(3,{_p}):
+        {imbuefire.%{_p}%} is not set
+        set {imbuefire.%{_p}%} to true
+        set name of {_p}'s held item to "&aDrusha Staff &9Fire"
+        play sound "particle.soul_escape" with volume 2 at {_p} for all entities
+        while {imbuefire.%{_p}%} is set:
+            wait 1 tick
+            draw 10 of dust using dustOption(rgb(240, 119, 26), 1) at block 1 above {_p} with offset vector(0.3, 0.8, 0.3)
+
+function imbuefrost(p: player):
+    if depletehealth(3,{_p}):
+        {imbuefrost.%{_p}%} is not set
+        set {imbuefrost.%{_p}%} to true
+        set name of {_p}'s held item to "&aDrusha Staff &9Frost"
+        play sound "particle.soul_escape" with volume 2 at {_p} for all entities
+        while {imbuefrost.%{_p}%} is set:
+            wait 1 tick
+            draw 30 of dust using dustOption(rgb(194, 237, 233), 1) at block 1 above {_p} with offset vector(0.3, 0.8, 0.3)
+        
+
+on right click:
+    if {selection.%player%} is set:
+        set {_name} to name of player's tool
+        if {_name} contains "Prayer: ":
+            loop player's inventory:
+                if loop-value is {staff.%player%}:
+                    add "%{_name}%" to lore of loop-value
+            send title "" to player
+            send subtitle "%{_name}% &eadded!" to player
+            clear {selection.%player%}
+            clear {staff.%player%}
+    else:
+        player's tool is a stick named "&aDrusha Staff"
+        set {_a} to line 1 of lore of player's tool
+        delete line 1 of lore of player's tool
+        add {_a} to lore of player's tool
+        play sound "item.crossbow.loading_end" with volume 1 with pitch 2 at player's location for player
+        displaystaff(player,"&7< %line 1 of lore of player's tool% &7>")
+
+
+
+
+on player's tool change:
+    player's tool is a stick named "&aDrusha Staff"
+    while player's tool is a stick named "&aDrusha Staff":
+        wait 1 tick
+        player's tool is a stick named "&aDrusha Staff"
+        displaystaff(player,"&7< %line 1 of lore of player's tool% &7>")
+
+on left click:
+    player's tool is a stick named "&aDrusha Staff"
+    player is sneaking:
+        if {selection.%player%} is not set:
+            set {selection.%player%} to true
+            send title "" to player
+            send subtitle "&ePrayer selection enabled." to player
+            set {staff.%player%} to player's held item
+        else:
+            clear {selection.%player%}
+            clear {staff.%player%}
+            send title "" to player
+            send subtitle "&cPrayer selection disabled." to player
+    else:
+        set {_spell} to line 1 of lore of player's tool
+        if {_spell} is "&9Prayer: Call Fire":
+            firespirit(player)
+        if {_spell} is "&9Prayer: Call Lightning Bolt":
+            lightningbolt(player)
+        if {_spell} is "&9Prayer: Life Leech":
+            lifeleech(player)
+        if {_spell} is "&9Prayer: Chain Heal":
+            lightningbolt(player)
+        if {_spell} is "&9Prayer: Leeching Curse":
+            shadowcurse(player)
+        if {_spell} is "&9Prayer: Imbue Lightning":
+            {imbuelightning.%player%} is not set
+            {imbuefire.%player%} is not set
+            {imbuefrost.%player%} is not set
+            imbuelightning(player)
+        if {_spell} is "&9Prayer: Imbue Fire":
+            {imbuelightning.%player%} is not set
+            {imbuefire.%player%} is not set
+            {imbuefrost.%player%} is not set
+            imbuefire(player)
+        if {_spell} is "&9Prayer: Imbue Frost":
+            {imbuelightning.%player%} is not set
+            {imbuefire.%player%} is not set
+            {imbuefrost.%player%} is not set
+            imbuefrost(player)
+        

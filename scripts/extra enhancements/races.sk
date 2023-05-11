@@ -1,0 +1,46 @@
+#command /pee2:
+	#trigger:
+		#if {vegan.%player%} is not set:
+		#	send "&7Fly &aEnabled" to player
+		#	set {vegan.%player%} to true
+		#	set {crepfear.%player%} to true
+		#else:
+		#	send "&7Fly &cDisabled" to player
+	#		clear {vegan.%player%}
+	#		clear {crepfear.%player%}
+			
+
+on consume:
+	if {vegan.%player%} is true:
+		if event-item is cooked pork or pork or cooked mutton or mutton or cooked beef or beef or cooked chicken or chicken or cooked rabbit or rabbit:
+			cancel event
+			apply nausea to the player for 10 seconds
+			send "&7bleh." to player
+		if event-item is apple or carrot or potato or baked potato or sweet berries or glow berries or melon:
+			set the player's food level to food level + 2
+			
+On Sneak Toggle:
+	if {crepfear.%player%} is true:
+		loop all animals in radius 10 of player:
+			set path target with speed 1.5 of loop-animal to player
+			
+on player move:
+	if {support.%player%} is true:
+		loop all players in radius 15 of player:
+			if loop-player has strength:
+				stop
+			if loop-player is not player:
+				apply potion of strength of tier 1 without any particles to the loop-player for 2 seconds
+				apply potion of resistance of tier 1 without any particles to the player for 2 seconds
+
+
+#command /pee3:
+	#trigger:
+	#	if {support.%player%} is not set:
+	#		send "&7pee &aEnabled" to player
+	#		set {support.%player%} to true
+	#	else:
+	#		send "&7pee &cDisabled" to player
+	#		clear {support.%player%}
+
+

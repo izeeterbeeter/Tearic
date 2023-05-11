@@ -1,0 +1,114 @@
+
+on load:
+    set {common::*} to cod,gunpowder,string,leather,sand,cobblestone,sticks,rabbit hide,egg,ink sac, feather, coal,flint, gravel,slime,paper,clay,brick,bone,iron nugget, kelp
+    loop all cooked meat:
+        add loop-value to {novice::*}
+    add apple,andesite,granite,diorite,iron ingot, copper ingot, book, scute, lapis, tnt, glass, crimson stem, warped stem to {novice::*}
+    set {legend::*} to pumpkin pie, lead, amethyst block, gold ingot, nautilus shell, honeycomb, nether quartz, powered rail, sponge, bookshelf, glowstone block, sea lantern
+    set {mythic::*} to diamond, emerald, blaze rod, blaze powder, ghast tear, name tag, redstone ore, ender pearl, eye of ender, experience bottle
+
+function drop_loot(r: text, e: entity):
+    set {_chest} to chest named "&6Reward" 
+    add "&8---------------------" to the lore of {_chest}
+    add "&bDropped by: %{_e}'s display name%" to the lore of {_chest}
+    add "&bContains: %{_r}%" to the lore of {_chest}
+    add "&8---------------------" to the lore of {_chest}
+    drop {_chest} at {_e}
+
+
+
+
+on rightclick:
+    player's tool's name contains "Reward"
+    player's tool's lore contains "&8---------------------"
+    set {_box} to player's tool
+    cancel event
+    send "&eOpening box..." to player #ui.toast.challenge_complete
+    play sound "ambient.basalt_deltas.mood" with volume 1 at location of player for all players
+    wait 2 tick
+    play sound "block.amethyst_block.step" with volume 2 at location of player for all players
+    wait 2 tick
+    remove 1 of {_box} from player's inventory
+    if {_box}'s name is "&6&lBoss Reward":
+        play sound "block.amethyst_block.step" with volume 2 at location of player for all players
+        wait 2 tick
+        play sound "block.amethyst_block.step" with volume 2 at location of player for all players
+        play sound "entity.player.levelup" with volume 1 at location of player for all players #event.raid.horn
+        wait 2 tick
+        launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+        wait 1.5 seconds
+        if {_box}'s lore contains "&bDropped by: &c&lVladimir":
+            set {frostknowledge.%player%} to true
+            title_reward(player, "pad lock")
+            #send "&7You have obtained the knowledge of &bFrost!" to player #ui.toast.challenge_complete
+            #play sound "ui.toast.challenge_complete" with volume 1 at location of player for all players\
+            send "&8------------------------------------------"
+            send "&7 "
+            send "&7You have obtained the knowledge of &bFrost!" to player #ui.toast.challenge_complete
+            send "&7 "
+            send "&8------------------------------------------"
+        if {_box}'s lore contains "&bDropped by: &c&lFire Warden":
+            set {fireknowledge.%player%} to true
+            title_reward(player, "Mera Mera")
+            #send "&7You have obtained the knowledge of &bFrost!" to player #ui.toast.challenge_complete
+            #play sound "ui.toast.challenge_complete" with volume 1 at location of player for all players\
+            send "&8------------------------------------------"
+            send "&7 "
+            send "&7You have obtained the knowledge of &eFire!" to player #ui.toast.challenge_complete
+            send "&7 "
+            send "&8------------------------------------------"
+        if {_box}'s lore contains "&bDropped by: &e&lLightning Knight":
+            set {lightningknowledge.%player%} to true
+            title_reward(player, "Enel")
+            #send "&7You have obtained the knowledge of &bFrost!" to player #ui.toast.challenge_complete
+            #play sound "ui.toast.challenge_complete" with volume 1 at location of player for all players\
+            send "&8------------------------------------------"
+            send "&7 "
+            send "&7You have obtained the knowledge of &eLightning!" to player #ui.toast.challenge_complete
+            send "&7 "
+            send "&8------------------------------------------"
+    if {_box}'s name is "&6Reward":
+        play sound "entity.player.levelup" with volume 1 at location of player for all players #event.raid.horn
+        wait 1.5 seconds
+        if {_box}'s lore contains "&bContains: &fCommon":
+            set {_num} to random integer between 1 and 16
+            set {_reward} to {_num} of random element of {common::*}
+            set {_color} to "&8"
+        if {_box}'s lore contains "&bContains: &aNovice":
+            set {_num} to random integer between 1 and 16
+            set {_reward} to {_num} of random element of {novice::*}
+            set {_color} to "&a"
+        if {_box}'s lore contains "&bContains: &eLegend":
+            set {_num} to random integer between 1 and 8
+            set {_reward} to {_num} of random element of {legend::*}
+            set {_color} to "&e"
+        if {_box}'s lore contains "&bContains: &cMythic":
+            set {_num} to random integer between 1 and 4
+            set {_reward} to {_num} of random element of {mythic::*}
+            set {_color} to "&c"
+        send "&8------------------------------------------"
+        send "&7 "
+        send "%{_color}%%type of {_reward}% &8(&bx%{_num}%&8)" to player #ui.toast.challenge_complete
+        send "&7 "
+        send "&8------------------------------------------"
+
+        play sound "entity.item.pickup" with volume 1 at location of player for all players
+        give player {_reward}
+
+
+
+
+
+
+on death:
+    victim's name contains "&c&lVladimir"
+    set {_chest} to chest named "&6&lBoss Reward"
+    drop_loot("&aNovice", victim)
+    drop_loot("&fCommon", victim)
+    drop_loot("&eLegend", victim)
+    drop_loot("&cMythic", victim)
+    add "&8---------------------" to the lore of {_chest}
+    add "&bDropped by: &c&lVladimir" to the lore of {_chest}
+    add "&bContains: &9&oSpecial" to the lore of {_chest}
+    add "&8---------------------" to the lore of {_chest}
+    drop {_chest}

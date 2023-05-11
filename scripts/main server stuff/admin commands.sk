@@ -1,0 +1,112 @@
+
+command /listallplayers:
+	trigger:
+		if player's name is "Izlador":
+			loop all offline players:
+				send loop-offlineplayer
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+command /blacksmith <text>:
+	trigger:
+		if player's name is "Izlador":
+			set {furnace.%player%} to arg 1 parsed as integer
+			send {furnace.%player%} to player
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+		
+command /tearic <number>:
+	trigger:
+		if player's name is "Izlador":
+			set {warped.%player%} to false
+			set {crimson.%player%} to false
+			set {magic.%player%} to arg 1
+			levelup(player,"magic")
+			send {magic.%player%} to player
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+
+command /xpother <offlineplayer>:
+	trigger:
+		if player's name is "Izlador":
+			add "&eTearic: &7%{magic.%arg-1%}%" to {_ya::*}
+			add "&eFarming: &7%{farm.%arg-1%}%" to {_ya::*}
+			add "&eBotany: &7%{botany.%arg-1%}%" to {_ya::*}
+			add "&eAxes: &7%{axes.%arg-1%}%" to {_ya::*}
+			add "&eJumping: &7%{jumping.%arg-1%}%" to {_ya::*}
+			add "&eMining: &7%{mine.%arg-1%}%" to {_ya::*}
+			add "&eBlacksmithing: &7%{furnace.%arg-1%}%" to {_ya::*}
+			add "&eSwords: &7%{swords.%arg-1%}%" to {_ya::*}
+			add "&eWoodcutting: &7%{woodcut.%arg-1%}%" to {_ya::*}
+			add "&eArchery: &7%{arch.%arg-1%}%" to {_ya::*}
+			add "&eAgility: &7%{agility.%arg-1%}%" to {_ya::*}
+			set {_ya::*} to sorted {_ya::*}
+			send reversed {_ya::*} to player
+			set {cow.%arg-1%} to false
+			set {warped.%arg-1%} to false
+			set {crimson.%arg-1%} to false
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+
+command /resetxp <number> <text> <offlineplayer>:
+	trigger:
+		if player's name is "Izlador":
+			set {%arg-2%.%arg-3%} to (arg-1)-1
+			set {xp%arg-2%.%arg-3%} to xp_req(arg-3,arg-2)+1
+			levelup(player,"%arg-2%")
+			send {%arg-2%.%arg-3%} to player
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+command /resetxp2 <number> <text> <offlineplayer>:
+	trigger:
+		if player's name is "Izlador":
+			set {xp%arg-2%.%arg-3%} to arg-1
+			levelup(player,"%arg-2%")
+			send {xp%arg-2%.%arg-3%} to player
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+	
+command /disease:
+	trigger:
+		if player's name is "Izlador":
+			create_disease()
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+command /diseases:
+	trigger:
+		if player's name is "Izlador":
+			broadcast {diseases::*}
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+		
+command /cleardis:
+	trigger:
+		if player's name is "Izlador":
+			clear {diseases::*}
+			loop all offline players:
+				set {infected.%loop-offlineplayer%} to false
+			loop all players:
+				set {infected.%loop-player%} to false
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+command /invsee <offlineplayer>:	
+	trigger:
+		if player's name is "Izlador":
+			open arg-1's inventory for player
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
+
+command /strip <player>:
+	trigger:
+		if player's name is "Izlador":
+			set arg-1's helmet to air
+			set arg-1's chestplate to air
+			set arg-1's leggings to air
+			set arg-1's boots to air
+		else:
+			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"

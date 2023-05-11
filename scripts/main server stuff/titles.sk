@@ -1,0 +1,114 @@
+command /cleartitles:
+    trigger:
+        if player is "Izlador":
+            clear player's scoreboard
+            clear {titles.%player%::*}
+        else:
+            broadcast "%player% nah"
+
+command /ya:
+    trigger:
+        title_reward(player, "Fart sniffer")
+    
+on join:
+    if {title.%player%} is not set:
+        stop
+    set player's display name to {title.%player%}
+    set player's tablist name to {title.%player%}
+    set join message to "%player's display name% &7has joined the game!"
+
+
+
+
+
+command /titles <text> <text="all">:
+    trigger:
+        if arg 1 is "show":
+            if arg 2 is "all":
+                send "" to player
+                send "" to player
+                send "&7<> &6Titles unlocked for &a%player% &7<>"
+                send "&7-----------------------------"
+                loop {titles.%player%::*}:
+                    add "&7|| &e%loop-value% &7|| " to {_a::*}
+                broadcast {_a::*}
+                send "&7-----------------------------"
+        if arg 1 is "use":
+            if {titles.%player%::*} contains arg 2:
+                send "&aTitle set!" to player
+                set {title.%player%} to "&7|| &e%arg 2% &7|| &f&6%player's name%"
+                set player's display name to "&7|| &e%arg 2% &7|| &f&6%player's name%"
+                set player's tablist name to "&7|| &e%arg 2% &7|| &f%player's name%"
+            if arg 2 is "none":
+                reset player's display name
+                reset player's tablist name
+                send "&cTitle removed!" to player
+
+#title_reward()
+function title_reward(p: player, t: text):
+    if {titles.%{_p}%::*} contains {_t}:
+        stop
+    play sound "entity.experience_orb.pickup" with volume 1 at {_p} for {_p}
+    set title of {_p}'s scoreboard to "&6&lTitle Unlocked!"
+    set line 3 of {_p}'s scoreboard to "&7---------------------"
+    set line 2 of {_p}'s scoreboard to "&e%{_t}%"
+    set line 1 of {_p}'s scoreboard to "&7---------------------"
+    #send title "&6&lTitle Unlocked!" with subtitle "&7%{_t}%" to {_p}
+    add {_t} to {titles.%{_p}%::*}
+    wait 5 seconds
+    clear {_p}'s scoreboard
+    #send subtitle "&7%{_t}%" to {_p}
+
+on craft:
+    if event-item is shield:
+        title_reward(player, "Times New Roman")
+    if event-item is bread:
+        add 1 to {breadcount.%player%}
+        broadcast {breadcount.%player%}
+        if {breadcount.%player%} >= 3:
+            title_reward(player, "bread bank")
+    if event-item is map:
+        title_reward(player, "Cartographer")
+
+on rightclick:
+    target is a animal
+    title_reward(player, "Rainfurrest")
+
+on shoot:
+    if shooter's tool is a bow:
+        if vehicle of the shooter is any boat:
+            title_reward(shooter, "Askeladd")
+
+on death:
+    if victim is wolf:
+        title_reward(attacker, "joe")
+    if victim's name contains "&c&lVladimir":
+        broadcast "ya"
+        loop all players in radius 40 of victim's location:
+            title_reward(loop-player, "Seras Victoria")
+            set {lives} to 4
+            set {bossfight.%loop-player%} to false
+            apply blindness without any particles to loop-player for 1.2 seconds
+        wait 0.3 seconds
+        teleport victim 500 blocks below victim's location
+
+on death:
+    victim is player
+    add 1 to {deathcount.%victim%}
+    if {deathcount.%victim%} is 20:
+        title_reward(victim,"bro stop dying")
+    if {deathcount.%victim%} is 45:
+        title_reward(victim,"i suck at this")
+    attacker is player
+    title_reward(attacker, "xXSlayer69Xx")
+
+on place of jukebox:
+    title_reward(player, "DJ Ghost")
+    
+on rightclick on redstone ore:
+    title_reward(player, "molester of ores")
+
+command /deaths <offline player>:
+    trigger:
+        send "This player has died &a%{deathcount.%arg-1%}% &ftimes!" to player
+    

@@ -1,0 +1,122 @@
+command /knowledge:
+    trigger:
+        if player is "Izlador":
+            set {fireknowledge.%player%} to true
+            set {lightningknowledge.%player%} to true
+        else:
+            broadcast "%player's name% cmon bruh"
+
+
+
+on break of amethyst block:
+    set {_loc} to location of event-block
+    if {botany.%player%} < 30:
+        clear {type::%{_loc}%::*}
+        drop {enhance::%{_loc}%::*}
+        clear {enhance::%{_loc}%::*}
+    if {enhance::%{_loc}%::*} is set:
+        if {type::%{_loc}%::*} is set:
+            set {_} to {type::%{_loc}%::1}
+            if player is holding any sword or any axe or a bow:
+                if lore of player's tool contains "&7Adept" or "&cMythic +3" or "&eLegend +2" or "&aNovice +1" or "&fIron +1" or "&bDiamond +2":
+                    if lore of player's tool contains "%{_}% +1" or "%{_}% +2" or "%{_}% +3" or "%{_}% +4" or "%{_}% +5":
+                        #broadcast "ya"
+                        clear {type::%{_loc}%::*}
+                        drop {enhance::%{_loc}%::*}
+                        clear {enhance::%{_loc}%::*}
+                        stop
+                    add "%{_}% +%random integer between 1 and 5%" to lore of player's tool
+                    play sound "entity.illusioner.mirror_move" with volume 1 at location of event-block for player
+                    clear {type::%{_loc}%::*}
+                    clear {enhance::%{_loc}%::*}
+                    add 15 to {xpbotany.%player%} 
+                    set {_xp} to xp_req(player,"botany")
+                    levelup(player,"botany")
+                    send action bar "&aBotany > &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+                    cancel drops
+                    stop
+                else:
+                    clear {type::%{_loc}%::*}
+                    drop {enhance::%{_loc}%::*}
+                    clear {enhance::%{_loc}%::*}
+            if player is holding any chestplate or any helmet or any leggings or any boots:
+                loop lore of player's tool:
+                    if loop-value contains {_}:
+                        clear {type::%{_loc}%::*}
+                        drop {enhance::%{_loc}%::*}
+                        clear {enhance::%{_loc}%::*}
+                        stop
+                add "%{_}%: &6%random integer between 1 and 25%%%" to lore of player's tool
+                play sound "entity.illusioner.mirror_move" with volume 1 at location of event-block for player
+                clear {type::%{_loc}%::*}
+                clear {enhance::%{_loc}%::*}
+                add 15 to {xpbotany.%player%} 
+                set {_xp} to xp_req(player,"botany")
+                levelup(player,"botany")
+                send action bar "&aBotany > &7%{xpbotany.%player%}%/%{_xp}% xp" to player
+                cancel drops
+                stop
+            clear {type::%{_loc}%::*}
+            drop {enhance::%{_loc}%::*}
+            clear {enhance::%{_loc}%::*}
+        else:
+            clear {type::%{_loc}%::*}
+            drop {enhance::%{_loc}%::*}
+            clear {enhance::%{_loc}%::*}
+    else:
+        clear {type::%{_loc}%::*}
+        drop {enhance::%{_loc}%::*}
+        clear {enhance::%{_loc}%::*}
+#entity.player.splash.high_speed
+on rightclick:
+    event-block is amethyst block
+    if {botany.%player%} > 29:
+        cancel event
+        set {_loc} to location of event-block
+        if player is sneaking:
+            play sound "entity.item.pickup" with volume 1 at location of event-block for all players
+            set {_p} to last element of {enhance::%{_loc}%::*}
+            give 1 of {_p} to player
+            remove {_p} from {enhance::%{_loc}%::*}
+            send action bar "&c%{enhance::%{_loc}%::*}%" to player
+            stop
+        if size of {enhance::%{_loc}%::*} is less than 2:
+            if player's tool is not air:
+                add 1 of player's tool to {enhance::%{_loc}%::*}
+                remove 1 of player's tool from player's inventory
+                send action bar "&a%{enhance::%{_loc}%::*}%" to player
+        if size of {enhance::%{_loc}%::*} is 2:
+            if {frostknowledge.%player%} is true:
+                if {enhance::%{_loc}%::*} contains packed ice block and light blue candle:
+                    draw 20 of dust using dustOption(purple, 1) at event-block with offset vector(0.5, 0.5, 0.5)
+                    draw 20 of dust using dustOption(aqua, 1) at event-block with offset vector(0.5, 0.5, 0.5)
+                    send "&bFrost has been selected! Break the amethyst block with the weapon/armor piece of your choice to add the enhancement. (Must have been crafted in a enhanced furnace if weapon)" to player
+                    set {type::%{_loc}%::*} to "&bFrost"
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    wait 2 tick
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    wait 2 tick
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+            if {fireknowledge.%player%} is true:
+                if {enhance::%{_loc}%::*} contains magma block and orange candle:
+                    draw 20 of dust using dustOption(purple, 1) at event-block with offset vector(0.5, 0.5, 0.5)
+                    draw 20 of dust using dustOption(orange, 1) at event-block with offset vector(0.5, 0.5, 0.5)
+                    send "&cFire has been selected! Break the amethyst block with the weapon/armor piece of your choice to add the enhancement. (Must have been crafted in a enhanced furnace if weapon)" to player
+                    set {type::%{_loc}%::*} to "&cFire"
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    wait 2 tick
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    wait 2 tick
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+            if {lightningknowledge.%player%} is true:
+                if {enhance::%{_loc}%::*} contains glowstone block and yellow candle:
+                    draw 20 of dust using dustOption(purple, 1) at event-block with offset vector(0.5, 0.5, 0.5)
+                    draw 20 of dust using dustOption(yellow, 1) at event-block with offset vector(0.5, 0.5, 0.5)
+                    send "&eLightning has been selected! Break the amethyst block with the weapon/armor piece of your choice to add the enhancement. (Must have been crafted in a enhanced furnace if weapon)" to player
+                    set {type::%{_loc}%::*} to "&eLightning"
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    wait 2 tick
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    wait 2 tick
+                    play sound "block.amethyst_block.step" with volume 2 at location of event-block for player
+                    

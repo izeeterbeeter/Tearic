@@ -1,0 +1,42 @@
+
+function in_tribe(p: player) :: boolean:
+    loop {tribes::*}:
+        if {tribes::%loop-value%::1} contains {_p} or "&dChieften &6> %{_p}%":
+            return true
+    return false
+
+function get_tribe(p: player) :: text:
+    loop {tribes::*}:
+        if {tribes::%loop-value%::1} contains {_p} or "&dChieften &6> %{_p}%":
+            return loop-value
+
+function spawn(p: player):
+    clear {incc.%{_p}%}
+    clear {stage.%{_p}%}
+    clear {ccchoice.%{_p}%}
+    set {_x} to round(random number between -200 and 200)
+    set {_z} to round(random number between -200 and 200)
+    set {_block} to block at location at ({_x}, 290, {_z}) in world "world"
+    apply blindness without any particles to {_p} for 5 seconds
+    wait 1 second
+    loop all blocks below {_block}:
+        if loop-block is air:
+            block below loop-block is not minecraft:lava
+            if block above loop-block is air:
+                teleport {_p} to loop-block
+                set {nfall.%{_p}%} to true
+    play sound "entity.player.levelup" with volume 15 at location of {_p} for {_p}
+    send "&7You wake up in an unknown location..." to {_p}
+
+command /increasenutrition:
+    trigger:
+        set {nutrition.%player%.vegetable} to 10
+        set {nutrition.%player%.meat} to 10
+        set {nutrition.%player%.fish} to 10
+        set {nutrition.%player%.grain} to 10
+        set {nutrition.%player%.dairy} to 10
+        set {nutrition.%player%.fruit} to 10
+
+command /setmain <text>:
+    trigger:
+        set {main.%player%} to arg-1

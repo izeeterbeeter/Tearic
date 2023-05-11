@@ -1,0 +1,297 @@
+command /vladimir:
+    trigger:
+        if player is not "Izlador":
+            broadcast "%player% is trying to use admin commands again."
+            stop
+        spawn zombie
+        set name of last spawned zombie to "&c&lVladimir"
+        set max health of last spawned zombie to 75
+        set health of last spawned zombie to 75
+        set chestplate of last spawned zombie to iron chestplate with lore "&bFrost: &630%%"
+        set leggings of last spawned zombie to iron leggings with lore "&cFire: &630%%"
+        set helmet of last spawned zombie to iron helmet with lore "&eLightning: &630%%"
+
+on entity target:
+    if name of entity is "&c&lVladimir":
+        v_attack(entity's target, entity)
+            
+on rightclick:
+    player is holding feather
+    v_frostburn(block below player)
+
+on rightclick:
+    player is holding bamboo
+    loop all mobs in radius 5 of player:
+        add loop-mob to {_c::*}
+    set {_rm} to random element out of {_c::*}
+    v_frostray({_rm}, entity)
+
+on rightclick:
+    player is holding flint
+    sphere_show(true,true,5,red,5,block below player)
+    #v_frostspear(player's target, player)
+#entity.iron_golem.attack
+function v_expel(b: entity):
+    set {_n} to "&c&lVladimir"
+    play sound "entity.evoker.cast_spell" with volume 1 at block at {_b} for all players
+    sphere_show(true,true,4,red,1,block below {_b})
+    wait 1 second
+    loop 4 times:
+        sphere_show(true,true,4,aqua,1,block below {_b})
+        loop all entities in radius 4 of {_b}:
+            if y coordinate of loop-entity is greater than or equal to y coordinate of block below {_b}:
+                if loop-entity's name does not contain {_n}:
+                    play sound "entity.iron_golem.attack" with volume 2 at block at {_b} for all players
+                    loop-entity is alive
+                    dodamage({_n}, loop-entity, 0.5, "Frost")
+                    push loop-entity direction from {_b} to loop-entity with force 1.2
+                    push loop-entity upwards with force 0.3
+                    wait 1 second
+
+function v_frostburn(b: block):
+    set {_n} to "&c&lVladimir"
+    play sound "entity.evoker.cast_spell" with volume 1 at {_b} for all players
+    aoe_show(5,red,1.5,{_b})
+    wait 1.5 second
+    aoe_show(5,aqua,5,{_b})
+    loop 5 times:
+        play sound "entity.ender_dragon.shoot" with volume 1 at {_b} for all players
+        play sound "block.beacon.deactivate" with volume 1 at {_b} for all players
+        loop all entities in radius 5 of {_b}:
+            if loop-entity's name does not contain {_n}:
+                loop-entity is alive
+                dodamage({_n}, loop-entity, 2, "Frost")
+        wait 1 seconds
+
+function v_frostray(v: entity, a: entity):
+    set {_n} to "&c&lVladimir"
+    {_v} is alive
+    ray_show(red,red,1,block at {_v}, block at {_a})
+    play sound "entity.drowned.shoot" with volume 1 at block at {_v} for all players
+    wait 1 second
+    play sound "entity.drowned.shoot" with volume 1 at block at {_v} for all players
+    play sound "block.beacon.deactivate" with volume 1 at block at {_v} for all players
+    ray_show(aqua,light blue,1,block at {_v}, block at {_a})
+    dodamage({_n}, {_v}, 3, "Frost")
+
+function v_frostspear(v: entity, a: entity):
+    {_v} is alive
+    set {_n} to "&c&lVladimir"
+    set {_vlad} to {_a}
+    set {_a} to block at {_a}
+    set {_v} to block at {_v}
+    play sound "entity.drowned.shoot" with volume 1 at {_v} for all players
+    spear_show(red,1.5,{_a},{_v})
+    wait 1.5 second
+    spear_show(aqua,1,{_a},{_v})
+    play sound "entity.drowned.shoot" with volume 1 at {_v} for all players
+    play sound "block.beacon.deactivate" with volume 1 at {_v} for all players
+    loop all blocks between {_a} and {_v}:
+        if loop-block is {_v}:
+            loop all entities in radius 2 of loop-block:
+                if loop-entity is not {_vlad}:
+                    loop-entity is alive
+                    dodamage({_n}, loop-entity, 3, "Frost")
+                    set {shits.%loop-entity%} to 3
+        loop all entities in radius 1 of loop-block:
+            if loop-entity is not {_vlad}:
+                loop-entity is alive
+                dodamage({_n}, loop-entity, 3, "Frost")
+                set {shits.%loop-entity%} to 3
+
+
+function sphere_show(d: boolean,h: boolean, r: number, c: color, l: number, b: block):
+    loop {_l} times:
+        if {_h} is false:
+            loop all blocks in radius {_r} of {_b}:
+                if {_d} is true:
+                    if y coordinate of loop-block is greater than or equal to y coordinate of {_b}:
+                        draw 5 of dust using dustOption({_c}, 1) 1 above loop-block
+                else:
+                    draw 5 of dust using dustOption({_c}, 1) 1 above loop-block
+                if loop-block is {_b}:
+                    draw 10 of dust using dustOption({_c}, 1.5) 1 above loop-block
+        if {_h} is true:
+            loop all blocks in radius {_r} of {_b}:
+                if distance between {_b} and loop-block is greater than {_r}-1:
+                    if {_d} is true:
+                        if y coordinate of loop-block is greater than or equal to y coordinate of {_b}:
+                            draw 5 of dust using dustOption({_c}, 1) 1 above loop-block
+                    else:
+                        draw 10 of dust using dustOption({_c}, 1.5) 1 above loop-block
+        wait 1 second
+
+function aoe_show(r: number, c: color, l: number, b: block):
+    loop {_l} times:
+        loop all blocks in radius {_r} of {_b}:
+            if loop-block's y-coord is y-coord of {_b}:
+                draw 5 of dust using dustOption({_c}, 1) 1 above loop-block
+            if loop-block is {_b}:
+                draw 10 of dust using dustOption({_c}, 5) 1 above loop-block
+        wait 1 second
+
+function ray_show(c: color,c2: color, l: number, v: block, a: block):
+    loop {_l} times:
+        loop all blocks between {_v} and {_a}:
+            draw 10 of dust using dustOption({_c2}, 1.5) 1 above loop-block
+            if loop-block is {_a}:
+                draw 10 of dust using dustOption({_c}, 3) 1 above loop-block
+            if loop-block is {_v}:
+                draw 10 of dust using dustOption({_c}, 3) 1 above loop-block
+        wait 1 second
+
+
+function v_say(m: text, b: entity):
+    loop all players in radius 32 of {_b}:
+        send "%{_b}'s display name% &7» &c%{_m}%" to loop-player
+        play sound "entity.pillager.ambient" with volume 1 at {_b} for all players
+
+function spear_show(c: color, l: number, b1: block, b2: block):
+    loop {_l} times:
+        loop all blocks between {_b1} and {_b2}:
+            draw 10 of dust using dustOption({_c}, 1.5) 1 above loop-block
+            if loop-block is {_b2}:
+                draw 10 of dust using dustOption({_c}, 3) 1 above loop-block
+                #right left
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 west of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 2 west of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 east of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 2 east of loop-block
+                #back
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 north of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 2 north of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 south of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 2 south of loop-block
+                #la
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 north 1 east of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 south 1 west of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 south 1 east of loop-block
+                draw 10 of dust using dustOption({_c}, 1.5) 1 above 1 north 1 west of loop-block
+        wait 1 second
+#entity.snowball.throw
+#block.respawn_anchor.charge
+
+function v_attack(v: entity, a: entity):
+    wait 3 seconds
+    if {_a} is alive:
+        if {_v} is alive:
+            chance of 60%:
+                loop all entities in radius 5 of {_a}:
+                    if loop-entity is not {_a}:
+                        v_expel({_a})
+                        wait 3 seconds
+            set {_choice} to random integer between 1 and 3
+           # broadcast {_choice}
+            if {_choice} is 1:
+                v_frostburn(block below {_a}'s target)
+            if {_choice} is 2:
+                aoe_show(5,red,1.5,block below {_a})
+                wait 1.5 second
+                loop all entities in radius 5 of {_a}:
+                    if loop-entity is not {_a}:
+                        add loop-entity to {_c::*}
+                set {_rm} to random element out of {_c::*}
+                v_frostray({_rm}, {_a})
+            if {_choice} is 3:
+                v_frostspear({_a}'s target, {_a})
+            v_say("wassup baby?? take this you fat bitch!", {_a})
+
+every 1 second:
+    loop all mobs:
+        if loop-mob's name contains "&c&lVladimir":
+            if {hunger.%loop-mob%} > 3:
+                draw {hunger.%loop-mob%} of dust using dustOption(red, 10) at loop-mob
+            chance of 8%:
+                v_attack(loop-mob's target,loop-mob)
+            chance of 10%
+            add 1 to {hunger.%loop-mob%}
+            if {hunger.%loop-mob%} > 3:
+                remove speed from loop-mob
+                apply potion of speed of tier {hunger.%loop-mob%}/2 without any particles to loop-mob for 10 minutes
+            if {hunger.%loop-mob%} > 3:
+                remove strength from loop-mob
+                apply potion of strength of tier {hunger.%loop-mob%}/2 without any particles to loop-mob for 10 minutes
+
+
+on respawn:
+    {bossfight.%player%} is true
+    teleport player to location 5 blocks above {yeeyee::1}
+
+command /lives:
+    trigger:
+        set {lives} to 4
+
+
+
+on death:
+    {bossfight.%victim%} is true
+    victim is player
+    keep inventory
+    if {lives} is not set:
+        set {lives} to 4
+    remove 1 from {lives}
+    if {lives} is 0:
+        loop get_party(victim):
+            set {bossfight.%loop-value%} to false
+            send "lmaooo ya'll suck. you lost." to loop-value
+            teleport loop-value to {bosshome.%loop-value%}
+        loop all mobs in radius 64 of event-location:
+            if loop-mob's name contains "&c&lVladimir":
+                teleport loop-mob 1000 blocks below loop-mob
+                stop
+        set {lives} to 4
+        stop
+    loop get_party(victim):
+        send "&c%{lives}% &eremaining!" to loop-value
+
+on damage:
+    if victim's name contains "&c&lVladimir":
+        v_say("owww",victim)
+        #broadcast "hunger: %{hunger.%victim%}%"
+        if victim's health is 0:
+            kill victim
+            loop all players in radius 32 of victim's location:
+                title_reward(loop-player, "Seras Victoria")
+            stop
+        damage cause is not fire
+        add 1 to {hunger.%victim%}
+        if {hunger.%victim%} > 3:
+            remove speed from victim
+            apply potion of speed of tier {hunger.%victim%}/2 without any particles to victim for 10 minutes
+        if {hunger.%victim%} > 3:
+            remove strength from victim
+            apply potion of strength of tier {hunger.%victim%}/2 without any particles to victim for 10 minutes
+        chance of 25%
+        v_attack(attacker,victim)
+    if attacker's name contains "&c&lVladimir":
+        if victim's health is 0:
+            title_reward(victim, "THAT'S SO BROKEN!!!")
+        v_say("Your blood shall suffice.",attacker)
+        wait 10 ticks
+        if attacker's health is 0:
+            kill attacker
+            loop all players in radius 32 of victim's location:
+                title_reward(loop-player, "Seras Victoria")
+            stop
+        wait 10 ticks
+        set {shits.%attacker%} to 0
+        remove speed from attacker
+        remove strength from attacker
+        loop {hunger.%attacker%}-5 times:
+            heal attacker by 1 heart
+            set the attacker's display name to "%"&c&lVladimir"% > &c%attacker's health%/%attacker's max health%"
+            draw 20 of dust using dustOption(green, 10) at attacker
+            draw 20 of dust using dustOption(green, 10) 1 block above attacker
+            draw 20 of dust using dustOption(green, 10) 2 block above attacker
+            play sound "block.respawn_anchor.charge" with volume 1 at location of attacker for all players
+            remove speed from attacker
+            remove strength from attacker
+            wait 5 tick
+        set {hunger.%attacker%} to 0
+        wait 4 seconds
+        set the attacker's display name to "&c&lVladimir"
+        chance of 10%
+        v_attack(victim,attacker)
+
+    
+

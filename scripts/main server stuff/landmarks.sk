@@ -1,0 +1,56 @@
+on rightclick on sign:
+    set {_x} to line 2 of event-block
+    if {_x} is "[Landmark]":
+        if line 3 of event-block is set:
+            if {landmarks::*} does not contain "%line 3 of event-block%,%x coordinate of event-block%,%y coordinate of event-block%,%z coordinate of event-block%,%world of event-block%":
+                add "%line 3 of event-block%,%x coordinate of event-block%,%y coordinate of event-block%,%z coordinate of event-block%,%world of event-block%" to {landmarks::*}
+                send "&aLandmark Created!" to player
+            if {landmarks::%player%::*} does not contain "%line 3 of event-block%,%x coordinate of event-block%,%y coordinate of event-block%,%z coordinate of event-block%,%world of event-block%":
+                add "%line 3 of event-block%,%x coordinate of event-block%,%y coordinate of event-block%,%z coordinate of event-block%,%world of event-block%" to {landmarks::%player%::*}
+                send "&aLandmark added!" to player
+
+on break of sign:
+    set {_x} to line 2 of event-block
+    if {_x} is "[Landmark]":
+        if line 3 of event-block is set:
+            remove "%line 3 of event-block%,%x coordinate of event-block%,%y coordinate of event-block%,%z coordinate of event-block%,%world of event-block%" from {landmarks::*}
+            loop all offlineplayers:
+                remove "%line 3 of event-block%,%x coordinate of event-block%,%y coordinate of event-block%,%z coordinate of event-block%,%world of event-block%" from {landmarks::%loop-offlineplayer%::*}
+            send "&cLandmark destroyed!" to player
+
+
+command /landmarks <text="show"> [<text>]:
+    trigger:
+        arg-1 is set
+        if arg-1 is "show":
+            send ""
+            send "&7---------- &6Landmarks &7----------"
+            send ""
+            loop {landmarks::%player%::*}:
+                set {_a::*} to loop-value split at ","
+                set {_x} to {_a::2} parsed as number
+                set {_y} to {_a::3} parsed as number
+                set {_z} to {_a::4} parsed as number
+                set {_loc} to location({_x},{_y},{_z})
+                send "&7 - &a%{_a::1}% &7(&e%distance between {_loc} and player's location% &7blocks away)"
+            send ""
+            send "&7------------------------------"
+        if arg-1 is "display":
+            if {displaydistance.%player%} is not set:
+                if arg-2 is set:
+                    loop {landmarks::%player%::*}:
+                        if loop-value contains arg-2:
+                            set {displaydistance.%player%} to arg-2
+                            while {displaydistance.%player%} is set:
+                                wait 5 tick
+                                send title "" to player
+                                set {_a::*} to loop-value split at ","
+                                set {_x} to {_a::2} parsed as number
+                                set {_y} to {_a::3} parsed as number
+                                set {_z} to {_a::4} parsed as number
+                                set {_loc} to location({_x},{_y},{_z})
+                                send subtitle "&7(&e%distance between {_loc} and player's location%&7)" with fadein 0 second with fade out 0 second
+                                draw 100 of dust using dustOption(rgb(55, 230, 221), 1) at location({_x},{_y}+6,{_z}) with offset vector(0.1, 10, 0.1) to player
+            clear {displaydistance.%player%}
+
+

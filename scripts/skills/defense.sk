@@ -1,0 +1,24 @@
+on damage:
+    send action bar bar(victim) to victim
+    if {defense.%victim%} > 9:
+        set {_beforehealth} to victim's health
+        set {_afterhealth} to victim's health - damage
+        {_beforehealth} >= 3:
+            {_afterhealth} <= 0
+            {stamina.%victim%} >= 100
+            set {amountreduced.%victim%} to "&c-%reduce_stamina(victim, 100)%"
+            if {amountreduced.%victim%} is set:
+                cancel event
+                set victim's health to 0.5
+                send action bar bar(victim) to victim
+                draw 50 happy_villager at victim with offset vector(0.5, 1, 0.5)
+                play sound "block.enchantment_table.use" with volume 2 at victim for all players
+                play sound "item.shield.block" with volume 2 at victim for all players
+                apply blindness without any particles to victim for 1 seconds
+                
+
+on respawn:
+    if {defense.%player%} >= 5:
+        set the maximum health of the player to ((({defense.%player%}-4))+10)
+    else:
+        set the maximum health of the player to 10

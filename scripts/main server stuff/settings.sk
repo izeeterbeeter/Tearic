@@ -1,0 +1,64 @@
+
+on load:
+    set {possiblesettings::*} to "stat.agility.show","stat.woodcut.show","stat.swords.show","stat.axes.show","stat.farm.show","stat.arch.show","stat.mine.show","stat.magic.show","stat.botany.show","stat.jump.show","stat.furnace.show"
+
+
+command /settings <text="show"> <boolean=true>:
+    trigger:
+        if arg 1 is "all":
+            clear {settings::%player%::*}
+            if arg 2 is true:
+                loop {possiblesettings::*}:
+                    add loop-value to {settings::%player%::*}
+                send "jammin" to player
+                stop
+            else:
+                loop {possiblesettings::*}:
+                    remove loop-value from {settings::%player%::*}
+                send "jammin" to player
+                stop
+        if arg 1 is "list":
+            if arg 2 is true:
+                send "&7-----------&6Your Current Settings&7-----------" to player
+                send {settings::%player%::*} to player
+                stop
+        if arg 1 is "show":
+            send "&7-----------&6All Possible Settings&7-----------" to player
+            send {possiblesettings::*} to player
+            stop
+        if {possiblesettings::*} contains arg 1:
+            if arg 1 contains "stat.":
+                if arg 1 contains ".show":
+                    set {_a::*} to arg 1 split at "stat."
+                    set {_stat::*} to {_a::2} split at ".show"
+                    set {_stat} to {_stat::1}
+                    #tbroadcast {_stat}
+                    set {_pee} to "stat.%{_stat}%.show"
+                    if arg 2 is true:
+                        if setting_enabled(player,{_pee}):
+                            send "You already have this setting enabled!" to player
+                            stop
+                        add {_pee} to {settings::%player%::*}
+                        send "jammin" to player
+                        stop
+                    if arg 2 is false:
+                        if setting_enabled(player,{_pee}) is false:
+                            send "You haven't enabled this setting!" to player
+                            stop
+                        remove {_pee} from {settings::%player%::*}
+                        send "jammin" to player
+                        stop
+        else:
+            send "This is not a setting!" to player
+
+function setting_enabled(p: player,s: text) :: boolean:
+    #broadcast {settings::%{_p}%::*}
+    #broadcast {_s}
+    loop {settings::%{_p}%::*}:
+        if loop-value is {_s}:
+            return true
+    return false
+    
+
+
+

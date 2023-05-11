@@ -1,0 +1,140 @@
+command /vamp:
+	trigger:
+		if {vamp.%player%} is not set:
+			set {vamp.%player%} to true
+			broadcast "ya"
+			clear {yeezy::*}
+		else:
+			clear {vamp.%player%}
+			broadcast "na"
+			clear {yeezy::*}
+
+on inventory click:
+	if type of player's current inventory is workbench inventory:
+		event-item's name is "&cBlood"
+		cancel event
+
+on consume:
+	{vamp.%player%} is true
+	send action bar "&7i require something more... &cwet?" to player
+	cancel event
+	play sound "entity.zombified_piglin.angry" with volume 1 at location of player for player
+	apply blindness without any particles to player for 1 second
+	apply hunger of tier 3 without any particles to player for 8 seconds
+
+on damage of villager:
+	attacker's tool is air
+	{vamp.%attacker%} is true
+	add 1.5 to the attacker's food level
+	send action bar "&7Delectable!" to attacker
+	play sound "item.honey_bottle.drink" with volume 1 at location of attacker for attacker
+
+on damage of animal:
+	attacker's tool is air
+	{vamp.%attacker%} is true
+	add 0.5 to the attacker's food level
+	send action bar "&7it'll do." to attacker
+	play sound "item.honey_bottle.drink" with volume 1 at location of attacker for attacker
+
+on damage of player:
+	attacker's tool is air
+	{vamp.%attacker%} is true
+	add 2 to the attacker's food level
+	play sound "item.honey_bottle.drink" with volume 1 at location of attacker for attacker
+
+on damage of player:
+	{vamp.%victim%} is true
+	set {_p} to victim's food level
+	if {_p} > 3:
+		if victim's health < 20:
+			loop damage times:
+				if {_p} > 3:
+					wait 0.3 seconds
+					subtract 1 from the victim's food level
+					heal victim by 1
+
+on death of zombie, skeleton, spider, or creeper:
+	{vamp.%attacker%} is true
+	add 2 to the attacker's food level
+	send action bar "&7yuck..." to attacker
+	play sound "item.honey_bottle.drink" with volume 1 at location of attacker for attacker
+
+on rightclick:
+	{vamp.%player%} is true
+	player is holding bottle
+	player is sneaking
+	target is animal
+	set {_waited} to difference between {blap.%player%} and now
+	if {_waited} is less than 10 ticks:
+		stop
+	damage target by 2 hearts
+	remove 1 of player's tool from player's inventory
+	give player redstone dust named "&cBlood" with lore "&7Vampires right click me!"
+	set {blap.%player%} to now
+	
+on rightclick:
+	if player is holding item with name "&cBlood":
+		cancel event
+		{vamp.%player%} is true
+		add 2 to player's food level
+		remove 1 of player's tool from player's inventory #item.honey_bottle.drink
+		play sound "item.honey_bottle.drink" with volume 1 at location of player for player
+
+
+on rightclick:
+	if name of player's tool is "&cTear of Draining":
+		loop all blocks in radius 20 of player:
+			if loop-block is grass:
+				set loop-block to coarse dirt
+			if loop-block is minecraft:grass:
+				set loop-block to dead bush
+			if loop-block is minecraft:fern:
+				set loop-block to dead bush
+			if loop-block is minecraft:vine:
+				set loop-block to air
+			if loop-block is any leaves:
+				spawn falling block of loop-block at loop-block
+				set loop-block to air
+		wait 3 seconds
+		loop all blocks in radius 20 of event-location:
+			if loop-block is any leaves:
+				set loop-block to air
+
+every 1 second:
+	loop all players:
+		{vamp.%loop-player%} is true
+		if weather in world "world" is clear:
+			if time in world "world" is not between 18:00 and 6:00:
+				stop
+			if sunlight level at the loop-player is greater than 14:
+				ignite the loop-player for 3 second
+				send action bar "&cIT FUCKING BUUURNS S S " to loop-player
+
+every 1 second:
+	loop all players:
+		{vamp.%loop-player%} is true
+		title_reward(loop-player, "playboi carti")
+		set {_p} to loop-player's food level
+		if {_p} < 3:
+			apply blindness without any particles to loop-player for 1 second
+			apply strength of tier 2 without any particles to loop-player for 1 second
+		if {_p} < 4:
+			apply speed of tier 2 without any particles to loop-player for 1 second
+		if {_p} < 5:
+			apply mining fatigue without any particles to loop-player for 1 second
+			
+
+
+#on rightclick:
+	#loop all blocks in radius 5 of event-block:
+	#	add location of loop-block to {yeezy::*}
+	#loop {yeezy::*}:
+	#	if block at loop-value is air:
+	#		remove loop-value from {yeezy::*}
+	#loop 200 times:
+	#	wait 1 tick
+	#	set {_v} to random element out of {yeezy::*}
+	#	play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of {_v} for all players
+	#	broadcast {_v}
+	#	set block at {_v} to crimson stem
+	#	remove {_v} from {yeezy::*}

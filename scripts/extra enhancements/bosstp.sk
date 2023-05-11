@@ -1,0 +1,74 @@
+on break of crying obsidian:
+    set {_loc} to location of event-block
+    if {portal::%{_loc}%} is set:
+        clear {portal::%{_loc}%}
+        clear {portal::%{_loc}%::*} #block.respawn_anchor.deplete   
+        play sound "block.respawn_anchor.deplete" with volume 1 at {_loc} for all players
+
+on rightclick on crying obsidian:
+    set {_loc} to location of event-block
+    if {portal::%{_loc}%} is not set:
+        name of player's tool is "&e&lTear of Constellations"
+        cancel event
+        remove 1 of player's tool from player's tool
+        set {portal::%{_loc}%} to true
+        draw 15 of dust using dustOption(purple, 1.1) at {_loc} with offset vector(0.5, 0.5, 0.5)
+        draw 15 of dust using dustOption(red, 1.1) at {_loc} with offset vector(0.5, 0.5, 0.5)
+        play sound "block.respawn_anchor.set_spawn" with volume 1 at {_loc} for all players
+        send action bar "&cBoss Portal Created." to player
+        stop
+    if {portal::%{_loc}%} is set:
+        draw 15 of dust using dustOption(purple, 1.1) at {_loc} with offset vector(0.5, 0.5, 0.5)
+        draw 15 of dust using dustOption(red, 1.1) at {_loc} with offset vector(0.5, 0.5, 0.5)
+        if player's tool is air:
+            if {portal::%{_loc}%::*} is not set:
+                send action bar "&cItems are required." to player
+            else:
+                if player is sneaking:
+                    set {_p} to last element of {portal::%{_loc}%::*}
+                    give 1 of {_p} to player
+                    remove {_p} from {portal::%{_loc}%::*}
+                    send action bar "&b%{portal::%{_loc}%::*}%" to player
+                    stop
+                send action bar "&b%{portal::%{_loc}%::*}%" to player
+        else:
+            cancel event
+            if size of {portal::%{_loc}%::*} < 4:
+                if player is sneaking:
+                    set {_p} to last element of {portal::%{_loc}%::*}
+                    give 1 of {_p} to player
+                    remove {_p} from {portal::%{_loc}%::*}
+                    send action bar "&b%{portal::%{_loc}%::*}%" to player
+                    stop
+                add 1 of player's tool to {portal::%{_loc}%::*} #block.respawn_anchor.charge
+                play sound "block.respawn_anchor.charge" with volume 1 at {_loc} for all players
+                remove 1 of player's tool from player's tool
+            send action bar "&b%{portal::%{_loc}%::*}%" to player
+        if {portal::%{_loc}%::*} contains blue ice and heart of the sea and eye of ender and amethyst shard:
+            if {vladtp::*} contains location of block above {_loc}:
+                stop
+            play sound "block.respawn_anchor.ambient" with volume 1 at {_loc} for all players
+            draw 20 of dust using dustOption(purple, 2) at {_loc} with offset vector(0.3, 2, 0.3)
+            draw 50 of dust using dustOption(black, 3) at {_loc} with offset vector(0, 10, 0)
+            strike lightning effect at {_loc}
+            create a fake explosion at {_loc}
+            draw 20 of dust using dustOption(red, 2) at {_loc} with offset vector(0.3, 2, 0.3)
+            set block above {_loc} to glass
+            add location of block above {_loc} to {vladtp::*}
+
+on break of glass:
+    if {vladtp::*} contains location of event-block:
+        loop {vladtp::*}:
+            remove location of event-block from {vladtp::*}
+        play sound "block.conduit.deactivate" with volume 1 at location of event-block for all players
+        if size of get_party(player) is 4:
+            teleport_party(player, location 5 blocks above {yeeyee::1})
+            clear {portal::%location of block 1 below event-block%::*}
+        else:
+            send action bar "&cYou need a party of 4 players!" to player
+            
+
+every 1 second:
+    loop {vladtp::*}:
+        draw 15 of dust using dustOption(purple, 1.1) at loop-value with offset vector(0.2, 0.2, 0.2)
+        draw 15 of dust using dustOption(red, 1.1) at loop-value with offset vector(0.2, 0.2, 0.2)

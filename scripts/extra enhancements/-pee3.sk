@@ -1,0 +1,163 @@
+command /bank:
+	trigger:
+		create a gui with virtual chest inventory with 3 rows named "&6Banking Done Right!" and shape "---------", "--1---2--", and "---------":
+			make gui slot "1" with paper named "&7Create Account!":
+				close player's inventory
+				send "Send a pin! Must be 4 numbers" to player
+				set {input2.%player%} to true
+			make gui slot "2" with paper named "&7View Account!":
+				close player's inventory
+				send "Please type the Account Pin" to player
+				set {input1.%player%} to true
+		open the last gui for the player
+
+command /clearbank:
+	trigger:
+		clear {accounts::*}
+
+command /addvalue <text> <text>:
+	trigger:
+		loop {accounts::*}:
+			set {_a::*} to loop-value split at "."
+			set {_account} to {_a::1}
+			if arg-1 is {_account}:
+				set {_ya} to "%arg-1%.%arg-2 parsed as integer%"
+				delete {accounts::%loop-index%}
+				add {_ya} to {accounts::*}
+
+command /shop <text>:
+	trigger:
+		loop {accounts::*}:
+			set {_a::*} to loop-value split at "."
+			set {_account} to {_a::1}
+			if arg-1 is {_account}:
+				create a gui with virtual chest inventory with 3 rows named "&6Shopping Made Easy!" and shape "---------", "-1234567-", and "---------":
+					make gui slot "1" with coal named "&7Coal" with lore value_check("c")
+					make gui slot "2" with copper ingot named "&7Copper" with lore value_check("ci")
+					make gui slot "3" with iron ingot named "&7Iron" with lore value_check("i")
+					make gui slot "4" with gold ingot named "&7Gold" with lore value_check("g")
+					make gui slot "5" with lapis named "&7Lapis" with lore value_check("l")
+					make gui slot "6" with emerald named "&7Emerald" with lore value_check("e")
+					make gui slot "7" with diamond named "&7Diamond" with lore value_check("d")
+				open the last gui for the player
+
+on chat:
+	if {input1.%player%} or {input2.%player%} or {input3.%player%} is true:
+		set {_message} to message
+		cancel event
+		if {input1.%player%} is true:
+			loop {accounts::*}:
+				set {_a::*} to loop-value split at "."
+				set {_account} to {_a::1}
+				if {_message} is {_account}:
+					banking(player,{_message})
+					broadcast "penis"
+					set {input1.%player%} to false
+					stop
+			send "account don't exist bruh" to player
+			set {input1.%player%} to false
+			stop
+		if {input2.%player%} is true:
+			if length of {_message} is 4:
+				loop {accounts::*}:
+					set {_a::*} to loop-value split at "."
+					set {_account} to {_a::1}
+					if {_message} is {_account}:
+						send "&4Account has already been made" to player
+						stop
+				add "%{_message}%.0" to {accounts::*}
+				banking(player,{_message})
+				loop {accounts::*}:
+					broadcast loop-value
+				set {input2.%player%} to false
+				stop
+			send "it's gotta be a number man" to player
+		if {input3.%player%} is true:
+			loop {accounts::*}:
+				set {_a::*} to loop-value split at "."
+				set {_account} to {_a::1}
+				if {_message} is {_account}:
+					set {_b::*} to {bigdog.%player%} split at "$"
+					set {_BIGBOY} to {_b::2} parsed as integer
+					change_value({_account},"add",{_BIGBOY})
+					remove 1 of paper named {bigdog.%player%} from player
+					set {input3.%player%} to false
+					send "&a$%{_BIGBOY}% &7deposited into account." to player
+					clear {bigdog.%player%} 
+				else:
+					send "that's not an account boi" to player
+					set {input3.%player%} to false
+					
+on rightclick with paper:
+	if name of tool of player is "&a$10" or "&a$20" or "&a$50" or "&a$100":
+		set {bigdog.%player%} to name of player's tool
+		#broadcast {bigdog.%player%} 
+		send "&aWhat account?" to player
+		set {input3.%player%} to true
+		
+		
+function value_check(i: text) :: text:
+	if {_i} is "c":
+		set {_c} to (10-20)
+		return "&a$%{_c}%"
+	
+				
+function banking(p: player, pin: text):
+	create a gui with virtual chest inventory with 3 rows named "&6Banking Done Right!" and shape "---------", "--1---2--", and "---------":
+		loop {accounts::*}:
+			set {_a::*} to loop-value split at "."
+			set {_account} to {_a::1}
+			set {_value} to {_a::2}
+			if {_pin} contains {_account}:
+				make gui slot "1" with emerald named "&a$%{_value}%"
+				make gui slot "2" with paper named "&aWithdraw":
+					close player's inventory
+					create a gui with virtual chest inventory with 3 rows named "&6Banking Done Right!" and shape "---------", "1-2-3-4-5", and "---------":
+						make gui slot "1" with emerald named "&a$5":
+							if change_value({_pin},"sub",5) is true:
+								give {_p} paper named "&a$5"
+						make gui slot "2" with emerald named "&a$10":
+							if change_value({_pin},"sub",10) is true:
+								give {_p} paper named "&a$10"
+						make gui slot "3" with emerald named "&a$20":
+							if change_value({_pin},"sub",20) is true:
+								give {_p} paper named "&a$20"
+						make gui slot "4" with emerald named "&a$50":
+							if change_value({_pin},"sub",50) is true:
+								give {_p} paper named "&a$50"
+						make gui slot "5" with emerald named "&a$100":
+							if change_value({_pin},"sub",100) is true:
+								give {_p} paper named "&a$100"
+					open the last gui for {_p}
+	open the last gui for {_p}
+	
+
+	
+function change_value(pin: text, aors: text, penis: number) :: boolean:
+	loop {accounts::*}:
+		set {_a::*} to loop-value split at "."
+		set {_account} to {_a::1}
+		set {_value} to {_a::2} parsed as integer
+		if {_pin} is {_account}:
+			if {_aors} is "add":
+				set {_ya} to "%{_pin}%.%{_value} + {_penis}%"
+				delete {accounts::%loop-index%}
+				add {_ya} to {accounts::*}
+			if {_aors} is "sub":
+				if {_value} < 5:
+					return false
+					stop
+				set {_ya} to "%{_pin}%.%{_value} - {_penis}%"
+				broadcast {_ya}
+				delete {accounts::%loop-index%}
+				add {_ya} to {accounts::*}
+				return true
+
+	
+
+
+
+
+		
+		
+	
