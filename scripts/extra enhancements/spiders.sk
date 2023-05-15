@@ -1,0 +1,47 @@
+
+on entity target:
+    entity's name is "&7Webslinger"
+    while entity's target is set:
+        if entity is not alive:
+            stop
+        wait 5 ticks
+        chance of 5%
+        loop 3 times:
+            make entity shoot snowball at speed 2
+            loop all entities in radius 2 of entity:
+                loop-entity is snowball
+                set {_snowball} to loop-entity
+                stop loop
+            while {_snowball} is alive:
+                wait 1 tick
+                draw 20 of dust using dustOption(white, 1) at {_snowball} with offset vector(0.3,0.3,0.3)
+                set {_loc} to location of {_snowball}
+            loop all entities in radius 2 of {_snowball}:
+                apply slowness of tier 4 without particles to loop-entity for 2 seconds
+
+on spawn of spider:
+    chance of 25%
+    set name of event-entity to "&7Webslinger"
+    set max health of event-entity to 35
+    set health of event-entity to 35
+
+on entity target:
+    entity's name is "&7Spear Slinger"
+    while entity's target is set:
+        set {_e} to entity's target
+        if entity is not alive:
+            stop
+        wait 5 ticks
+        chance of 5%
+        spawn armor stand at block above entity
+        set {_a} to last spawned armor stand
+        push {_a} upwards at speed 0.2
+        wait 1 tick
+        push {_a} direction from {_a} to {_e} at speed 3
+
+on spawn of skeleton:
+    chance of 25%
+    set name of event-entity to "&7Spear Slinger"
+    set max health of event-entity to 35
+    set health of event-entity to 35
+    set tool of event-entity to stick named "&7Spear Slinger"
