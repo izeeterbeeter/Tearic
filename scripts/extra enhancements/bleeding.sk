@@ -40,8 +40,11 @@ on rightclick:
 		remove 1 of player's tool from player's inventory
 	
 
+on respawn:
+	wait 1 tick
+	set {shits.%player%} to 0
 
-		
+
 command /unsit:
 	trigger:
 		clear {sit.%player%}
@@ -67,6 +70,9 @@ on damage:
 							set {shits.%victim%} to 3
 						broadcast {shits.%victim%}
 on damage:
+	if attacker's name is "&7Spear Slinger":
+		victim is not blocking
+		set {shits.%victim%} to 3
 	while {shits.%victim%} >= 3:
 		wait 1 tick
 		if {shits.%victim%} >= 3:

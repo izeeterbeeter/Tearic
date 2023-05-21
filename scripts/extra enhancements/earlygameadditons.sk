@@ -1,6 +1,298 @@
+Options:
+    nono_blocks: water, kelp, seagrass, coral, lily pad, ice, packed ice, clay
+    cage1: mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks
+    cage2: oak fence, oak fence, oak fence,oak fence, air, oak fence, oak fence, oak fence, oak fence
+    cage3: oak fence, oak fence, oak fence,oak fence, air, oak fence,oak fence, oak fence, oak fence
+    cage4: mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks, mangrove planks
+    goblin_heads: player head with nbt compound from "{SkullOwner:{Id:[I;493424442,-1037481418,-1333840090,1290856384],Properties:{textures:[{Value:'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M2ODhlMTAwMTZiMjViZGJhYTJkYWJmMDQ2ZTkwMDE2MTU2ZmQ2OGU1NWIyZjk4MDBlOGFlNjExYmIzZDcxIn19fQ=='}]}}}",player head with nbt compound from "{SkullOwner:{Id:[I;-1692587836,-1682551272,-1234852147,-1257164825],Properties:{textures:[{Value:'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk5NGUxZTgwZTIyMjZmOTk3N2NiOTc4ZjJkNDMzN2U3ZTY3NzlhNTViYzkyM2YzNTZjZDAxMDc3MmY0ZGEwNSJ9fX0='}]}}}"
+
+on respawn:
+    {prisoner.%player%} is true
+    teleport player to location at location((random integer between 0 and 1000),100000,(random integer between 0 and 1000))
+    apply darkness of tier 4 without particles to player for 11 seconds
+    play sound "entity.zombie.ambient" with volume 1 with pitch 2 for player
+    wait 1 second
+    loop 4 times:
+        play sound "block.snow.step" with volume 1 for player
+        wait 1 second
+    set {nfall.%player%} to true
+    wait 1 tick
+    set {_a} to random element of {availablecages::*}
+    teleport player to {_a}
+    remove {_a} from {availablecages::*}
+    wait 2 seconds
+    set {nfall.%player%} to false
+    loop all blocks in radius 12 of player:
+        loop-block is air or minecraft:grass
+        block below loop-block is grass or ice or sand
+        set block at loop-block to chest
+        set {invensla.%loop-block%} to player
+        while {invensla.%loop-block%} is set:
+            wait 2 ticks
+            draw 100 of dust using dustOption(white, 1) at block 10 above loop-block with offset vector(0.1,6,0.1)
+        broadcast loop-block
+        wait 1 tick
+        stop
+
+on rightclick on chest:
+    {invensla.%event-block%} is set
+    cancel event
+
+on break of chest:
+    {invensla.%event-block%} is set
+    loop {slaveinven::%{invensla.%event-block%}%::*}:
+        drop loop-value at event-block
+    clear {slaveinven::%{invensla.%event-block%}%::*}
+    clear {invensla.%event-block%}
+    
+
+on death:
+    victim is player
+    if {prisoner.%victim%} is true:
+        clear {prisoner.%victim%}
+    if name of attacker contains "&7Goblin":
+        loop inventory of victim:
+            add loop-value to {slaveinven::%victim%::*}
+            delete loop-slot
+        set {prisoner.%victim%} to true
+        force victim to respawn
+
+
 on rightclick on sheep:
     player's tool is empty bucket
     remove 1 of player's tool from player's tool
     wait 3 ticks
     give player milk bucket
     play sound "entity.cow.milk" with volume 1 at location of player for all players
+
+
+on entity target:
+    if name of entity contains "&7Goblin":
+        while entity's target is set:
+            wait 5 ticks
+            apply slowness of tier 1 without any particles to entity for 2 seconds
+            chance of 5%
+            push event-mob upwards at speed 0.4
+            wait 1 tick
+            push event-mob (direction from entity to entity's target) at speed 1
+
+on break:
+    loop all blocks in radius 2.5 of event-block:
+        if {availablecages::*} contains loop-block:
+            cancel event
+
+
+#on spawn of skeleton:
+    #chance of 15%
+    #delete event-mob
+    #spawn skeleton horse at event-location
+    #set {_horse} to last spawned skeleton horse
+    #equip last spawned skeleton horse with saddle
+    #spawn skeleton at {_horse}
+    #make last spawned skeleton ride {_horse}
+    #equip last spawned skeleton with leather helmet
+    #set name of last spawned skeleton to "&7Skeleton Rider"
+
+command /goblinhead:
+    trigger:
+        player is "Izlador"
+        give player random element of {@goblin_heads}
+
+command /resetcages:
+    trigger:
+        player is "Izlador"
+        clear {availablecages::*}
+
+
+
+
+function generate_meteor(b: block):
+    biome at block 200 above {_b} is not deep lukewarm ocean or deep ocean or lukewarm ocean or river or warm ocean or frozen ocean or frozen river or deep frozen ocean or cold ocean or deep cold ocean or ocean
+    spawn armor stand 600 blocks above {_b}
+    set {_a} to last spawned armor stand
+    push {_a} downwards at speed 20
+    while {_a} is alive:
+        wait 1 tick
+        {_a}'s y coordinate is less than 320
+        loop all blocks in radius 16 of {_a}:
+            if loop-block is any log or leaves:
+                delete loop-block
+        if block below {_a} is not air:
+            set {_spot} to location of block below {_a}
+            wait 5 ticks
+            kill {_a}
+    create an explosion of force 10 at {_spot}
+    loop all blocks in radius 3 of block 4 below {_spot}:
+        set loop-block to blackstone
+    loop all blocks in radius 3 of block 4 below {_spot}:
+        chance of 25%
+        set loop-block to crying obsidian
+        chance of 10%
+        set loop-block to lava
+
+function generate_ruins(b: block):
+    # Spot selector code
+    # makes sure the spot isnt in going to spawn in water
+    biome at block 200 above {_b} is not deep lukewarm ocean or deep ocean or lukewarm ocean or river or warm ocean or frozen ocean or frozen river or deep frozen ocean or cold ocean or deep cold ocean or ocean
+    spawn armor stand 600 blocks above {_b}
+    set {_a} to last spawned armor stand
+    push {_a} downwards at speed 20
+    while {_a} is alive:
+        wait 1 tick
+        {_a}'s y coordinate is less than 320
+        loop all blocks in radius 16 of {_a}:
+            if loop-block is any log or leaves:
+                delete loop-block
+        if block below {_a} is not air:
+            set {_spot} to location of block below {_a}
+            wait 5 ticks
+            kill {_a}
+    #structure generation code
+    set {_j} to random integer between 1 and 3
+    {_j} is 1:
+        loop all blocks in radius 10 of {_spot}:
+            chance of 50%
+            block below loop-block is not air
+            set {_j} to random integer between 1 and 4
+            {_j} is 1:
+                set block at loop-block to cobblestone
+            {_j} is 2:
+                set block at loop-block to cobblestone
+            {_j} is 3:
+                set block at loop-block to cracked stone bricks
+            {_j} is 4:
+                set block at loop-block to stone
+        loop all blocks in radius 16 of {_spot}:
+            distance between loop-block and {_spot} is greater than or equal to 15
+            chance of 70%
+            block below loop-block is not air
+            set {_j} to random integer between 1 and 4
+            {_j} is 1:
+                set block at loop-block to cobblestone
+            {_j} is 2:
+                set block at loop-block to cobblestone
+            {_j} is 3:
+                set block at loop-block to cracked stone bricks
+            {_j} is 4:
+                set block at loop-block to stone
+        loop all blocks in radius 16 of {_spot}:
+            loop-block is grass block
+            chance of 50%:
+                set block above loop-block to minecraft:grass
+        loop 6 times:
+            set {_a1} to block 10 above {_spot}
+            set {_a2} to block 10 above 10 east of {_spot}
+            spawn baby zombie at random element of blocks between {_a1} and {_a2}
+            set {_goblin} to last spawned entity
+            set name of {_goblin} to "&7Goblin"
+            equip {_goblin} with random element of {@goblin_heads}
+            set tool of {_goblin} to stick named "&7Stone Spear"
+            set max health of {_goblin} to 35
+            set health of {_goblin} to 35
+    {_j} is 2:
+        loop all blocks in radius 16 of {_spot}:
+            block below loop-block is grass block or any ice or sand or gravel
+            block at loop-block is minecraft:grass or air
+            add loop-block to {_bb::*}
+        loop 5 times:
+            add random element of {_bb::*} to {_bbb::*}
+            remove {_bbb::*} from {_bb::*}
+        loop {_bbb::*}:
+            loop all blocks in radius 3 of loop-value:
+                chance of 25%:
+                    set loop-block to stone
+                chance of 25%:
+                    set loop-block to cracked stone bricks
+                chance of 25%:
+                    set loop-block to mossy cobblestone
+                chance of 25%:
+                    set loop-block to cobblestone
+        loop all blocks in radius 5 of {_spot}:
+            if loop-block is stone or cracked stone bricks or mossy cobblestone or cobblestone:
+                set loop-block to air
+        loop all blocks in radius 1 of {_spot}:
+            y coordinate of loop-block <= y coordinate of {_spot}
+            set loop-block to water
+        loop all blocks in radius 3 of {_spot}:
+            y coordinate of loop-block <= y coordinate of {_spot}
+            loop-block is not a water
+            block below loop-block is not a water
+            set loop-block to cobblestone
+    {_j} is 3:
+        set {_cages::*} to {@cage1},{@cage2},{@cage3},{@cage4}
+        set block at {_spot} to campfire
+        set block above {_spot} to smoker
+        loop all blocks in radius 16 of {_spot}:
+            clear {_yea}
+            block below loop-block is grass block or any ice or sand
+            block at loop-block is minecraft:grass or air
+            chance of 25%:
+                wait 1 tick
+            loop blocks in radius 6 of loop-block:
+                if {_bb::*} contains loop-block-2:
+                    set {_yea} to true
+            {_yea} is not set:
+                add loop-block to {_bb::*}
+        loop 9 times:
+            add random element of {_bb::*} to {_bbb::*}
+            remove {_bbb::*} from {_bb::*}
+        # cage generation code
+        loop {_bbb::*}:
+            set {_spot} to loop-value
+            set {_x} to x coordinate of {_spot}
+            set {_y} to y coordinate of {_spot}
+            set {_z} to z coordinate of {_spot}
+            add block 1 above 1 east 1 south of {_spot} to {availablecages::*}
+            loop {_cages::*}:
+                add 1 to {_n}
+                add 1 to {_pee}
+                #broadcast {_x},{_y},{_z}
+                set block at location({_x},{_y},{_z}) to loop-value-2
+                add 1 to {_x}
+                if {_pee} is 3:
+                    set {_x} to x coordinate of {_spot}
+                    add 1 to {_z}
+                    clear {_pee}
+                if {_n} is 9:
+                    set {_z} to z coordinate of {_spot}
+                    add 1 to {_y}
+                    clear {_n}
+        loop 7 times:
+            set {_a1} to block 10 above {_spot}
+            spawn baby zombie at {_a1}
+            set {_goblin} to last spawned entity
+            set name of {_goblin} to "&7Goblin"
+            equip {_goblin} with random element of {@goblin_heads}
+            set tool of {_goblin} to stick named "&7Stone Spear"
+            set max health of {_goblin} to 35
+            set health of {_goblin} to 35
+        
+    
+    
+    
+
+on chunk load:
+    set {_random} to random integer between 1 and 1000000
+    {_random} is less than 500
+    {generated.%event-chunk%} is not set
+    set {generated.%event-chunk%} to true 
+    loop all blocks in event-chunk:
+        wait 1 tick
+        set {_b} to loop-block
+        stop loop
+    generate_meteor({_b})
+
+on chunk load:
+    set {_random} to random integer between 1 and 1000000
+    {_random} is less than 3500
+    {generated.%event-chunk%} is not set
+    set {generated.%event-chunk%} to true 
+    loop all blocks in event-chunk:
+        wait 1 tick
+        set {_b} to loop-block
+        stop loop
+    generate_ruins({_b})
+
+on rightclick:
+    player is holding stick
+    #generate_meteor(player's target block)

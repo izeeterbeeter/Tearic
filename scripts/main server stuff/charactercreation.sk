@@ -1,7 +1,12 @@
 
 command /cc:
     trigger:
-        charactercreator(player)
+        intro(player)
+
+Options:
+    dice: "⚀","⚁","⚂","⚃","⚄","⚅"
+    skill_list: "magic","furnace","botany","axes","swords","arch","defense","farm","mine","woodcut"
+
 
 
 on jump:
@@ -19,13 +24,6 @@ on jump:
             set {main.%player%} to "magic"
             send "&dTearic chosen!" to player
         set {stage.%player%} to 2
-    if {stage.%player%} is 2:
-        if {ccchoice.%player%} is 2:
-            send "&aConfirmed." to player
-            set {stage.%player%} to 4
-        if {ccchoice.%player%} is 3:
-            send "&aDenied." to player
-            set {stage.%player%} to 3
 
 
 
@@ -42,11 +40,36 @@ on any movement:
 
 
 
+function intro(p: player):
+    set {nfall.%{_p}%} to true
+    apply blindness of tier 100 without any particles to {_p} for 16 seconds
+    teleport {_p} to location(0.5,10000,0.5)
+    hide {_p} from all players
+    wait 5 seconds#minecraft:ambient.warped_forest.additions
+    teleport {_p} to location(0.5,10000,0.5)
+    play sound "minecraft:ambient.warped_forest.additions" with volume 100 for {_p}
+    send title "&7&oWelcome to..." to {_p} with fadein 1.5 second with fade out 0 second
+    wait 4 second
+    teleport {_p} to location(0.5,10000,0.5)
+    play sound "ambient.soul_sand_valley.mood" with volume 1000 for {_p}
+    wait 5 ticks
+    send title "&7&oWelcome to..." to {_p} with fadein 0 second with fade out 0 second
+    send subtitle "<##7214a1>&lTearum" to {_p}
+    wait 5 seconds
+    charactercreator({_p})
+
+
+
+
+
 function charactercreator(p: player):
     clear {incc.%{_p}%}
     clear {stage.%{_p}%}
     clear {ccchoice.%{_p}%}
+    hide {_p} from all players
     teleport {_p} to location(0.5,300,0.5)
+    send title "&aCreate your character!" to {_p}
+    send subtitle "&7Walk around in order to choose!" to {_p}
     set block below {_p} to barrier
     set block below 1 east {_p} to barrier
     set block 2 east {_p} to barrier
@@ -104,7 +127,7 @@ function charactercreator(p: player):
                 send "&7----------------&6Jump to confirm!&7-----------------" to {_p}
                 send "" to {_p}
     teleport {_p} to location(0.5,300,0.5)
-    wait 2 seconds
+    wait 0.5 seconds
     send "" to {_p}
     send "" to {_p}
     send "" to {_p}
@@ -113,25 +136,46 @@ function charactercreator(p: player):
     send "" to {_p}
     send "" to {_p}
     send "" to {_p}
-    send "&7Would you like to create a backstory?" to {_p}
-    send "  &7  - (Increased starting skill levels, at the cost of 3 skill xp gaining debuffs.)" to {_p}
     send "" to {_p}
-    send "&7Move to your left or right to decide." to {_p}
     send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    send "" to {_p}
+    play sound "entity.experience_orb.pickup" with volume 1 for {_p}
+    send title "&aCharacter Created!" to {_p}
     clear {ccchoice.%{_p}%}
     clear {_n}
-    while {stage.%{_p}%} is 2:
-        wait 5 ticks
-        {ccchoice.%{_p}%} is set
-        if {ccchoice.%{_p}%} != {_n}:
-            set {_n} to {ccchoice.%{_p}%}
-            if {ccchoice.%{_p}%} is 2:
-                send "&aYes! (Jump to confirm)" to {_p}
-            if {ccchoice.%{_p}%} is 3:
-                send "&cNo!! (Jump to confirm)" to {_p}
     teleport {_p} to location(0.5,300,0.5)
-    while {stage.%{_p}%} is 3:
+    wait 4 seconds #block.tripwire.click_on
+    while {stage.%{_p}%} is 2:
+        set {_skills::%{_p}%::*} to {@skill_list}
+        loop 2 times:
+            loop 10 times:
+                wait 5 ticks
+                send title "" to {_p}
+                send subtitle "&7%random element of {@dice}%" to {_p} with fadein 0 second with fade out 0 second
+                play sound "entity.experience_orb.pickup" with volume 1 for {_p}
+            set {_random} to random element of {_skills::%{_p}%::*}
+            remove {_random} from {_skills::%{_p}%::*}
+            add random integer between 1 and 6 to {%{_random}%.%{_p}%}
+            wait 2 seconds
+            send title "&aFate has decided." to {_p} with fadein 0 second with fade out 0 second
+            send subtitle "&7&o%{_random}%" to {_p} with fadein 0 second with fade out 0 second #block.beacon.activate
+            play sound "block.beacon.activate" with volume 1 for {_p}
+            wait 7 seconds
         wait 2 seconds
+        reveal {_p} to all players
         send "" to {_p}
         send "" to {_p}
         send "" to {_p}
@@ -143,18 +187,7 @@ function charactercreator(p: player):
         send "" to {_p}
         clear {_n}
         spawn({_p})
+        clear {stage.%{_p}%}
         stop
-    wait 2 seconds
-    send "" to {_p}
-    send "" to {_p}
-    send "" to {_p}
-    send "" to {_p}
-    send "" to {_p}
-    send "" to {_p}
-    send "" to {_p}
-    send "" to {_p}
-    send "&7Move to decide." to {_p}
-    send "" to {_p}
-    while {stage.%{_p}%} is 4:
 
     

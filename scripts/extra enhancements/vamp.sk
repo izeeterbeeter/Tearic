@@ -52,7 +52,7 @@ on damage of player:
 					wait 0.3 seconds
 					subtract 1 from the victim's food level
 					heal victim by 1
-
+    
 on death of zombie, skeleton, spider, or creeper:
 	{vamp.%attacker%} is true
 	add 2 to the attacker's food level

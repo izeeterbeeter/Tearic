@@ -25,23 +25,92 @@ on spawn of spider:
     set max health of event-entity to 35
     set health of event-entity to 35
 
+command /spearthrower:
+    trigger:
+        player is "Izlador"
+        spawn skeleton at player
+        set name of last spawned skeleton to "&7Spear Slinger"
+        set max health of last spawned skeleton to 35
+        set health of last spawned skeleton to 35
+        set tool of last spawned skeleton to stick named "&7Stone Spear"
+        set {spears.%last spawned skeleton%} to 1
+
 on entity target:
     entity's name is "&7Spear Slinger"
+    set {_ee} to entity
     while entity's target is set:
+        wait 1 tick
+        distance between entity's target and entity is greater than 6
+        {spears.%entity%} > 0
+        remove 1 from {spears.%entity%}
+        {spot.%entity%} is not set
         set {_e} to entity's target
         if entity is not alive:
             stop
-        wait 5 ticks
-        chance of 5%
-        spawn armor stand at block above entity
+        #item.crossbow.loading_middle
+        play sound "item.crossbow.loading_middle" with volume 2 at entity's location for all players
+        wait 1.5 seconds
+        play sound "item.trident.throw" with volume 2 at entity's location for all players
+        spawn armor stand at block 0.5 above entity
+        set entity's tool to air
         set {_a} to last spawned armor stand
-        push {_a} upwards at speed 0.2
+        set tag "Invisible" of nbt compound of {_a} to true
+        push {_a} upwards at speed 0.3
         wait 1 tick
-        push {_a} direction from {_a} to {_e} at speed 3
+        push {_a} direction from {_a} to block above {_e} at speed 3
+        while {_a} is not on ground:
+            play sound "entity.chicken.step" with volume 1 at {_a} for all players
+            wait 1 ticks
+            draw 5 of dust using dustOption(gray, 1.1) at {_a}
+            draw 5 of dust using dustOption(brown, 1.1) at {_spot}
+            loop all entities in radius 2.5 of {_a}:
+                loop-entity is {_e}
+                {_e} is blocking: #item.shield.block
+                    play sound "item.shield.block" with volume 1 at {_a} for all players
+                    kill {_a}
+                    stop loop
+                make entity damage loop-entity by 3
+                set {spot.%entity%} to block at {_a}
+                play sound "item.trident.hit" with volume 1 at {_a} for all players
+                push {_e} direction from {_a} to block above {_e} at speed 0.5
+                kill {_a}
+            if {_a} is not alive:
+                stop loop
+        if {spot.%entity%} is not set:
+            set {spot.%entity%} to block at {_a}
+        wait 1 second
+        kill {_a}
+        spawn armor stand at {spot.%entity%}
+        set {_a} to last spawned armor stand
+        set tag "Invisible" of nbt compound of {_a} to true
+        while {_a} is alive:
+            draw 10 of dust using dustOption(brown, 1) at {_a} with offset vector(0,0.5,0)
+            draw 10 of dust using dustOption(gray, 1) at block below {_a} with offset vector(0,0.1,0)
+            chance of 1%:
+                push entity upwards at speed 0.45
+            loop all armor stands in radius 1.7 of entity:
+                if loop-entity is {_a}:
+                    clear {spot.%entity%}
+                    kill {_a}
+                    set tool of event-entity to stick named "&7Stone Spear"
+            set path target with speed 2 of entity to {spot.%entity%}
+            wait 1 tick
+            entity is not alive
+            clear {spot.%entity%}
+            set tool of event-entity to stick named "&7Stone Spear"
+            kill {_a}
+        entity is alive
+        clear path target of entity
+        clear {spot.%entity%}
+        kill {_a}
+        add 1 to {spears.%entity%}
+
+            
 
 on spawn of skeleton:
     chance of 25%
     set name of event-entity to "&7Spear Slinger"
     set max health of event-entity to 35
     set health of event-entity to 35
-    set tool of event-entity to stick named "&7Spear Slinger"
+    set tool of event-entity to stick named "&7Stone Spear"
+    set {spears.%event-entity%} to 1

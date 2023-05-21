@@ -61,7 +61,6 @@ on chat:
 command /xp:
 	trigger:
 		loop {@skill_list}:
-			broadcast loop-value
 			if {%loop-value%.%player%} is not set:
 				set {%loop-value%.%player%} to 0
 		add "&aMain Skills > " to {_ya::*}
