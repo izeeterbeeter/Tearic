@@ -15,14 +15,14 @@ command /blacksmith <text>:
 		else:
 			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
 		
-command /tearic <number>:
+command /tearum <number>:
 	trigger:
 		if player's name is "Izlador":
 			set {warped.%player%} to false
 			set {crimson.%player%} to false
-			set {magic.%player%} to arg 1
-			levelup(player,"magic")
-			send {magic.%player%} to player
+			set {tearum.%player%} to arg 1
+			levelup(player,"tearum")
+			send {tearum.%player%} to player
 		else:
 			broadcast "%player% IS TRYING TO USE ADMIN COMMANDS!!"
 
@@ -30,7 +30,7 @@ command /tearic <number>:
 command /xpother <offlineplayer>:
 	trigger:
 		if player's name is "Izlador":
-			add "&eTearic: &7%{magic.%arg-1%}%" to {_ya::*}
+			add "&eTearum: &7%{tearum.%arg-1%}%" to {_ya::*}
 			add "&eFarming: &7%{farm.%arg-1%}%" to {_ya::*}
 			add "&eBotany: &7%{botany.%arg-1%}%" to {_ya::*}
 			add "&eAxes: &7%{axes.%arg-1%}%" to {_ya::*}

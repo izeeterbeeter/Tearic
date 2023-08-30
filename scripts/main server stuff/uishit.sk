@@ -24,9 +24,9 @@ command /guide <text="show">:
             send "" to player
             send "&7----------------------------------------------"
             send "" to player
-            send "&dTearicpedia!"
+            send "&dTearumpedia!"
             send "" to player
-            Send " &7Tearic is a custom made minecraft server created by &6Izlador&7. The reason it exists is to prolong the life of minecraft servers by adding more things to do, and prevent players from becoming 'overpowered' early."
+            Send " &7Tearum is a custom made minecraft server created by &6Izlador&7. The reason it exists is to prolong the life of minecraft servers by adding more things to do, and prevent players from becoming 'overpowered' early."
             send "" to player
             send "&7Let this be your guide."
             send "" to player
@@ -163,10 +163,10 @@ command /guide <text="show">:
             send "&aLevel 20: Can plant and harvest carrots"
             send "&aLevel 30: Can plant and harvest potatoes, can make bonemeal using bones."
             send "" to player
-            send formatted "&7--------> <tooltip:&7View the Blacksmithing skill><cmd:/guide blacksmithing>&6[Blacksmithing]<r>&7  <tooltip:&7View the Tearic skill><cmd:/guide tearic>&6[Tearic]<r>&7<--------"
-        if arg-1 is "tearic":
+            send formatted "&7--------> <tooltip:&7View the Blacksmithing skill><cmd:/guide blacksmithing>&6[Blacksmithing]<r>&7  <tooltip:&7View the Tearum skill><cmd:/guide tearum>&6[Tearum]<r>&7<--------"
+        if arg-1 is "tearum":
             send "" to player
-            send "&7----------------> &6Tearic&7 <----------------"
+            send "&7----------------> &6Tearum&7 <----------------"
             send "" to player
             send "&7Shadow wizard money gang (we love casting spells)" to player
             send "" to player
@@ -174,7 +174,7 @@ command /guide <text="show">:
             send "&aLevel 5: Can use ability tears"
             send "&aLevel 12: Can make and use nether portals. You can also make ability tears."
             send "  &a- You will be prompted in chat to select either crimson or warped style."
-            send "    &a- Crimson: destruction and magic shit. (Use crimson fungus as fuel)"
+            send "    &a- Crimson: destruction and tearum shit. (Use crimson fungus as fuel)"
             send "    &a- Warped: Utility and general use spells. (Use warped fungus as fuel)"
             send "&aLevel 22: Can use enchanting tables"
             send "&aLevel 32: Can use brewing stands"
@@ -202,12 +202,12 @@ command /guide <text="show">:
             send "  &a- Flax seed"
             send "&aLevel 32: Can use brewing stands"
             send "" to player
-            send formatted "&7--------> <tooltip:&7View the Tearic skill><cmd:/guide tearic>&6[Tearic]<r>&7 <--------"
+            send formatted "&7--------> <tooltip:&7View the Tearum skill><cmd:/guide tearum>&6[Tearum]<r>&7 <--------"
         if arg-1 is "gemcutting":
             send "" to player
             send "&7----------------> &6Gemcutting&7 <----------------"
             send "" to player
-            send formatted "&7Gemcutting is an ability unlocked by reaching level 30 in the <tooltip:&7View the Mining skill><cmd:/guide tearic>&aMining<r>&7 skill." 
+            send formatted "&7Gemcutting is an ability unlocked by reaching level 30 in the <tooltip:&7View the Mining skill><cmd:/guide tearum>&aMining<r>&7 skill." 
             send "&7It allows you to create rings that give unique perks. Kind of like baubles. Little trinkets and doodads if you will." to player
             send "" to player
             send "&7In order to create a gem, you have to rightclick a stonecutter with either a diamond or an emerald." to player
@@ -220,11 +220,11 @@ command /guide <text="show">:
             send "&7Each gem does something different!" to player
             send "" to player
             send "&7-------------------------------------------------"
-        if arg-1 is "tearic staff":
+        if arg-1 is "tearum staff":
             send "" to player
-            send "&7----------------> &6Tearic Staff&7 <----------------"
+            send "&7----------------> &6Tearum Staff&7 <----------------"
             send "" to player
-            send formatted "&6The Tearic Staff allows you to put spells in one place. It stores tears and switches through them. <tooltip:&7View the Tearic skill><cmd:/guide tearic>&aTearic<r>&7 skill." 
+            send formatted "&6The Tearum Staff allows you to put spells in one place. It stores tears and switches through them. <tooltip:&7View the Tearum skill><cmd:/guide tearum>&aTearum<r>&7 skill." 
             send "&7It allows you to create rings that give unique perks. Kind of like baubles. Little trinkets and doodads if you will." to player
             send "" to player
             send "&7In order to create a gem, you have to rightclick a stonecutter with either a diamond or an emerald." to player

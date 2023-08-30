@@ -17,7 +17,7 @@ every 1 second:
         if {stamina.%loop-player%} is not set:
             set {stamina.%loop-player%} to 5
         if {maxmana.%loop-player%} is not set:
-            set {maxmana.%loop-player%} to {magic.%loop-player%}*10
+            set {maxmana.%loop-player%} to {tearum.%loop-player%}*10
         if {mana.%loop-player%} is not set:
             set {mana.%loop-player%} to 5
         if {mana.%loop-player%} < {maxmana.%loop-player%}:

@@ -3,8 +3,8 @@
 		#clear {ya::*} 
 		#set {warped.%player%} to false
 		#set {crimson.%player%} to false
-		#set {magic.%player%} to arg 1 parsed as integer
-		#send {magic.%player%} to player
+		#set {tearum.%player%} to arg 1 parsed as integer
+		#send {tearum.%player%} to player
 		#play sound "ambient.warped_forest.mood" with volume 1 at player for all players
 		#give player glowing ghast tear named "&c&lTear of Regret" with lore "&7Upsetting the tree spirits may not be in your best interest..."
 		#give player glowing ghast tear named "&e&lTear of Equal Trade" with lore "&7Humankind cannot gain something without giving something up in return."#
@@ -46,12 +46,12 @@ on player move:
 		cancel event
 
 on portal enter:
-	if {magic.%player%} is 12:
+	if {tearum.%player%} is 12:
 		stop
 	if {botany.%player%} is 12:
 		stop
 	push player backwards at speed 0.1
-	send action bar "&7You need at least magic or botany level &c12 &7to do this!" to player
+	send action bar "&7You need at least tearum or botany level &c12 &7to do this!" to player
 
 command /corruption <number>:
 	trigger:
@@ -126,11 +126,11 @@ function charge(p: player, worp: text):
 		
 # ability tears
 on rightclick:
-	if {magic.%player%} < 12:
+	if {tearum.%player%} < 12:
 		player is holding flint and steel or fire charge
 		if event-block is obsidian:
 			play sound "ENTITY_GUARDIAN_ATTACK" with volume 1 at location of event-block for all players
-			send action bar "&7You need at least magic or botany level &c12 &7to do this!" to player
+			send action bar "&7You need at least tearum or botany level &c12 &7to do this!" to player
 			cancel event
 	if player is holding ghast tear named "&d&lTear of Repel":
 		{selection.%player%} is not set
@@ -152,7 +152,7 @@ on rightclick:
 						push loop-entity upwards with force 0.3
 			wait 1 second
 	#Crimson Tears
-	if {magic.%player%} > 4:
+	if {tearum.%player%} > 4:
 		if player is holding ghast tear named "&c&lTear of Anivia":
 			{selection.%player%} is not set
 			set {_waited} to difference between {acd.%player%} and now
@@ -189,7 +189,7 @@ on rightclick:
 		if {_spell} is "&7&lTear of Manabullet":
 			manathrow(player)
 		#warped tears
-	if {magic.%player%} > 4:
+	if {tearum.%player%} > 4:
 		if name of player's tool is "&e&lTear of Open Skies":
 			{selection.%player%} is not set
 			set {_waited} to difference between {occd.%player%} and now

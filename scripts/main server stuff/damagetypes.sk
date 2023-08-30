@@ -48,8 +48,8 @@ function damagecalc(v: entity, t: text) :: number:
             ignite {_v} for 2.5 seconds
             play sound "item.firecharge.use" with volume 1 at location of {_v} for all players
             draw 10 of flame 1 block above location of {_v} with extra 0.2
-        if {_t} is "Tearic":
-            set {_tool} to "&5Tearic"
+        if {_t} is "Tearum":
+            set {_tool} to "&5Tearum"
 
     if {_tool} contains "&cFire":
         loop {@armor_slots}:
@@ -81,11 +81,11 @@ function damagecalc(v: entity, t: text) :: number:
                     set {_percent} to {_gay::1} parsed as number
                     set {_damagecalc} to {_percent}+{_damagecalc}
         return "0.%{_damagecalc}%" parsed as number
-    if {_tool} contains "&5Tearic":
+    if {_tool} contains "&5Tearum":
         loop {@armor_slots}:
             set {_slot} to loop-value
             loop lore of {_slot}:
-                if loop-value-2 contains "&5Tearic":
+                if loop-value-2 contains "&5Tearum":
                     set {_gay::*} to split loop-value-2 at ": &6"
                     set {_gay::*} to split {_gay::2} at "%%"
                     set {_percent} to {_gay::1} parsed as number

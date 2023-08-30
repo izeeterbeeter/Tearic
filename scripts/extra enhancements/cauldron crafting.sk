@@ -16,19 +16,19 @@ on break of cauldron:
 	clear {ya::%{_loc}%::*}
 
 on rightclick on enchanting table:
-	if {magic.%player%} < 22:
+	if {tearum.%player%} < 22:
 		cancel event
-		send action bar "&7You need at least magic level &c22 &7to do this!" to player
+		send action bar "&7You need at least tearum level &c22 &7to do this!" to player
 
 on rightclick on brewing stand:
-	if {magic.%player%} < 32:
+	if {tearum.%player%} < 32:
 		cancel event
-		send action bar "&7You need at least magic level &c32 &7to do this!" to player
+		send action bar "&7You need at least tearum level &c32 &7to do this!" to player
 
 #putting items in cauldron and crafting
 on rightclick on cauldron:
 	block below event-block is minecraft:fire or campfire
-	if {magic.%player%} or {botany.%player%} > 11:
+	if {tearum.%player%} or {botany.%player%} > 11:
 		set {_loc} to location of event-block
 		if player is sneaking:
 			play sound "entity.item.pickup" with volume 1 at location of event-block for all players
@@ -55,7 +55,7 @@ on rightclick on cauldron:
 				send action bar "&c%{ya::%{_loc}%::*}%" to player
 				remove 1 of player's tool from player
 			if size of {ya::%{_loc}%::*} is 4:
-				if {magic.%player%} > 11:
+				if {tearum.%player%} > 11:
 					#crimson tears
 					if block below event-block is minecraft:fire or campfire:
 						if {frostknowledge.%player%} is true:
@@ -63,10 +63,10 @@ on rightclick on cauldron:
 								drop glowing ghast tear named "&d&lTear of Repel" with lore "&7Get outta my face!" above event-block
 								play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 								clear {ya::%{_loc}%::*}
-								add 8 to {xpmagic.%player%} 
-								set {_xp} to xp_req(player,"magic")
-								levelup(player,"magic")
-								send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+								add 8 to {xptearum.%player%} 
+								set {_xp} to xp_req(player,"tearum")
+								levelup(player,"tearum")
+								send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
 						if {crimson.%player%} is true:
 							broadcast "ya"
 							if {frostknowledge.%player%} is true:
@@ -74,61 +74,61 @@ on rightclick on cauldron:
 									drop glowing ghast tear named "&c&lTear of Anivia" with lore "&7The great bird's tears will spawn the coldest of winds." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 29:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 29:
 								if {ya::%{_loc}%::*} contains crimson fungus and wither skeleton skull and fire charge and emerald:
 									drop glowing ghast tear named "&c&lTear of Regret" with lore "&7Upsetting the tree spirits may not be in your best interest..." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 19:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 19:
 								if {ya::%{_loc}%::*} contains crimson fungus and packed ice and snowball and fermented spider eye:
 									drop glowing ghast tear named "&c&lTear of Frozen Core" with lore "&7The cold is unforgiving." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 15:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 15:
 								if {ya::%{_loc}%::*} contains crimson fungus and flint and bone and spider eye:
 									drop glowing ghast tear named "&c&lTear of Exposed Veins" with lore "&7May your blood flow with vigor." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
 							if {ya::%{_loc}%::*} contains crimson fungus and firework charge and fire charge and charcoal:
 								drop glowing ghast tear named "&c&lTear of Mars" with lore "&7The condensed power of mars." above event-block
 								play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 								clear {ya::%{_loc}%::*}
-								add 8 to {xpmagic.%player%} 
-								set {_xp} to xp_req(player,"magic")
-								levelup(player,"magic")
-								send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+								add 8 to {xptearum.%player%} 
+								set {_xp} to xp_req(player,"tearum")
+								levelup(player,"tearum")
+								send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
 							if {ya::%{_loc}%::*} contains crimson fungus and crimson fungus and amethyst shard and twisting vines:
 								drop glowing ghast tear named "&c&lTear of Asclepius" with lore "&7You are a monster." above event-block
 								play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 								clear {ya::%{_loc}%::*}
-								add 8 to {xpmagic.%player%} 
-								set {_xp} to xp_req(player,"magic")
-								levelup(player,"magic")
-								send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 24:
+								add 8 to {xptearum.%player%} 
+								set {_xp} to xp_req(player,"tearum")
+								levelup(player,"tearum")
+								send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 24:
 								if {ya::%{_loc}%::*} contains crimson fungus and fishing rod and tnt block and egg:
 									drop glowing ghast tear named "&c&lTear of Wild Soul" with lore "&7Show your might and strike them down!" above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
 									clear {ya::%{_loc}%::*}
 						
 						#warped tears
@@ -138,64 +138,64 @@ on rightclick on cauldron:
 									drop glowing ghast tear named "&e&lTear of Jack" with lore "&7Big brrrrrrrrrrrr." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 24:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 24:
 								if {ya::%{_loc}%::*} contains warped fungus and ender pearl and emerald and shulker shell:
 									drop glowing ghast tear named "&e&lTear of Equal Trade" with lore "&7Humankind cannot gain something without giving something up in return." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 16:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 16:
 								if {ya::%{_loc}%::*} contains warped fungus and feather and slimeball and emerald:
 									drop glowing ghast tear named "&e&lTear of Insect" with lore "&7Have you ever seen a insect die to fall damage?" above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 14:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 14:
 								if {ya::%{_loc}%::*} contains warped fungus and ender pearl and diamond and rotten flesh:
 									drop glowing ghast tear named "&e&lTear of Constellations" with lore "&7Follow the stars and you will find your friends." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 24:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 24:
 								if {ya::%{_loc}%::*} contains warped fungus and chest and ender pearl and trapdoor:
 									drop glowing ghast tear named "&e&lTear of The Keeper" with lore "&7You're lucky he's nice to you." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 14:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 14:
 								if {ya::%{_loc}%::*} contains warped fungus and hopper and ender pearl and glow ink sac:
 									drop glowing ghast tear named "&e&lTear of Greed" with lore "&7Do you REALLY need all of that?" above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
-							if {magic.%player%} > 11:
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
+							if {tearum.%player%} > 11:
 								if {ya::%{_loc}%::*} contains warped fungus and compass and ender pearl and sunflower:
 									drop glowing ghast tear named "&e&lTear of Open Skies" with lore "&7Humans do not belong deep below." above event-block
 									play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 									clear {ya::%{_loc}%::*}
-									add 8 to {xpmagic.%player%} 
-									set {_xp} to xp_req(player,"magic")
-									levelup(player,"magic")
-									send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+									add 8 to {xptearum.%player%} 
+									set {_xp} to xp_req(player,"tearum")
+									levelup(player,"tearum")
+									send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
 						if {warped.%player%} is false:
 							if {crimson.%player%} is false:
 								send "&cCrimson: &7Destruction and cool mage shit." to player
@@ -206,15 +206,15 @@ on rightclick on cauldron:
 					else:
 						play sound "block.redstone_torch.burnout" with volume 10 at location of event-block for all players
 						send action bar "&cThe Tear rejects the temperature." to player
-				if {magic.%player%} > 5:
+				if {tearum.%player%} > 5:
 					if "%{ya::%{_loc}%::*}%" is "%{crafting::heatrepellent::*}%":
 						drop empty map named "&cHeat Repellent Seal" with lore "&7Apply to chestplate by rightclicking while wearing chestplate." above event-block
 						play sound "ENTITY_ILLUSIONER_CAST_SPELL" with volume 2 at location of event-block for all players
 						clear {ya::%{_loc}%::*}
-						add 8 to {xpmagic.%player%} 
-						set {_xp} to xp_req(player,"magic")
-						levelup(player,"magic")
-						send action bar "&aTearic> &7%{xpmagic.%player%}%/%{_xp}% xp" to player
+						add 8 to {xptearum.%player%} 
+						set {_xp} to xp_req(player,"tearum")
+						levelup(player,"tearum")
+						send action bar "&aTearum> &7%{xptearum.%player%}%/%{_xp}% xp" to player
 				if {botany.%player%} > 11:
 					if block below event-block is minecraft:fire or campfire:
 						if "%{crafting::bandage::*}%" is "%{ya::%{_loc}%::*}%":
@@ -474,7 +474,7 @@ on rightclick on cauldron:
 								send action bar "&7You need at least botany &c12 &7to craft this!" to player
 								
 	else:
-		send action bar "&7You need at least magic or botany level &c12 &7to do this!" to player
+		send action bar "&7You need at least tearum or botany level &c12 &7to do this!" to player
 
 				
 			

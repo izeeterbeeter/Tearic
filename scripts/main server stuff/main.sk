@@ -1,5 +1,5 @@
 on server list ping:
-	set the motd to "                          &d&lTearic %newline%              &eBruh this shit is WACK!"
+	set the motd to "                          &d&lTearum %newline%              &eBruh this shit is WACK!"
 
 options:
 	namecolour: &e                         # The default name colour of the item name
@@ -81,7 +81,7 @@ on first join:
 	set {woodcut.%player%} to 1
 	set {farm.%player%} to 1
 	set {agility.%player%} to 1
-	set {magic.%player%} to 1
+	set {tearum.%player%} to 1
 	set {swords.%player%} to 1
 	set {arch.%player%} to 1
 	set {axes.%player%} to 1
@@ -93,7 +93,7 @@ on first join:
 	set {xpwoodcut.%player%} to 0
 	set {xpfarm.%player%} to 0
 	set {xpagility.%player%} to 0
-	set {xpmagic.%player%} to 0
+	set {xptearum.%player%} to 0
 	set {xpswords.%player%} to 0
 	set {xparch.%player%} to 0
 	set {xpaxes.%player%} to 0
@@ -102,7 +102,7 @@ on first join:
 	set {xpjumping.%player%} to 0
 	set {xpmine.%player%} to 0
 	set {xpdefense.%player%} to 0
-	broadcast "&eWelcome &a%player% &eto Tearic!"
+	broadcast "&eWelcome &a%player% &eto Tearum!"
 	set {_x} to round(random number between -200 and 200)
 	set {_z} to round(random number between -200 and 200)
 	set {_block} to block at location at ({_x}, 290, {_z}) in world event-world
@@ -253,7 +253,7 @@ every 5 second:
 				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
 				play sound "block.enchantment_table.use" with volume 100 at loop-player for all players
 		if {serverage} is 1:
-			if {magic.%loop-player%} is 12:
+			if {tearum.%loop-player%} is 12:
 				set {serverage} to 2
 				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
 				play sound "block.enchantment_table.use" with volume 100 at loop-player for all players
@@ -263,7 +263,7 @@ every 5 second:
 				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
 				play sound "block.enchantment_table.use" with volume 100 at loop-player for all players
 		if {serverage} is 3:
-			if {magic.%loop-player%} is 22:
+			if {tearum.%loop-player%} is 22:
 				set {serverage} to 4
 				send title "&eSomething is different..." with subtitle "&cServer age has increased!" to all players
 				play sound "block.enchantment_table.use" with volume 10000 at loop-player for all players

@@ -1,5 +1,5 @@
 options:
-	skill_list: "magic","furnace","botany","axes","swords","arch","jumping","agility","defense","farm","mine","woodcut"
+	skill_list: "tearum","furnace","botany","axes","swords","arch","jumping","agility","defense","farm","mine","woodcut"
 
 
 
@@ -17,7 +17,7 @@ function get_dir(p: player) :: text:
 on join:
 	while player is online:
 		wait 5 ticks
-		if player's tool is a stick named "&dTearic Staff":
+		if player's tool is a stick named "&dTearum Staff":
 			send action bar "%bar(player)%" to player
 		if player's tool is a stick named "&aDrusha Staff":
 			send action bar "%bar(player)%" to player
@@ -65,7 +65,7 @@ command /xp:
 				set {%loop-value%.%player%} to 0
 		add "&aMain Skills > " to {_ya::*}
 		add "" to {_ya::*}
-		add "&e  - Tearic: &7%{magic.%player%}%" to {_ya::*}
+		add "&e  - Tearum: &7%{tearum.%player%}%" to {_ya::*}
 		add "&e  - Botany: &7%{botany.%player%}%" to {_ya::*}
 		add "&e  - Blacksmithing: &7%{furnace.%player%}%" to {_ya::*}
 		add "" to {_ya::*}
@@ -87,14 +87,14 @@ command /xp:
 		send "&7--------&6Stats&7---------"
 		send "" to player
 		send {_ya::*} to player
-		set {_a} to {defense.%{_p}%}+{agility.%{_p}%}+{arch.%{_p}%}+{woodcut.%{_p}%}+{swords.%{_p}%}+{furnace.%{_p}%}+{mine.%{_p}%}+{jumping.%{_p}%}+{axes.%{_p}%}+{botany.%{_p}%}+{farm.%{_p}%}+{magic.%{_p}%}
+		set {_a} to {defense.%{_p}%}+{agility.%{_p}%}+{arch.%{_p}%}+{woodcut.%{_p}%}+{swords.%{_p}%}+{furnace.%{_p}%}+{mine.%{_p}%}+{jumping.%{_p}%}+{axes.%{_p}%}+{botany.%{_p}%}+{farm.%{_p}%}+{tearum.%{_p}%}
 		set {averagelevel.%{_p}%} to {_a}/11
 		send "" to player
 		send "&6Average Level >> &7&l%{averagelevel.%player%}%" to player
 		send "" to player
 		send "&7-------------------------" to player
 		send "" to player
-		if {magic.%player%} is 12:
+		if {tearum.%player%} is 12:
 			if {warped.%player%} is false:
 				if {crimson.%player%} is false:
 					send "" to player
@@ -133,7 +133,7 @@ function xp_req(p: player, s: text) :: number:
 	if {_s} is "farm":
 		set {_xp} to {%{_s}%.%{_p}%} * 108
 		return {_xp}
-	if {_s} is "magic":
+	if {_s} is "tearum":
 		set {_xp} to {%{_s}%.%{_p}%} * 40
 		return {_xp}
 	
@@ -146,8 +146,8 @@ function levelup(p: player, s: text):
 		if {_s} is "furnace":
 			if check_main({_p}) is not "furnace":
 				stop
-		if {_s} is "magic":
-			if check_main({_p}) is not "magic":
+		if {_s} is "tearum":
+			if check_main({_p}) is not "tearum":
 				stop
 	if {xp%{_s}%.%{_p}%} > {_xp}:
 		add 1 to {%{_s}%.%{_p}%}
@@ -158,15 +158,15 @@ function levelup(p: player, s: text):
 		send subtitle "&7Your &d&l%{_s}% &7skill is now level &e%{%{_s}%.%{_p}%}%&7!" to {_p}
 		play sound "entity.player.levelup" with volume 1 at location of {_p} for all players
 	wait 0.2 seconds
-	if {_s} is "magic":
-		if {magic.%{_p}%} > 11:
+	if {_s} is "tearum":
+		if {tearum.%{_p}%} > 11:
 			if {warped.%{_p}%} is false:
 				if {crimson.%{_p}%} is false:
 					send "&cCrimson: &7Destruction and cool mage shit." to {_p}
 					send "&3Warped: &7Utility and general spells." to {_p}
 					send "&3Warped: 1 &7| &cCrimson: 2" to {_p}
 					set {cow.%{_p}%} to true
-	set {_a} to {agility.%{_p}%}+{arch.%{_p}%}+{woodcut.%{_p}%}+{swords.%{_p}%}+{furnace.%{_p}%}+{mine.%{_p}%}+{jumping.%{_p}%}+{axes.%{_p}%}+{botany.%{_p}%}+{farm.%{_p}%}+{magic.%{_p}%}
+	set {_a} to {agility.%{_p}%}+{arch.%{_p}%}+{woodcut.%{_p}%}+{swords.%{_p}%}+{furnace.%{_p}%}+{mine.%{_p}%}+{jumping.%{_p}%}+{axes.%{_p}%}+{botany.%{_p}%}+{farm.%{_p}%}+{tearum.%{_p}%}
 	set {averagelevel.%{_p}%} to {_a}/11
 	if {furnace.%{_p}%} >= 12:
 		title_reward({_p},"Le Smelt")
@@ -214,10 +214,10 @@ function levelup(p: player, s: text):
 	if {mine.%{_p}%} >= 50:
 		title_reward({_p},"Echomaster")			
 	if {swords.%{_p}%} >= 20:
-		if {tearic.%{_p}%} >= 20:
+		if {tearum.%{_p}%} >= 20:
 			title_reward({_p},"...im cool right?")
 	if {mine.%{_p}%} >= 20:
-		if {tearic.%{_p}%} >= 20:
+		if {tearum.%{_p}%} >= 20:
 			title_reward({_p},"Simon")		
 
 
@@ -244,11 +244,11 @@ every 90 seconds:
 			if loop-block is bookshelf:
 				add 1 to {_p.%loop-player%}
 		if {_p.%loop-player%} is greater than 5:
-			add 5 to {xpmagic.%loop-player%} 
+			add 5 to {xptearum.%loop-player%} 
 			play sound "ambient.warped_forest.mood" with volume 1 at loop-player for loop-player
-			set {_xp} to xp_req(loop-player,"magic")
-			levelup(loop-player,"magic")
-			show_xp(loop-player,"magic",{xpmagic.%loop-player%},"Tearic")
+			set {_xp} to xp_req(loop-player,"tearum")
+			levelup(loop-player,"tearum")
+			show_xp(loop-player,"tearum",{xptearum.%loop-player%},"Tearum")
 		else:
 			loop all blocks in radius 8 of loop-player:
 				if loop-block is bookshelf:
@@ -259,11 +259,11 @@ every 90 seconds:
 					stop
 				if {botany.%loop-player%} is greater than 11:
 					stop
-				add {_p.%loop-player%} to {xpmagic.%loop-player%} 
-				set {_xp} to xp_req(loop-player,"magic")
+				add {_p.%loop-player%} to {xptearum.%loop-player%} 
+				set {_xp} to xp_req(loop-player,"tearum")
 				play sound "ambient.warped_forest.mood" with volume 1 at loop-player for loop-player
-				levelup(loop-player,"magic")
-				show_xp(loop-player,"magic",{xpmagic.%loop-player%},"Tearic")
+				levelup(loop-player,"tearum")
+				show_xp(loop-player,"tearum",{xptearum.%loop-player%},"Tearum")
 				set {_a.%loop-player%} to false
 						#ignite loop-player
 			
@@ -273,24 +273,24 @@ every 90 seconds:
 			if loop-block is crying obsidian:
 				add 1 to {_p.%loop-player%}
 		if {_p.%loop-player%} is greater than 5:
-			add 5 to {xpmagic.%loop-player%} 
+			add 5 to {xptearum.%loop-player%} 
 			play sound "ambient.warped_forest.mood" with volume 1 at loop-player for loop-player
-			set {_xp} to xp_req(loop-player,"magic")
-			levelup(loop-player,"magic")
-			#send action bar "&aTearic> &7%{xpmagic.%loop-player%}%/%{_xp}% xp" to loop-player
-			show_xp(loop-player,"magic",{xpmagic.%loop-player%},"Tearic")
+			set {_xp} to xp_req(loop-player,"tearum")
+			levelup(loop-player,"tearum")
+			#send action bar "&aTearum> &7%{xptearum.%loop-player%}%/%{_xp}% xp" to loop-player
+			show_xp(loop-player,"tearum",{xptearum.%loop-player%},"Tearum")
 		else:
 			loop all blocks in radius 8 of loop-player:
 				if loop-block is crying obsidian:
 					set {_a.%loop-player%} to true
 					stop loop
 			if {_a.%loop-player%} is true:
-				add {_p.%loop-player%} to {xpmagic.%loop-player%} 
-				set {_xp} to xp_req(loop-player,"magic")
+				add {_p.%loop-player%} to {xptearum.%loop-player%} 
+				set {_xp} to xp_req(loop-player,"tearum")
 				play sound "ambient.warped_forest.mood" with volume 1 at loop-player for loop-player
-				levelup(loop-player,"magic")
-				#send action bar "&aTearic> &7%{xpmagic.%loop-player%}%/%{_xp}% xp" to loop-player
-				show_xp(loop-player,"magic",{xpmagic.%loop-player%},"Tearic")
+				levelup(loop-player,"tearum")
+				#send action bar "&aTearum> &7%{xptearum.%loop-player%}%/%{_xp}% xp" to loop-player
+				show_xp(loop-player,"tearum",{xptearum.%loop-player%},"Tearum")
 				set {_a.%loop-player%} to false
 					#ignite loop-player
 	
@@ -309,17 +309,17 @@ command /piss <player>:
 			#if loop-block is bookshelf:
 				#add 1 to {_p.%loop-player%}
 			#if {_p.%loop-player%} is greater than 10:
-				#send action bar "&cBrain blast! There's too many books here to gain Tearic xp!" to loop-player
+				#send action bar "&cBrain blast! There's too many books here to gain Tearum xp!" to loop-player
 				#stop
-			#add 1 to {xpmagic.%loop-player%} 
-			#set {_xp} to xp_req(loop-player,"magic")
-			#levelup(loop-player,"magic")
-			#send action bar "&aTearic> &7%{xpmagic.%loop-player%}%/%{_xp}% xp" to loop-player
+			#add 1 to {xptearum.%loop-player%} 
+			#set {_xp} to xp_req(loop-player,"tearum")
+			#levelup(loop-player,"tearum")
+			#send action bar "&aTearum> &7%{xptearum.%loop-player%}%/%{_xp}% xp" to loop-player
 			#if loop-block is crying obsidian:
-				#add 1 to {xpmagic.%loop-player%} 
-				#set {_xp} to xp_req(loop-player,"magic")
-				#levelup(loop-player,"magic")
-				#send action bar "&aTearic> &7%{xpmagic.%loop-player%}%/%{_xp}% xp" to loop-player
+				#add 1 to {xptearum.%loop-player%} 
+				#set {_xp} to xp_req(loop-player,"tearum")
+				#levelup(loop-player,"tearum")
+				#send action bar "&aTearum> &7%{xptearum.%loop-player%}%/%{_xp}% xp" to loop-player
 				
 on death of enderman or blaze or shulker or magma cube:
 	chance of 50%:
@@ -331,21 +331,21 @@ on rightclick:
 		send action bar "&eWhat wonderful knowledge!" to player
 		play sound "entity.player.levelup" with volume 1 at location of player for all players
 		wait 1 seconds
-		add 10 to {xpmagic.%player%} 
-		set {_xp} to xp_req(player,"magic")
-		levelup(player,"magic")
-		show_xp(player,"magic",{xpmagic.%player%},"Tearic")
+		add 10 to {xptearum.%player%} 
+		set {_xp} to xp_req(player,"tearum")
+		levelup(player,"tearum")
+		show_xp(player,"tearum",{xptearum.%player%},"Tearum")
 	if player's tool is a ender pearl:
 		chance of 30%
 		wait 0.9 seconds
 		remove 1 of player's tool from player's inventory
-		send action bar "&eYou gain knowledge of Tearic constructs!" to player
+		send action bar "&eYou gain knowledge of Tearum constructs!" to player
 		play sound "entity.player.levelup" with volume 1 at location of player for all players
 		wait 1 seconds
-		add 2 to {xpmagic.%player%} 
-		set {_xp} to xp_req(player,"magic")
-		levelup(player,"magic")
-		show_xp(player,"magic",{xpmagic.%player%},"Tearic")
+		add 2 to {xptearum.%player%} 
+		set {_xp} to xp_req(player,"tearum")
+		levelup(player,"tearum")
+		show_xp(player,"tearum",{xptearum.%player%},"Tearum")
 	
 
 
@@ -378,19 +378,19 @@ on rightclick:
 		send action bar "&eWhat wonderful knowledge!" to player
 		play sound "entity.player.levelup" with volume 1 at location of player for all players
 		wait 1 seconds
-		add 8 to {xpmagic.%player%} 
-		set {_xp} to xp_req(player,"magic")
-		levelup(player,"magic")
-		show_xp(player,"magic",{xpmagic.%player%},"Tearic")
+		add 8 to {xptearum.%player%} 
+		set {_xp} to xp_req(player,"tearum")
+		levelup(player,"tearum")
+		show_xp(player,"tearum",{xptearum.%player%},"Tearum")
 	if player is holding enchanted book:
 		remove 1 of player's tool from player's inventory
 		send action bar "&eWhat wonderful knowledge!" to player
 		play sound "entity.player.levelup" with volume 1 at location of player for all players
 		wait 1 seconds
-		add 15 to {xpmagic.%player%} 
-		set {_xp} to xp_req(player,"magic")
-		levelup(player,"magic")
-		show_xp(player,"magic",{xpmagic.%player%},"Tearic")
+		add 15 to {xptearum.%player%} 
+		set {_xp} to xp_req(player,"tearum")
+		levelup(player,"tearum")
+		show_xp(player,"tearum",{xptearum.%player%},"Tearum")
 
 
 every 5 seconds:

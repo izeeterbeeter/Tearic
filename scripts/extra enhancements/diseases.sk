@@ -108,7 +108,7 @@ command /dp <player>:
 
 every 5 seconds:
 	loop all players:
-		if {shits.%loop-player%} is 3:
+		if {bleed.%loop-player%} is 3:
 			chance of 2%:
 				infect(loop-player)
 		

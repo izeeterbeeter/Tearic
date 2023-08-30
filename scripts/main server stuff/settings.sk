@@ -1,6 +1,6 @@
 
 on load:
-    set {possiblesettings::*} to "stat.agility.show","stat.woodcut.show","stat.swords.show","stat.axes.show","stat.farm.show","stat.arch.show","stat.mine.show","stat.magic.show","stat.botany.show","stat.jump.show","stat.furnace.show"
+    set {possiblesettings::*} to "stat.agility.show","stat.woodcut.show","stat.swords.show","stat.axes.show","stat.farm.show","stat.arch.show","stat.mine.show","stat.tearum.show","stat.botany.show","stat.jump.show","stat.furnace.show"
 
 
 command /settings <text="show"> <boolean=true>:

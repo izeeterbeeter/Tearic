@@ -152,5 +152,5 @@ function stab(p: player):
 		loop all entities in radius 1.5 of loop-block:
 			loop-entity is not {_p}
 			make {_p} damage loop-entity by 2
-			set {shits.%loop-entity%} to 3
+			set {bleed.%loop-entity%} to 3
 		draw 40 of dust using dustOption(gray, 1) 1 above loop-block with offset vector(0.1, 0.1, 0.1)

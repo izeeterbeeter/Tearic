@@ -5,7 +5,7 @@ command /cc:
 
 Options:
     dice: "⚀","⚁","⚂","⚃","⚄","⚅"
-    skill_list: "magic","furnace","botany","axes","swords","arch","defense","farm","mine","woodcut"
+    skill_list: "tearum","furnace","botany","axes","swords","arch","defense","farm","mine","woodcut"
 
 
 
@@ -21,8 +21,8 @@ on jump:
             set {main.%player%} to "furnace"
             send "&8Blacksmith chosen!" to player
         if {ccchoice.%player%} is 3:
-            set {main.%player%} to "magic"
-            send "&dTearic chosen!" to player
+            set {main.%player%} to "tearum"
+            send "&dTearum chosen!" to player
         set {stage.%player%} to 2
 
 on first join:
@@ -100,7 +100,7 @@ function charactercreator(p: player):
                 send "" to {_p}
                 send "&7  - This specilization allows you to meditate and communicate with the Tree Spirits. Revolves around healing and dealing elemental damage. You can create totems which provide various effects in a radius." to {_p}
                 send "" to {_p}
-                send "&7  - Allows the player to level up the Botany skill past level 12. But doesn't allow them to level up &dTearic &7or &8Blacksmithing &7past level 12." to {_p}
+                send "&7  - Allows the player to level up the Botany skill past level 12. But doesn't allow them to level up &dTearum &7or &8Blacksmithing &7past level 12." to {_p}
                 send "" to {_p}
                 send "&7----------------&6Jump to confirm!&7-----------------" to {_p}
                 send "" to {_p}
@@ -112,7 +112,7 @@ function charactercreator(p: player):
                 send "" to {_p}
                 send "&7  - Allows the player to use ores to create weapons, tools, and armor. This whole skill revolves around weapon crafting and tools. Tanky." to {_p}
                 send "" to {_p}
-                send "&7  - Allows the player to level up the Blacksmithing skill past level 12. But doesn't allow them to level up &dTearic &7or &aBotany &7past level 12." to {_p}
+                send "&7  - Allows the player to level up the Blacksmithing skill past level 12. But doesn't allow them to level up &dTearum &7or &aBotany &7past level 12." to {_p}
                 send "" to {_p}
                 send "&7----------------&6Jump to confirm!&7-----------------" to {_p}
                 send "" to {_p}
@@ -120,9 +120,9 @@ function charactercreator(p: player):
                 send "" to {_p}
                 send "&7----------- &6Character Creation &7-----------" to {_p}
                 send "" to {_p}
-                send "&dTearic" to {_p}
+                send "&dTearum" to {_p}
                 send "" to {_p}
-                send "&7  - Allows the player to use the powers of Tears and cast magical spells. This whole skill revolves around dealing damage, making useful spells, and being physically weak." to {_p}
+                send "&7  - Allows the player to use the powers of Tears and cast tearumal spells. This whole skill revolves around dealing damage, making useful spells, and being physically weak." to {_p}
                 send "" to {_p}
                 send "&7  - Allows the player to level up the Blacksmithing skill past level 12. But doesn't allow them to level up &8Blacksmithing &7or &aBotany &7past level 12." to {_p}
                 send "" to {_p}

@@ -44,7 +44,7 @@ crimson >>
 #regret: chance of setting nearby trees to flames - crimson stem, wither skull, fire charge, emerald
 25
 #big slam: throws nearby enemies up and slams them down with lightning - crimson stem, fishing rod, diamond axe, egg
-magic tdisease: infect a player with a magical disease - crimson stem, crimson fungus, amethyst shard, twisting vines
+tearum tdisease: infect a player with a tearumal disease - crimson stem, crimson fungus, amethyst shard, twisting vines
 
 neutral
 blink: blink forward 10 blocks - soulsand, ender pearl, glowstone, redstone
@@ -93,7 +93,7 @@ frost: slows
 fire: ignites
 lightning: small chain attack, like statik shiv in league
 blunt: basic damage type
-tearic: all magic damage, enderdragon, wither
+tearum: all tearum damage, enderdragon, wither
 natural: drusha kind of shit. enderman, blaze, etc..
 
 

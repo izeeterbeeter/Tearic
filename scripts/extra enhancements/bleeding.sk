@@ -1,91 +1,55 @@
+options:
+  bleed-max: 3
+  bleed-timeout: 2 seconds
 
-# on break of minecraft:grass:
-# 	chance of 25%:
-# 		drop string named "&7Fiber"
-
-
-
-# on damage:
-# 	wait 1 second
-# 	if {shits.%victim%} is 3:
-# 		while {shits.%victim%} is 3:
-# 			draw 40 of block using redstone block at victim with offset vector(0.3, 1, 0.3)
-# 			wait 1.5 seconds
-			
-
-# on death:
-# 	set {shits.%victim%} to 0
-
-# on rightclick:
-# 	if name of player's tool is "&aBandage":
-# 		if player's target block is cauldron:
-# 			stop
-# 		heal(3,player)
-# 		set {shits.%player%} to 0
-# 		#send action bar "&a&lSo much better!" to player
-# 		send title "" to player
-# 		play sound "entity.experience_orb.pickup" with volume 1 at player's location for player
-# 		send subtitle "<##2cca53>[+]" with fadein 0 second with fade out 0 second
-# 		remove 1 of player's tool from player's inventory
-# 	if name of player's tool is "&7Fiber":
-# 		cancel event
-# 		{sit.%player%} is not set
-# 		if player's target block is cauldron:
-# 			stop
-# 		clear {shits.%player%}
-# 		#send action bar "&a&lit works i guess." to player
-# 		send title "" to player
-# 		play sound "entity.experience_orb.pickup" with volume 1 at player's location for player
-# 		send subtitle "<##2cca53>[+]" with fadein 0 second with fade out 0 second
-# 		remove 1 of player's tool from player's inventory
-	
-
-# on respawn:
-# 	wait 1 tick
-# 	set {shits.%player%} to 0
+on damage:
+  if attacker is a player:
+    if victim is a player:
+      if victim is not blocking:
+        add 1 to {bleed.%victim%}
+        bleed(victim)
 
 
-# command /unsit:
-# 	trigger:
-# 		clear {sit.%player%}
+function bleed(e: entity):
+    {bleed.%{_e}%} >= {@bleed-max}
+    if {currentlybleeding.%{_e}%} is set:
+        stop
+    else:
+        set {currentlybleeding.%{_e}%} to true
+    while {bleed.%{_e}%} is greater than 0:
+        set {_waited.%{_e}%} to difference between {last-bleed.%{_e}%} and now
+        if {_waited.%{_e}%} is greater than {@bleed-timeout} or {last-bleed.%{_e}%} is not set:
+            damage {_e} by 1 heart
+            make 20 of dust above location of {_e} with extra 3
+            send title "" to {_e}
+            send subtitle "<##a91919>🗡♥" to {_e} with fadein 0 seconds with fade out 0 seconds
+            set {last-bleed.%{_e}%} to now
 
-# on damage:
-# 	if {vamp.%victim%} is not set:
-# 		if attacker is holding a sword or axe:
-# 			if victim is player:
-# 				if victim is not blocking:
-# 					if {shits.%victim%} is not 3:
-# 						add 1 to {shits.%victim%}
-# 		if attacker is holding a bow:
-# 			if victim is player:
-# 				if victim is not blocking:
-# 					if {shits.%victim%} is not 3:
-# 						if victim is wearing leather chestplate:
-# 							add 1.5 to {shits.%victim%}
-# 						if victim is wearing iron chestplate:
-# 							add 1 to {shits.%victim%}
-# 						if victim is wearing diamond chestplate or netherite chestplate:
-# 							add 0.5 to {shits.%victim%}
-# 						if victim is not wearing any chestplate:
-# 							set {shits.%victim%} to 3
-# 						broadcast {shits.%victim%}
-# on damage:
-# 	if attacker's name is "&7Spear Slinger":
-# 		victim is not blocking
-# 		set {shits.%victim%} to 3
-# 	while {shits.%victim%} >= 3:
-# 		wait 1 tick
-# 		if {shits.%victim%} >= 3:
-# 			send title "" to victim
-# 			send subtitle "<##a91919>🗡♥" to victim with fadein 0 second with fade out 0 second
-# 			if {shits.%victim%} >= 3:
-# 				set {_waited} to difference between {_a.%victim%} and now
-# 				if {_waited} is greater than 2 seconds:
-# 					damage victim by 1 heart
-# 					make 20 of dust above location of victim with extra 3
-# 					set {_a.%victim%} to now
-# 				if {_waited} is not set:
-# 					damage victim by 1 heart
-# 					make 20 of dust above location of victim with extra 3
-# 					set {_a.%victim%} to now
-				
+on rightclick:
+    if name of player's tool is "&aBandage":
+        if player's target block is cauldron:
+            stop
+        heal(3,player)
+        set {bleed.%player%} to 0
+        clear {currentlybleeding.%player%}
+        #send action bar "&a&lSo much better!" to player
+        send title "" to player
+        play sound "entity.experience_orb.pickup" with volume 1 at player's location for player
+        send subtitle "<##2cca53>[+]" with fadein 0 second with fade out 0 second
+        remove 1 of player's tool from player's inventory
+        if name of player's tool is "&7Fiber":
+            cancel event
+        {sit.%player%} is not set
+        if player's target block is cauldron:
+            stop
+        set {bleed.%player%} to 0
+        clear {currentlybleeding.%player%}
+        #send action bar "&a&lit works i guess." to player
+        send title "" to player
+        play sound "entity.experience_orb.pickup" with volume 1 at player's location for player
+        send subtitle "<##2cca53>[+]" with fadein 0 second with fade out 0 second
+        remove 1 of player's tool from player's inventory
+
+on respawn:
+  set {bleed.%player%} to 0
+  clear {currentlybleeding.%player%}

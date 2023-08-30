@@ -36,7 +36,7 @@ command /pees2:
 		clear {totem::*}
 
 function treetalk(gorb: number) :: text:
-	set {_g::*} to "Why hello there!", "This one gets it.", "Praise be to you human!", "We know many secrets.", "This one's kind of cute", "Why do you come to us?", "Is this the one you speak of?", "The extent of your knowledge of the natural world is intriguing.", "Your brethren, they torture our souls. You do not. We thank you.", "Your prayer, it's soothing.", "Hm..", "Those humans that call themselves users of tearic... they know nothing.", "Your soul.. it's quite soothing.", "You have a beautiful form.", "Do you have a romantic partner?"
+	set {_g::*} to "Why hello there!", "This one gets it.", "Praise be to you human!", "We know many secrets.", "This one's kind of cute", "Why do you come to us?", "Is this the one you speak of?", "The extent of your knowledge of the natural world is intriguing.", "Your brethren, they torture our souls. You do not. We thank you.", "Your prayer, it's soothing.", "Hm..", "Those humans that call themselves users of tearum... they know nothing.", "Your soul.. it's quite soothing.", "You have a beautiful form.", "Do you have a romantic partner?"
 	set {_b::*} to "You disgust us.", "Is it really trying to communicate with us?", "Your soul is covered in thorns.", "Your feeble mind cannot even begin to comprehend us.", "*******", "There is a cavern between us.", "Stop trying already, it's embarassing.", "Your kind is nothing without us!", "We created you, why do you torture us?", "Your kind disrupts the natural order.", "We shed those tears.", "oh just fuck off.", "We don't even want to look at you.", "please... go away.", "There is a special place in the nether just for you"
 	if {_gorb} is 1:
 		return random element out of {_g::*}

@@ -89,12 +89,12 @@ function v_frostspear(v: entity, a: entity):
                 if loop-entity is not {_vlad}:
                     loop-entity is alive
                     dodamage({_n}, loop-entity, 3, "Frost")
-                    set {shits.%loop-entity%} to 3
+                    set {bleed.%loop-entity%} to 3
         loop all entities in radius 1 of loop-block:
             if loop-entity is not {_vlad}:
                 loop-entity is alive
                 dodamage({_n}, loop-entity, 3, "Frost")
-                set {shits.%loop-entity%} to 3
+                set {bleed.%loop-entity%} to 3
 
 
 function sphere_show(d: boolean,h: boolean, r: number, c: color, l: number, b: block):
@@ -271,7 +271,7 @@ on damage:
                 title_reward(loop-player, "Seras Victoria")
             stop
         wait 10 ticks
-        set {shits.%attacker%} to 0
+        set {bleed.%attacker%} to 0
         remove speed from attacker
         remove strength from attacker
         loop {hunger.%attacker%}-5 times:

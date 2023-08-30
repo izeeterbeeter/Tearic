@@ -43,7 +43,7 @@ on rightclick on stonecutter:
         add "<##b01f1f>When equipped, there is a chance that your attacks will launch enemies into the air, %nl%<##b01f1f>leaving them vulnerable to further strikes." to lore of player's tool
     if {_random} is {gemstones::7}:
         add "<##b01f1f>Increases two random stats." to lore of player's tool
-        set {_stats::*} to "Overpower Multiplier","Overpower Chance","Movement Speed","Magic Damage","Elemental Damage","Bonus Defense","Overpower Defense", "Elemental Defense", "Magic Defense"
+        set {_stats::*} to "Overpower Multiplier","Overpower Chance","Movement Speed","Tearum Damage","Elemental Damage","Bonus Defense","Overpower Defense", "Elemental Defense", "Tearum Defense"
         loop 2 times:
             set {_random2} to random element of {_stats::*}
             remove {_random2} from {_stats::*}

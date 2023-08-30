@@ -55,9 +55,9 @@ function tos_increase(p: player,a: number):
         delete lore of loop-item
         add "&7%{_num}%/100" to lore of loop-item
         if {_num} >= 100:
-            add 100 to {xpmagic.%{_p}%}
-            levelup({_p},"magic")
-            show_xp({_p},"magic",{xpmagic.%{_p}%},"Tearic")
+            add 100 to {xptearum.%{_p}%}
+            levelup({_p},"tearum")
+            show_xp({_p},"tearum",{xptearum.%{_p}%},"Tearum")
             remove 1 of loop-item from {_p}'s inventory
             stop 
     
@@ -65,8 +65,8 @@ function tos_increase(p: player,a: number):
 
 
 function spellpower(p: player) :: number:
-    if {magic.%{_p}%} >= 12:
-        return {magic.%{_p}%}-12
+    if {tearum.%{_p}%} >= 12:
+        return {tearum.%{_p}%}-12
 
 
 function bleedforme(p: player):
@@ -98,7 +98,7 @@ function bleedforme(p: player):
                 loop all entities in radius 10 of {_armorstand}:
                     loop-entity is not an item
                     loop-entity is not {_p}
-                    set {shits.%loop-entity%} to 3
+                    set {bleed.%loop-entity%} to 3
                     damage loop-entity by 3+spellpower({_p})
                     make {_p} damage loop-entity by 0.1
                     draw 1 of sweep_attack at loop-entity
