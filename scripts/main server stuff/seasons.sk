@@ -59,10 +59,13 @@ on death of wolf:
 
 on join:
     while player is online:
-        wait 10 ticks
+        wait 2 seconds
         if get_temp(player) is less than 46:
-            chance of 50
             draw 4 of dust using dustOption(white, 1) 1.4 above and 0.3 in front of player
+
+on join:
+    while player is online:
+        wait 10 ticks
         set {_temp.%player%} to get_temp(player)
         #send action bar "<light blue>%{_temp.%player%}%&7°F" to player
         if get_temp(player) is greater than 110:

@@ -109,7 +109,7 @@ on projectile hit:
 		set victim's invulnerability ticks to 0
 		wait 1 second
 		set victim's invulnerability ticks to 0.5
-	shooter is a playerw
+	shooter is a player
 	add 1 to {arrows.%victim%}
 
 on death:

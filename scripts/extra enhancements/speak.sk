@@ -1,0 +1,104 @@
+import:
+    org.bukkit.map.MinecraftFont
+
+on load:
+    set {-speak::eye-offset} to vector(0,0.7,0)
+    set {-speak::line-offset} to vector(0,0.3,0)
+    set {-speak::font} to MinecraftFont.Font
+    set {-speak::space-width} to {-speak::font}.getWidth(" ")
+
+command /speak <message:text> [as <speaker:player=%player%>]:
+    trigger:
+        speakMessage({_speaker}, {_message})
+
+function speakMessage(speaker: player, message: text, duration: timespan = 10 seconds, line-width: number = 180):
+    # spawn display and set up properties
+    skbee spawn text display at {_speaker}'s eyes
+    set {_display} to last spawned entity
+    set display billboard of {_display} to vertical
+    set display translation of {_display} to {-speak::eye-offset}
+    set display line width of {_display} to {_line-width}
+    make {_display} ride {_speaker}
+
+    # setup name
+    set {_name} to "%{_speaker}%"
+    # compute height
+    set {_height} to getLinesDueToWrapping("%{_name}%: %{_message}%", {_line-width})
+
+    # move other displays up
+    set {_offset} to {-speak::line-offset} ** vector({_height}, {_height}, {_height})
+    set {_previous} to {_display}
+    loop reversed {-speak::%{_speaker}%::messages::*}:
+        set {_other} to loop-value
+        set display interpolation duration of {_other} to 10
+        set display translation of {_other} to {_other}'s display translation ++ {_offset}
+        set display interpolation start of {_other} to -1
+        # musical chairs because i guess two displays can't occupy ride at the same time
+        make {_other} ride {_previous}
+        set {_previous} to {_other}
+
+    # add display to list for later control (moving up)
+    set {_id} to unix timestamp of now
+    set {-speak::%{_speaker}%::messages::%{_id}%} to {_display}
+
+    # setup end time
+    set {_end} to {_duration} from now
+    
+    # format message (we hate text components)
+    set {_prefix} to text component from {_name}
+    set color format of {_prefix} to rgb(212, 65, 2) # orange or whatever
+    set {_message} to "&f: %{_message}%"
+    
+    # typing animation (4 is four the &f: at the start)
+    loop length of {_message} - 4 times:
+        set {_msg} to text component from substring of {_message} from 1 to loop-number + 4
+        set display text component of {_display} to merge components {_prefix} and {_msg}
+        wait 1 tick
+
+    # wait for duration to end and delete
+    set {_time-left} to difference between now and 33 ticks before {_end}
+    if {_time-left} < 6 seconds:
+        set {_time-left} to 6 seconds
+    wait {_time-left}
+
+    # give time for any upwards movement to finish
+    delete {-speak::%{_speaker}%::messages::%{_id}%}
+    wait 10 ticks
+    
+    # try to force sync, seems to help fix the issue of occasionally interpolating that last "move up" translation
+    set display interpolation duration of {_display} to 1
+    set display translation of {_display} to {_display}'s display translation ++ vector(0,0.001,0)
+    set display interpolation start of {_display} to -1
+    wait 1 ticks
+    
+    # fade out
+    set display interpolation duration of {_display} to 20
+    set display text opacity of {_display} to 26
+    set display text background color of {_display} to bukkitColor(26,0,0,0)
+    set display interpolation start of {_display} to -1
+    wait 1 second
+
+    delete random entity out of {_display}
+
+# Returns the number of lines that the text will take up when wrapped
+# Relies on the width being highly compound, like 180, because it doesn't
+# take into account each character's width individually, but rather the width of 
+# the entire word.
+function getLinesDueToWrapping(text: text, line-width: number = 180) :: number:
+    set {_words::*} to {_text} split by " "
+    set {_width} to 5
+    set {_lines} to 0
+    loop {_words::*}:
+        set {_word-width} to {-speak::font}.getWidth(loop-value)
+        if {_width} + {_word-width} >= {_line-width}:
+            while {_word-width} > {_line-width}:
+                add 1 to {_lines}
+                subtract {_line-width} from {_word-width}
+            set {_width} to {_word-width}
+            add 1 to {_lines}
+        else:
+            add {_word-width} to {_width}
+            if {_lines} = 0:
+                add 1 to {_lines}
+        add {-speak::space-width} to {_width}
+    return {_lines}

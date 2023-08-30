@@ -36,7 +36,7 @@ command /spearthrower:
         set {spears.%last spawned skeleton%} to 1
 
 on entity target:
-    entity's name is "&7Spear Slinger"
+    entity's name contains "&7Spear Slinger"
     set {_ee} to entity
     while entity's target is set:
         wait 1 tick

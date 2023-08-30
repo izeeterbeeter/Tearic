@@ -1,309 +1,108 @@
-# Gem types!
-# Emerald: attack
-# Diamond: defense
 
 
 on load:
-    set {_i1} to sunflower named "&6Ring"
-    register new shaped recipe for {_i1} using gold nugget, gold ingot, gold nugget, gold ingot, air, gold ingot, gold nugget, gold ingot and gold nugget with id "ring" in group "ring"
-    set {emerald::*} to "Upper Cut","Confused Jabs","Lost","Focused","Fling","Bloody Metabolism"
-    set {diamond::*} to "Tough Skin","Energized Skin","Escapism","Electric Trials","Pad Lock"
+    set {gemstones::*} to "Heart's Embrace","Fortune's Favor","Energizing Tide","Manaflow Veil","Restorative Venom","Fury's Grasp","Fusion","Venomous Touch","Mana Shield","Reflective Barrier"
 
 
-on rightclick:
-    name of player's tool contains "Ring"
-    cancel event
 
-every 1 second:
-    loop {gemcrafter::*}:
-        draw 20 of dust using dustOption(red, 1.5) at block above loop-value with offset vector(0, 0.5, 0)
-
-
-on break of anvil:
-    set {_loc} to location of event-block
-    if {gemcrafter::%{_loc}%} is set:
-        drop {gemcrafter::%{_loc}%::*}
-        clear {gemcrafter::%{_loc}%} 
-        remove {_loc} from {gemcrafter::*}
-
-on rightclick on anvil:
-    {mine.%player%} > 29
-    block 2 above event-block is lightning rod
-    block 3 above event-block is amethyst_block
-    set {_loc} to location of event-block
-    cancel event
-    if {gemcrafter::%{_loc}%} is not set:
-        set {gemcrafter::%{_loc}%} to {_loc}
-    if player is sneaking:
-        play sound "entity.item.pickup" with volume 1 at location of event-block for all players
-        set {_p} to last element of {gemcrafter::%{_loc}%::*}
-        if {_p} is "&6Ring &7>> ":
-            give player sunflower named "&6Ring"
-            remove {_p} from {gemcrafter::%{_loc}%::*}
-            send action bar "&c%{gemcrafter::%{_loc}%::*}%" to player
-            stop
-        give 1 of {_p} to player
-        remove {_p} from {gemcrafter::%{_loc}%::*}
-        send action bar "&c%{gemcrafter::%{_loc}%::*}%" to player
-        stop
-    if size of {gemcrafter::%{_loc}%::*} is 2:
-        set {_type::*} to {gemcrafter::%{_loc}%::2}'s name split at " ("
-        if name of player's tool is "&aTree Spirit's Will":
-            if {_type::*} contains "&bdiamond":
-                remove 1 of player's tool from player's tool
-                wait 5 ticks
-                give player create_ring(diamond,"%{_type::2}%")
-                clear {gemcrafter::%{_loc}%::*}
-            if {_type::*} contains "&bemerald":
-                remove 1 of player's tool from player's tool
-                wait 5 ticks
-                give player create_ring(emerald,"%{_type::2}%")
-                clear {gemcrafter::%{_loc}%::*}
-            if {_type::*} contains "&bamethyst shard":
-                wait 5 ticks
-                remove 1 of player's tool from player's tool
-                give player create_ring(amethyst shard,"%{_type::2}%")
-                clear {gemcrafter::%{_loc}%::*}
-        else:
-            send action bar "&d%{gemcrafter::%{_loc}%::*}%" to player
-            stop
-    if name of player's tool is "&6Ring":
-        #block.anvil.hit
-        play sound "block.anvil.hit" with volume 1 at location of event-block for all players
-        add "&6Ring &7>> " to {gemcrafter::%{_loc}%::*}
-        remove 1 of player's tool from player's tool
-    if {gemcrafter::%{_loc}%::*} contains "&6Ring &7>> ":
-        if name of player's tool contains "Cut":
-            add 1 of player's tool to {gemcrafter::%{_loc}%::*}
-            remove 1 of player's tool from player's tool
-            #yeah yeah do this yeah yeah yeah yeah
-    send action bar "&d%{gemcrafter::%{_loc}%::*}%" to player
-
-function create_ring(i: item,t: text) :: item:
-    if {_t} contains "Novice":
-        set {_chance} to "10%%"
-    if {_t} contains "Expert":
-        set {_chance} to "30%%"
-    if {_t} contains "Legend":
-        set {_chance} to "20%%"
-    if {_i} is diamond:
-        set {_item} to glowing sunflower named "&6Diamond Ring" with lore "&7--------------"
-        add " " to lore of {_item}
-        set {_r} to random element of {diamond::*}
-        add "&d%{_r}%: &7%{_chance}%" to lore of {_item}
-        add " " to lore of {_item}
-        add "&7--------------" to lore of {_item}
-        return {_item}
-    if {_i} is emerald:
-        set {_item} to glowing sunflower named "&6Emerald Ring" with lore "&7--------------"
-        add " " to lore of {_item}
-        set {_r} to random element of {emerald::*}
-        add "&d%{_r}%: &7%{_chance}%" to lore of {_item}
-        add " " to lore of {_item}
-        add "&7--------------" to lore of {_item}
-        return {_item}
-    if {_i} is amethyst shard:
-        
-        #yah
-
-on rightclick:
-    name of player's tool contains " Ring"
-    if name of player's tool contains "Diamond":
-        if {diamond.%player%} is not set:
-            set {diamond.%player%} to true
-            send "Ring Enabled!" to player
-            add 3rd line of lore of player's tool to {ring::%player%::*}
-        else:
-            if {ring::%player%::*} contains 3rd line of lore of player's tool:
-                remove 3rd line of lore of player's tool from {ring::%player%::*}
-                clear {diamond.%player%}
-                send "Ring Disabled!" to player
-            else:
-                send "You already have a Diamond ring enabled!" to player
-    if name of player's tool contains "Emerald":
-        if {emerald.%player%} is not set:
-            set {emerald.%player%} to true
-            send "Ring Enabled!" to player
-            add 3rd line of lore of player's tool to {ring::%player%::*}
-        else:
-            if {ring::%player%::*} contains 3rd line of lore of player's tool:
-                remove 3rd line of lore of player's tool from {ring::%player%::*}
-                clear {emerald.%player%}
-                send "Ring Disabled!" to player
-            else:
-                send "You already have a Emerald ring enabled!" to player
-    if name of player's tool contains "Amethyst":
-        if {amethyst.%player%} is not set:
-            set {amethyst.%player%} to true
-            send "Ring Enabled!" to player
-            add 3rd line of lore of player's tool to {ring::%player%::*}
-        else:
-            if {ring::%player%::*} contains 3rd line of lore of player's tool:
-                remove 3rd line of lore of player's tool from {ring::%player%::*}
-                clear {amethyst.%player%}
-                send "Ring Disabled!" to player
-            else:
-                send "You already have a Amethyst ring enabled!" to player
-    send "Rings >> %{ring::%player%::*}%"
 
 
 
 on rightclick on stonecutter:
-    {mine.%player%} > 29
-    if player is holding diamond or emerald or amethyst shard:
-        play sound "ui.stonecutter.take_result" with volume 1 at location of event-block for all players
-        cancel event
-        set {_item} to type of player's tool
-        set {_rand} to random integer between 1 and 100
-        if {_rand} > 90:
-            remove 1 of player's tool from player's tool
-            give player {_item} named "&b%{_item}% (Expert Cut)"
-            stop
-        if {_rand} > 60:
-            remove 1 of player's tool from player's tool
-            give player {_item} named "&b%{_item}% (Legend Cut)"
-            stop
-        if {_rand} > 40:
-            remove 1 of player's tool from player's tool
-            give player {_item} named "&b%{_item}% (Novice Cut)"
-            stop
-        if {_rand} > 0:
-            remove 1 of player's tool from player's tool
-            give player {_item} named "&b%{_item}% (Adept Cut)"
-            stop
-
-# RING EFFECTS >>
-
-command /resetring:
-    trigger:
-        if player's name is "Izlador":
-            clear {ring::%player%::*}
-            clear {emerald.%player%}
-            clear {amethyst.%player%}
-            clear {diamond.%player%}
-        else:
-            broadcast "%player's name% just doesn't give up"
-
-
-
-on drop:
-    if event-item's name contains " Ring":
-        if {ring::%player%::*} contains 3rd line of lore of event-item:
-            #broadcast "ya"
-            set {_a::*} to 3rd line of lore of event-item split at ": "
-            set {_type} to {_a::1}
-            set {_b::*} to {_type} split at "&d"
-            set {_type} to {_b::2}
-            remove 3rd line of lore of event-item from {ring::%player%::*}
-            send "%3rd line of lore of event-item% Ring Disabled!" to player
-            if {emerald::*} contains {_type}:
-                clear {emerald.%player%}
-            # if loop-value-2's name contains "Amethyst":
-                #clear {amethyst.%{_p}%}
-            if {diamond::*} contains {_type}:
-                clear {diamond.%player%}
-
-on inventory click:
-    #ring_check(player)
-    #broadcast event-item's name
-    if event-item's name contains " Ring":
-        if {ring::%player%::*} contains 3rd line of lore of event-item:
-            #broadcast "ya"
-            set {_a::*} to 3rd line of lore of event-item split at ": "
-            set {_type} to {_a::1}
-            set {_b::*} to {_type} split at "&d"
-            set {_type} to {_b::2}
-            remove 3rd line of lore of event-item from {ring::%player%::*}
-            send "%3rd line of lore of event-item% Ring Disabled!" to player
-            if {emerald::*} contains {_type}:
-                clear {emerald.%player%}
-            # if loop-value-2's name contains "Amethyst":
-                #clear {amethyst.%{_p}%}
-            if {diamond::*} contains {_type}:
-                clear {diamond.%player%}
+    {mine.%player%} > 9
+    cancel event
+    set {_item} to player's tool
+    {gems::*} contains {_item}
+    play sound "ui.stonecutter.take_result" with volume 1 at block at event-block for all players
+    play sound "entity.evoker.cast_spell" with volume 1 with pitch 2 at block at event-block for all players
+    set player's tool to {_item} named "%{_item}'s name% <##454646>&ocut"
+    if {_item}'s name contains "Amber":
+        set {_random} to random element of {gemstones::1} and {gemstones::2}
+        add "<##f0bf56>%{_random}%" to lore of player's tool
+    if {_item}'s name contains "Sapphire":
+        set {_random} to random element of {gemstones::3},{gemstones::4},{gemstones::5}
+        add "<##317dba>%{_random}%" to lore of player's tool
+    if {_item}'s name contains "Ruby":
+        set {_random} to random element of {gemstones::6},{gemstones::7},{gemstones::8}
+        add "<##b01f1f>%{_random}%" to lore of player's tool
+    if {_item}'s name contains "Topaz":
+        set {_random} to random element of {gemstones::9} and {gemstones::10}
+        add "<##e7ce62>%{_random}%" to lore of player's tool
+    add "" to lore of player's tool
+    if {_random} is {gemstones::1}:
+        add "<##f0bf56>For 10 seconds after eliminating an enemy, %nl%<##f0bf56>any damage exceeding 3 hearts triggers a healing effect, %nl%<##f0bf56>replenishing 3 hearts of your lost vitality" to lore of player's tool
+    if {_random} is {gemstones::2}:
+        add "<##f0bf56>Increases the chance of finding rare loot or valuable resources." to lore of player's tool
+    if {_random} is {gemstones::3}:
+        add "<##317dba>Whenever you receive healing, %nl%<##317dba>a portion of that energy is channeled into restoring your stamina. %nl%<##317dba>The amount regenerated scales with the amount of healing received." to lore of player's tool
+    if {_random} is {gemstones::4}:
+        add "<##317dba>When you receive healing, the Manaflow Veil activates, %nl%<##317dba>channeling a portion of the healing energy to restore your mana. %nl%<##317dba>The amount of mana regenerated scales with the amount of healing received." to lore of player's tool
+    if {_random} is {gemstones::5}:
+        add "<##317dba>This gemstone resonates with the poison effects. %nl%<##317dba>Effectively healing you everytime you take poison damage." to lore of player's tool
+    if {_random} is {gemstones::6}:
+        add "<##b01f1f>When equipped, there is a chance that your attacks will launch enemies into the air, %nl%<##b01f1f>leaving them vulnerable to further strikes." to lore of player's tool
+    if {_random} is {gemstones::7}:
+        add "<##b01f1f>Increases two random stats." to lore of player's tool
+        set {_stats::*} to "Overpower Multiplier","Overpower Chance","Movement Speed","Magic Damage","Elemental Damage","Bonus Defense","Overpower Defense", "Elemental Defense", "Magic Defense"
+        loop 2 times:
+            set {_random2} to random element of {_stats::*}
+            remove {_random2} from {_stats::*}
+            add "&7%{_random2}%: +%random integer between 0 and 100%%%" to lore of player's tool
+    if {_random} is {gemstones::8}:
+        add "<##b01f1f>Chance to poison enemies." to lore of player's tool
+    if {_random} is {gemstones::9}:
+        add "<##e7ce62>When equippied, excess mana will swirl around you, turning into shield." to lore of player's tool
+    if {_random} is {gemstones::10}:
+        add "<##e7ce62>Reflect a portion of damage taken back to attackers." to lore of player's tool
 
 
 
+on anvil prepare:
+    if slot 0 of event-inventory is any chestplate or leggings or boots or helmet:
+        set {_gem} to slot 1 of event-inventory
+        if {gemstones::*} contains uncolored line 1 of lore of {_gem}:
+            set {_i} to slot 0 of event-inventory
+            loop lore of {_i}:
+                {gemstones::*} contains uncolored loop-value
+                stop
+            add line 1 of lore of {_gem} to {_i}'s lore
+            if line 1 of lore of {_gem} is "<##b01f1f>Fusion":
+                add line 4 of lore of {_gem} to {_i}'s lore
+                add line 5 of lore of {_gem} to {_i}'s lore
+            set event-slot to {_i}
+            set repair cost of event-inventory to 35-{mine.%player%}
 
 
+function has_gem(g: text,p: player) :: boolean:
+    set {_armorslots::*} to {_p}'s helmet,{_p}'s chestplate,{_p}'s leggings,{_p}'s boots
+    loop {_armorslots::*}:
+        set {_slot} to loop-value
+        loop lore of {_slot}:
+            {_g} is uncolored loop-value-2
+            return true
+    return false
+
+on heal:
+    event-entity is player
+    if has_gem("Manaflow Veil",event-entity):
+        increase_mana(event-entity, heal amount*3)
+    if has_gem("Energizing Tide",event-entity):
+        increase_stamina(event-entity, heal amount*3)
 
 on damage:
-    # Diamond
-    if victim is player:
-        loop {ring::%victim%::*}:
-            set {_a::*} to loop-value split at ": "
-            set {_type} to {_a::1}
-            set {_chance} to {_a::2}
-            if {_type} contains "Tough Skin":
-                heal victim by 1 heart
-            if {_type} contains "Energized Skin":
-                if victim does not have speed:
-                    apply speed of tier 1 without any particles to victim for 2 seconds
-            if {_type} contains "Escapism":
-                health of victim is less than 6
-                set {_waited} to difference between {escap.%victim%} and now
-                if {_waited} is less than 1 minute and 30 seconds:
-                    stop
-                set {escap.%victim%} to now
-                loop all blocks in radius 3 of victim:
-                    draw 2 of dust using dustOption(white, 2) at loop-block with offset vector(0.5, 0.5, 0.5)
-                    draw 2 of campfire_cosy_smoke at loop-block
-                apply invisibility of tier 1 without any particles to victim for 5 seconds
-                apply speed of tier 2 without any particles to victim for 2 seconds
-                hide victim from all players
-                wait 5 seconds
-                reveal victim to all players
-            if {_type} contains "Electric Trials":
-                health of victim is less than 6
-                set {_waited} to difference between {elt.%victim%} and now
-                if {_waited} is less than 1 minute and 30 seconds:
-                    stop
-                set {elt.%victim%} to now
-                loop all entities in radius 6 of victim:
-                    if loop-entity is not a item or victim:
-                        dodamage(victim,loop-entity,1.5,"Lightning")
-                loop all blocks in radius 3 of victim:
-                    draw 2 of dust using dustOption(yellow, 2) at loop-block with offset vector(0.5, 0.5, 0.5)
-            if {_type} contains "Pad Lock":
-                health of victim is less than 6
-                set {_waited} to difference between {pl.%victim%} and now
-                if {_waited} is less than 1 minute and 30 seconds:
-                    stop
-                set {pl.%victim%} to now
-                loop all entities in radius 6 of victim:
-                    if loop-entity is not a item or victim:
-                        dodamage(victim,loop-entity,2,"Frost")
-                loop all blocks in radius 3 of victim:
-                    draw 2 of dust using dustOption(light blue, 2) at loop-block with offset vector(0.5, 0.5, 0.5)
-    loop {ring::%attacker%::*}:
-        set {_a::*} to loop-value split at ": "
-        set {_type} to {_a::1}
-        set {_chance} to {_a::2}
-        set {_chance2::*} to {_chance} split at "&7"
-        set {_chance} to {_chance2::2} parsed as number
-        if {_type} contains " Cut":
-            chance of {_chance}
-            wait 0.1 seconds
-            push victim up at speed 0.3
-        if {_type} contains " Jabs":
-            chance of {_chance}
-            if victim does not have blindness:
-                apply blindness of tier 1 to victim for 5 seconds
-        if {_type} contains "Focused":
-            chance of {_chance}
-            make victim look at attacker
-        if {_type} contains "Fling":
-            chance of {_chance}
-            push attacker upwards at speed 0.3
-            wait 3 tick
-            push attacker (direction from attacker to location of victim) at speed 0.7
-        if {_type} contains "Bloody Metabolism":
-            set {_waited} to difference between {bm.%attacker%} and now
-            if {_waited} is less than 10 seconds:
-                stop
-            chance of {_chance}
-            set {bm.%attacker%} to now
-            heal attacker by 3 hearts
+    victim is player
+    damage type is poison
+    if has_gem("Restorative Venom",victim):
+        cancel event
+        play sound "block.brewing_stand.brew" with volume 1 for victim
+        heal(2,victim)
 
-
-
+on damage:
+    if has_gem("Fury's Grasp",attacker):
+        chance of 25%
+        wait 1 tick
+        push victim upwards at speed 1
+    if has_gem("Venomous Touch",attacker):
+        chance of 25%
+        apply wither of tier 3 to victim for 3 seconds
+        

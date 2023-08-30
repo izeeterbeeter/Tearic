@@ -1,0 +1,91 @@
+on damage:
+    set {_damage} to final damage
+    #basic damage
+    if victim is player:
+        cancel event
+        set damage to calculate_damage(attacker,victim,{_damage})
+
+
+#What do i want to do?
+# - critical strike damage system (it"s called overpower in this)
+# - magic damage system (scales with spellpower + equipment)
+# - movement speed system (scales with agility)
+# - attack damage system, calculate damage by reading the victims armor"s lore to see what resistances they have, and calculate the damage.
+# - elemental damage system (scales with relationship with tree spirits + drusha level + equipment)
+
+function add_percentage(n: number, p: number) :: number:
+    set {_i} to ({_p} / 100) * {_n}
+    return {_n} + {_i}
+
+function get_attackdamage(e: entity) :: number:
+    if {baseAD.%{_e}%} is not set:
+        set {baseAD.%{_e}%} to 10
+    return add_percentage({baseAD.%{_e}%},get_addition("Attack Damage", {_e}))
+
+function get_elementaldamage(e: entity,t: text) :: number:
+    if {baseED.%{_e}%} is not set:
+        set {baseED.%{_e}%} to 5
+    return add_percentage({baseEd.%{_e}%}, get_addition("Elemental Damage", {_e}))
+
+function get_magicdamage(e: entity) :: number:
+    if {baseMD.%{_e}%} is not set:
+        set {baseMD.%{_e}%} to 5
+    return add_percentage({baseMD.%{_e}%}, get_addition("Magic Damage", {_e}))
+
+function get_movementspeed(e: entity) :: number:
+    if {baseMS.%{_e}%} is not set:
+        set {_baseMS.%{_e}%} to 0.2
+    return add_percentage({baseMS.%{_e}%},get_addition("Movement Speed",{_e}))
+
+function get_overpowerdefense(e: entity) :: number:
+    if {baseOPD.%{_e}%} is not set:
+        set {baseOPD.%{_e}%} to 5
+    return add_percentage({baseOPD.%{_e}%}, get_addition("Overpower Defense", {_e}))
+
+function get_elementaldefense(e: entity) :: number:
+    if {baseED.%{_e}%} is not set:
+        set {baseED.%{_e}%} to 5
+    return add_percentage({baseED.%{_e}%}, get_addition("Elemental Defense", {_e}))
+
+function get_magicdefense(e: entity) :: number:
+    if {baseMgD.%{_e}%} is not set:
+        set {baseMgD.%{_e}%} to 5
+    return add_percentage({baseMgD.%{_e}%}, get_addition("Magic Defense", {_e}))
+
+function get_overpowerchance(e: entity) :: number:
+    if {baseOPC.%{_e}%} is not set:
+        set {baseOPC.%{_e}%} to 10
+    return add_percentage({baseOPC.%{_e}%}, get_addition("Overpower Chance", {_e}))
+
+function get_overpowermultiplier(e: entity) :: number:
+    if {baseOPM.%{_e}%} is not set:
+        set {baseOPM.%{_e}%} to 1.5
+    return add_percentage({baseOPM.%{_e}%}, get_addition("Overpower Multiplier", {_e}))
+
+function get_stats(e: entity) :: objects:
+    set {_armortypes::*} to "helmet","chestplate","leggings","boots","tool"
+    loop {_armortypes::*}:
+        loop lore of loop-value of {_e}:
+            add loop-value-2 to {_lore::*}
+    return {_lore::*}
+
+function get_addition(t: text,e: entity) :: number:
+    loop get_stats({_e}):
+        if loop-value-1 contains "&7%{_t}%: +":
+            set {_a::*} to loop-value-1 split at "+"
+            set {_b} to {_a::2} parsed as number
+            add {_b} to {_p}
+    return {_p}
+
+function displaytext(l: location, damage: string):
+    le spawn text display 1 block above {_l}
+    set {_d} to last spawned entity
+    set display text of {_d} to "&c%{_damage}%"
+    set display billboard of {_d} to center
+    wait 0.5 seconds
+    kill {_d}
+
+function calculate_damage(attacker: entity,victim: entity,damage: number) :: number:
+    # Should calculate the damage by collecting the damage using the functions and then dealing it.
+    return {_d}
+

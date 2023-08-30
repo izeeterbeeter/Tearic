@@ -1,0 +1,258 @@
+
+
+on item despawn:
+    set {_item} to 1 of event-item
+    if event-item's name contains " coins":
+        stop
+    set {_amount} to item amount of event-item
+    add_item({_item},{_amount})
+
+
+function add_item(item: item, amount: number):
+    calc_value({_item})
+    if {thekeeperslist::*} does not contain {_item}:
+        add {_item} to {thekeeperslist::*}
+        add {_amount} to {thekeeperslist::%{_item}%::1}
+    else:
+        add {_amount} to {thekeeperslist::%{_item}%::1}
+    broadcast "&7&lItem &6%{_item}%/%{_amount}% has been added!"
+    build_shop()
+
+
+
+command /resetkeeper:
+    trigger:
+        clear {thekeeperslist::*}
+        loop {valuelist::*}:
+            if {valuelist::%loop-value%::1} is set:
+                broadcast loop-value
+                clear {valuelist::%loop-value%::1}
+                clear {valuelist::%loop-value%}
+        clear {valuelist::*}
+        broadcast {valuelist::*}
+
+function build_shop():
+    wait 1 tick
+    loop all players:
+        set metadata tag "thekeeper" of loop-player to chest inventory with 6 rows named "&eThe Keeper's Bargain"
+        set {_b} to 0
+        loop {thekeeperslist::*}:
+            set {_item} to loop-value-2
+            if {thekeeperslist::%{_item}%::1} is less than 1:
+                remove {_item} from {thekeeperslist::*}
+                clear {thekeeperslist::%{_item}%}
+                clear {_item}
+            add "&6%{valuelist::%{_item}%::1}% coins" to lore of {_item}
+            add "&8%{thekeeperslist::%{_item}%::1}%" to lore of {_item}
+            if {_b} is 45:
+                add 1 to {_pages}
+                set metadata tag "thekeeper%{_pages}%" of loop-player to chest inventory with 6 rows named "&eThe Keeper's Bargain"
+                clear metadata tag "thekeeper%{_pages}+1%" of loop-player
+                set {_b} to 0
+            if {_pages} is set:
+                set slot {_b} of metadata tag "thekeeper%{_pages}%" of loop-player to {_item}
+                set slot 48 of metadata tag "thekeeper%{_pages}%" of loop-player to paper named "&7Previous Page"
+                if {_pages} is not {lastpage}:
+                    set slot 50 of metadata tag "thekeeper%{_pages}%" of loop-player to paper named "&7Next Page"
+            else:
+                set slot {_b} of metadata tag "thekeeper" of loop-player to {_item}
+                set slot 50 of metadata tag "thekeeper" of loop-player to paper named "&7Next Page"
+            add 1 to {_b}
+        set {lastpage} to {_pages}
+        if inventory name of loop-player's current inventory is "&eThe Keeper's Bargain":
+            if {currentpage.%loop-player%} is 0:
+                open (metadata tag "thekeeper" of loop-player) to loop-player
+            else:
+                open (metadata tag "thekeeper%{currentpage.%loop-player%}%" of loop-player) to loop-player
+
+command /lelele:
+    trigger:
+        broadcast "%calc_value(player's held item's type)% coins"
+
+on load:
+    set {base_price_items::*} to iron ingot,gold ingot,diamond,emerald,copper ingot, coal,redstone,lapis lazuli, any log, any stone, cobblestone,dirt,grass,minecraft:grass,clay, any leaves,sand,stick,glass,nether brick, glowstone,quartz,obsidian,any wool, any dye,leather,feather,egg,string,any fish, any meat, raw iron, raw copper, raw gold
+function base_price(i: item) :: number:
+    if {_i} is raw iron:
+        return 5 # or whatever value you want for raw iron
+    if {_i} is raw gold:
+        return 10 # or whatever value you want for raw gold
+    if {_i} is raw copper:
+        return 4 # or whatever value you want for raw copper
+    if {_i} is copper ingot:
+        return 8
+    if {_i} is iron ingot:
+        return 10
+    if {_i} is gold ingot:
+        return 20
+    if {_i} is diamond:
+        return 100
+    if {_i} is emerald:
+        return 50
+    if {_i} is coal:
+        return 5
+    if {_i} is redstone:
+        return 8
+    if {_i} is lapis lazuli:
+        return 12
+    if {_i} is any log or any stone or cobblestone or dirt or grass or minecraft:grass or clay or any leaves or sand or stick:
+        return 3
+    if {_i} is glass or nether brick or glowstone:
+        return 4
+    if {_i} is quartz:
+        return 15
+    if {_i} is obsidian:
+        return 40
+    if {_i} is any wool or any dye or leather or feather or string or egg:
+        return 5
+    if {_i} is any fish or any meat:
+        return 7
+    return 1 # or some other default value
+
+
+function calc_value(i: item) :: number:
+    # Debug: Start calculating the value for the item
+   # broadcast "Calculating value for %{_i}%"
+    # If the value is already in valuelist, return it
+    if {valuelist::%{_i}%::1} is set:
+        #broadcast "Value found in valuelist: %{valuelist::%{_i}%::1}%"
+        return {valuelist::%{_i}%::1}
+    if {base_price_items::*} contains {_i}:
+        #broadcast "Value found in base price: %base_price({_i})%"
+        set {valuelist::%{_i}%::1} to base_price({_i})
+        return {valuelist::%{_i}%::1}
+    # If the item doesn't have a crafting recipe, return the base price
+    set {_recipes::*} to all recipes for {_i}
+    if {_recipes::*} is not set:
+        set {valuelist::%{_i}%::1} to base_price({_i})
+       # broadcast "Value for non-craftable item: %{valuelist::%{_i}%::1}%"
+        return {valuelist::%{_i}%::1}
+    # Calculate the value based on the crafting recipe
+    set {_totalValue} to 0
+    loop all recipes for {_i}:
+        loop ingredients of recipe loop-value:
+            if loop-value-2 is not air:
+                set {_ingredient} to loop-value-2
+               # broadcast "Calculating value for ingredient: %{_ingredient}%"
+                # If the value is not in valuelist, calculate it recursively
+                if {valuelist::*} does not contain {_ingredient}:
+                    calc_value({_ingredient}) # Recursive call, but we don't add the value here
+                add {valuelist::%{_ingredient}%::1} to {_totalValue}
+    # Divide the total value by the number of recipes
+    set {_totalValue} to {_totalValue} /  (size of {_recipes::*})
+    # Set the calculated value for this item in valuelist
+    set {valuelist::%{_i}%::1} to {_totalValue}
+  #  broadcast "Final calculated value for %{_i}%: %{_totalValue}%"
+    return {_totalValue}
+
+
+
+function extract_ingredients(i: item) :: objects:
+    set {_ingredients::*} to air
+    set {_queue::*} to {_i}
+    while {_queue::*} is set:
+        set {_item} to {_queue::1}
+        remove {_queue::1} from {_queue::*}
+        set {_recipes::*} to all recipes for {_item}
+        if {_recipes::*} is not set:
+            add {_item} to {_ingredients::*}
+        else:
+            loop all recipes for {_item}:
+                loop ingredients of recipe loop-value:
+                    if loop-value-2 is not air:
+                        add loop-value-2 to {_queue::*}
+    return {_ingredients::*}
+
+
+function calc_value2(i: item) :: number:
+    # Define a list of items that we have already processed
+    set {_processed::*} to air
+    set {_recipes::*} to all recipes for {_i}
+    if {_recipes::*} is not set:
+        return 10
+    loop all recipes for {_i}:
+        add 1 to {_craftingrecipeslot}
+        add {_craftingrecipeslot} to {_items::*}
+        loop ingredients of recipe loop-value:
+            if loop-value-2 is not air:
+                # If we have already processed this item, skip it
+                if {_processed::*} contains loop-value-2:
+                    continue
+                add loop-value-2 to {_items::%{_craftingrecipeslot}%::*}
+                # Add the item to the list of processed items
+                add loop-value-2 to {_processed::*}
+    set {_amount} to 0
+    loop {_items::*}:
+        set {_craftingrecipeslot} to loop-value
+        loop {_items::%{_craftingrecipeslot}%::*}:
+            set {_ingredient} to loop-value-2
+            if {valuelist::*} contains {_ingredient}:
+                add {valuelist::%{_ingredient}%::1} to {_amount}
+            else:
+                add {_ingredient} to {valuelist::*}
+                if {_ingredient} is any log or any stone or any leaves or cobblestone or dirt or grass or minecraft:grass or clay:
+                    set {valuelist::%{_ingredient}%::1} to 10
+                    add {valuelist::%{_ingredient}%::1} to {_amount}
+                else:
+                    set {_recipes::*} to all recipes for {_i}
+                    if {_recipes::*} is not set:
+                        add {valuelist::%{_ingredient}%::1} to {_amount}
+                    else:
+                        add calc_value({_ingredient}) to {_amount}
+    loop {valuelist::*}:
+        if {valuelist::%loop-value%::1} is less than 1:
+            set {valuelist::%loop-value%::1} to 1
+    # If the calculated value is less than a floor value (e.g. 10), set it to the floor value
+    if {_amount} < 10:
+        set {_amount} to 10
+    return {_amount}
+
+
+on inventory click:
+    if name of event-inventory is "&eThe Keeper's Bargain":
+        cancel event
+        remove paper named "&7Next Page" from player's inventory
+        remove paper named "&7Previous Page" from player's inventory
+        #cancel the clicking. This makes the Item unstealable
+        set {_item} to event-slot
+        if {_item} is paper named "&7Next Page":
+            add 1 to {currentpage.%player%}
+            build_shop()
+            open (metadata tag "thekeeper%{currentpage.%player%}%" of player) to player
+        if {_item} is paper named "&7Previous Page":
+            remove 1 from {currentpage.%player%}
+            if {currentpage.%player%} is 0:
+                build_shop()
+                open (metadata tag "thekeeper" of player) to player
+            else:
+                build_shop()
+                open (metadata tag "thekeeper%{currentpage.%player%}%" of player) to player
+        {_item} is not paper named "&7Next Page"
+        {_item} is not paper named  "&7Previous Page"
+        loop lore of {_item}:
+            add 1 to {_a}
+        clear line {_a} of lore of {_item}
+        clear line {_a}-1 of lore of {_item}
+        {valuelist::%{_item}%::1} <= {coins::%player%}
+        pay("The Keeper",{valuelist::%{_item}%::1},"%player%")
+        give player {_item}
+        remove paper named "&7Next Page" from player's inventory
+        remove paper named "&7Previous Page" from player's inventory
+        set {_item} to event-slot
+        clear lore of {_item}
+        remove 1 from {thekeeperslist::%{_item}%::1}
+        add 10 to {valuelist::%{_item}%::1}
+        close player's inventory
+        build_shop()
+        wait 2 ticks
+        open (metadata tag "thekeeper" of player) to player
+        if {currentpage.%player%} is 0:
+            open (metadata tag "thekeeper" of player) to player
+        else:
+            open (metadata tag "thekeeper%{currentpage.%player%}%" of player) to player
+
+command /thekeeper:
+    trigger:
+        build_shop()
+        set {currentpage.%player%} to 0
+        open (metadata tag "thekeeper" of player) to player
+

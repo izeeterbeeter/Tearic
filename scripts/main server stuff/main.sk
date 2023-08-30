@@ -322,3 +322,4 @@ on chat:
 	else:
 		cancel event
 		broadcast "&6%player's display name% &7» &f%message%"
+		speakMessage(player, message)

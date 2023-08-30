@@ -1,0 +1,20 @@
+
+command /lootspawner:
+    trigger:
+        lootspawner(player's target block, "chest")
+
+on load:
+    set {tearumloot::*} to light gray dye named "&7Wolf Fur",ghast tear named "&eTear Essence" with lore "&7It's shaking...", honey bottle, water bottle, stick named "&7Stone Spear", map, amethyst shard, book, arrow
+    add string named "&7Fiber",glowing paper named "&aBandage" with lore "&7So much better then plain old fiber..." to {tearumloot::*}
+
+
+function lootspawner(b: block, t: text):
+    if {_t} is "chest":
+        set block at {_b} to chest
+    if {_t} is "barrel":
+        set block at {_b} to barrel
+    set {_b} to block at {_b}
+    wait 1 tick
+    loop 6 times:
+        set {_slot} to random integer between 0 and 27
+        set slot {_slot} of {_b}'s inventory to random element of {tearumloot::*}

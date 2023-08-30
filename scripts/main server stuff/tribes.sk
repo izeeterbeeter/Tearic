@@ -7,7 +7,7 @@ on rightclick:
     event-block is chest or barrel or dispenser or dropper or hopper or trapped chest or door or trapdoor
     loop {tribes::*}:
         if {tribes::%loop-value%::chunks::*} contains chunk at player's location:
-            if {tribes::%loop-value%::*} contains player or "&dChieften &6> %player%":
+            if {tribes::%loop-value%::members::*} contains player or "&dChieften &6> %player%":
                 stop
     cancel event
     send action bar "&7A tribe owns this block." to player
@@ -17,17 +17,228 @@ on break:
     event-block is chest or barrel or dispenser or dropper or hopper or trapped chest or door or trapdoor
     loop {tribes::*}:
         if {tribes::%loop-value%::chunks::*} contains chunk at player's location:
-            if {tribes::%loop-value%::*} contains player or "&dChieften &6> %player%":
+            if {tribes::%loop-value%::members::*} contains player or "&dChieften &6> %player%":
                 stop
     cancel event
     send action bar "&7A tribe owns this block." to player
 
 
+function build_member_screen(p: player):
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %{_p}%":
+            set metadata tag "%{_tribe}%members" of {_p} to chest inventory with 6 rows named "&e%{_tribe}% Members"
+            set {_b} to 0
+            loop {tribes::%{_tribe}%::members::*}:
+                set {_playerhead} to loop-value-2
+                {_playerhead} is not "&dChieften &6> %{_p}%"
+                set slot {_b} of metadata tag "%{_tribe}%members" of {_p} to skull of {_playerhead} named "&a%loop-value-2%"
+                add 1 to {_b}
+            open (metadata tag "%{_tribe}%members" of {_p}) to {_p}
+
+function build_player_screen(p: player, shownplayer: offline player):
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %{_p}%":
+            set metadata tag "%{_tribe}%%{_shownplayer}%" of {_p} to chest inventory with 6 rows named "&ePlayer Details of &c%{_shownplayer}%"
+            set slot 22 of metadata tag "%{_tribe}%%{_shownplayer}%" of {_p} to skull of {_shownplayer} named "&7%{_shownplayer}%"
+            set {_map} to map named "&dRoles"
+            loop {roles::%{_shownplayer}%::*}:
+                add "%loop-value-2%" to lore of {_map}
+            add "&7&o(right click to edit)" to lore of {_map}
+            set slot 23 of metadata tag "%{_tribe}%%{_shownplayer}%" of {_p} to {_map}
+            open (metadata tag "%{_tribe}%%{_shownplayer}%" of {_p}) to {_p}
+
+
+function has_permission(shownplayer: offline player, permission: text) :: boolean:
+    loop {roles::%{_shownplayer}%::*}:
+        loop {roles::%{_shownplayer}%::%loop-value-1%::*}:
+            if uncolored loop-value-2 contains {_permission}:
+                return true
+    return false
+
+function edit_roles_screen(p: player, shownplayer: offline player):
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %{_p}%":
+            #broadcast {_shownplayer}
+            set metadata tag "%{_tribe}%%{_shownplayer}%roles" of {_p} to chest inventory with 2 rows named "&eEdit Roles of &c%{_shownplayer}%"
+            set {_b} to 0
+            #broadcast {roles::%{_shownplayer}%::*}
+            loop {roles::%{_shownplayer}%::*}:
+                #broadcast loop-value-2
+                set slot {_b} of metadata tag "%{_tribe}%%{_shownplayer}%roles" of {_p} to empty map named "%loop-value-2%" with lore "&7&o(right click to remove)"
+                add 1 to {_b}
+            set slot 16 of metadata tag "%{_tribe}%%{_shownplayer}%roles" of {_p} to paper named "&fAdd role"
+            set slot 17 of metadata tag "%{_tribe}%%{_shownplayer}%roles" of {_p} to empty map named "&fCreate New Role"
+            wait 1 tick
+            open (metadata tag "%{_tribe}%%{_shownplayer}%roles" of {_p}) to {_p}
+
+function main_tribe_screen(p: player):
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %{_p}%":
+            set metadata tag "%{_tribe}%" of {_p} to chest inventory with 3 rows named "&e%{_tribe}%"
+            set slot 13 of metadata tag "%{_tribe}%" of {_p} to skull of {_p} named "&7Members"
+            set slot 15 of metadata tag "%{_tribe}%" of {_p} to gold nugget named "&7Currency" with lore "&8%{tribes::%{_tribe}%::balance}%"
+            set slot 12 of metadata tag "%{_tribe}%" of {_p} to comparator named "&7Settings"
+            set slot 14 of metadata tag "%{_tribe}%" of {_p} to empty map named "&7Chunk Map"
+            open (metadata tag "%{_tribe}%" of {_p}) to {_p}
+
+function add_existing_role_screen(p: player, shownplayer: offline player):
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %{_p}%":
+            set metadata tag "%{_tribe}%createdroles" of {_p} to chest inventory with 3 rows named "&eCreated Roles | &f%{_shownplayer}%"
+            set {_b} to 0
+            broadcast "add_existing_roles_screen: %{_shownplayer}%"
+            loop {tribes::%{_tribe}%::createdRoles::*}:
+                set {_role} to paper named "&5%loop-value-2%"
+                loop {tribes::%{_tribe}%::createdRoles::%loop-value-2%::permissions::*}:
+                    add loop-value-3 to lore of {_role}
+                set slot {_b} of metadata tag "%{_tribe}%createdroles" of {_p} to {_role}
+                add 1 to {_b}
+            open (metadata tag "%{_tribe}%createdroles" of {_p}) to {_p}
+
+function create_role_screen(p: player,rolename: text):
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %{_p}%":
+            set metadata tag "%{_tribe}%createnewrole" of {_p} to chest inventory with 3 rows named "&eCreating New Role! %{_rolename}%"
+            set slot 0 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Assign Duties to Members | AD" with lore "&cDisabled"
+            set slot 1 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Withdraw Money from Tribe Account | WM" with lore "&cDisabled"
+            set slot 2 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Assign Roles | AR" with lore "&cDisabled"
+            set slot 3 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Kick Members | KM" with lore "&cDisabled"
+            set slot 4 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Invite Players | IP" with lore "&cDisabled"
+            set slot 5 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Claim/Unclaim Land | CL" with lore "&cDisabled"
+            set slot 6 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can Sell To Keeper | SK" with lore "&cDisabled"
+            set slot 7 of metadata tag "%{_tribe}%createnewrole" of {_p} to paper named "&7Can  | CL" with lore "&cDisabled"
+            set slot 26 of metadata tag "%{_tribe}%createnewrole" of {_p} to map named "&7Finish"
+            open (metadata tag "%{_tribe}%createnewrole" of {_p}) to {_p}
+
+on anvil gui click:
+    if event-integer is 2: #clicked the output item slot
+        if name of event-inventory is "Name Role":
+            if event-text is not set:
+                stop
+            if {tribes::%get_tribe(player)%::createdRoles::*} contains event-text:
+                stop
+            else:
+                create_role_screen(player,event-text)
+
+on anvil gui close:
+    if name of event-inventory is "Name Role":
+        if event-text is not set:
+            cancel event
+        if {tribes::%get_tribe(player)%::createdRoles::*} contains event-text:
+            cancel event
+        else:
+            create_role_screen(player,event-text)
+
+command /checkpermission <text> <player>:
+    trigger:
+        broadcast has_permission(arg-2,arg-1)
+
+on inventory click:
+    loop {tribes::*}:
+        set {_tribe} to loop-value
+        if {tribes::%{_tribe}%::members::1} contains "&dChieften &6> %player%":
+            if name of event-inventory is "&e%{_tribe}%":
+                cancel event
+                set {_item} to event-slot
+                if {_item}'s name is "&7Members":
+                    build_member_screen(player)
+            # tribe members screen manager
+            if name of event-inventory is "&e%{_tribe}% Members":
+                cancel event
+                set {_item} to event-slot
+                set {_player} to uncolored {_item}'s name parsed as offline player
+                if click action is left mouse button:
+                    build_player_screen(player,{_player})
+                if click action is right mouse button:
+                    cancel event
+            # Edit roles of tribe member
+            if name of event-inventory contains "&eEdit Roles":
+                cancel event
+                set {_item} to event-slot
+                if click action is right mouse button:
+                    set {_sections::*} to uncolored name of event-inventory split at " "
+                    #broadcast "edit roles: %{_sections::*}%"
+                    set {_shownplayer} to {_sections::4} parsed as offline player
+                    index of event-slot is not 16 or 17
+                    remove name of {_item} from {roles::%{_shownplayer}%::*}
+                    edit_roles_screen(player,{_shownplayer})
+                if click action is left mouse button:
+                    set {_sections::*} to uncolored name of event-inventory split at " "
+                    #broadcast "edit roles: %{_sections::*}%"
+                    set {_shownplayer} to {_sections::4} parsed as offline player
+                    #broadcast {_shownplayer}
+                    if index of event-slot is 16:
+                        add_existing_role_screen(player,{_shownplayer})
+                    if index of event-slot is 17:
+                        set {_gui} to a new anvil gui named "Name Role" with default text "peepeepoopoo"
+                        #set here slots and title or text before opening it.
+                        #check expressions and examples below to learn how.
+                        open anvil gui {_gui} to player
+            # Create new role
+            if name of event-inventory contains "&eCreating New Role!":
+                cancel event
+                set {_a::*} to name of event-inventory split at "! "
+                set {_rolename} to {_a::2}
+                #broadcast {_rolename}
+                if click action is left mouse button:
+                    if event-item is paper:
+                        set {_item} to event-item
+                        #broadcast {_item}
+                        if lore of {_item} contains "&cDisabled":
+                            set line 1 of lore of {_item} to "&aEnabled"
+                            set event-slot to {_item}
+                        else:
+                            set line 1 of lore of {_item} to "&cDisabled"
+                            set event-slot to {_item}
+                    if event-item is empty map named "&7Finish":
+                        add {_rolename} to {tribes::%{_tribe}%::createdRoles::*}
+                        loop items in event-inventory:
+                            if loop-item is paper:
+                                if lore of loop-item contains "&aEnabled":
+                                    add name of loop-item to {tribes::%{_tribe}%::createdRoles::%{_rolename}%::permissions::*}
+                        #broadcast {tribes::%{_tribe}%::createdRoles::*}
+                        send "Role %{_rolename}% has been created with selected permissions." to player
+                        build_member_screen(player)
+                    #remove {_item}'s name from
+            if name of event-inventory contains "&eCreated Roles | &f":
+                cancel event
+                set {_a::*} to uncolored name of event-inventory split at " "
+                #broadcast {_a::*}
+                set {_player} to {_a::4} parsed as offline player
+                if click action is left mouse button:
+                    if event-item is paper:
+                        add name of event-item to {roles::%{_player}%::*}
+                        loop lore of event-item:
+                            add loop-value-2 to {roles::%{_player}%::%name of event-item%::*}
+                        build_member_screen(player)
+                        #broadcast {roles::%{_player}%::*}
+            if name of event-inventory contains "&ePlayer Details of ":
+                cancel event
+                set {_item} to event-slot
+                set {_sections::*} to uncolored name of event-inventory split at " "
+                #broadcast {_sections::4}
+                #broadcast name of event-inventory
+                if click action is right mouse button:
+                    edit_roles_screen(player,{_sections::4} parsed as offline player)
+
+
+
+
+
+
 command /tribes <text="show"> [<text>]:
     trigger:
+        if arg-1 is "manage":
+            main_tribe_screen(player)
         if arg-1 is "create":
             loop {tribes::*}:
-                if {tribes::%loop-value%::1} contains player or "&dChieften &6> %player%":
+                if {tribes::%loop-value%::members::1} contains player or "&dChieften &6> %player%":
                     send "&7You are already in a tribe! Use &d/tribes leave &7to leave!"
                     play sound {@decline} with volume 1 at player for player
                     stop
@@ -35,7 +246,8 @@ command /tribes <text="show"> [<text>]:
                 {tribes::*} does not contain arg-2:
                     send "&7Tribe &6%arg-2% &7created!"
                     add arg-2 to {tribes::*}
-                    add "&dChieften &6> %player%" to {tribes::%arg-2%::*}
+                    add "&dChieften &6> %player%" to {tribes::%arg-2%::members::*}
+                    set {tribes::%arg-2%::balance} to 0
                     play sound {@accept} with volume 1 at player for player
                     stop
                 else:
@@ -44,11 +256,11 @@ command /tribes <text="show"> [<text>]:
                     stop
         if arg-1 is "show":
             loop {tribes::*}:
-                if {tribes::%loop-value-1%::*} contains player or "&dChieften &6> %player%":
+                if {tribes::%loop-value-1%::members::1} contains player or "&dChieften &6> %player%":
                     send ""
                     send "&7-------------&6%loop-value-1% Tribe&7-------------"
                     send ""
-                    loop {tribes::%loop-value-1%::*}:
+                    loop {tribes::%loop-value-1%::members::*}:
                         send "<light green>%loop-value-2%" to player
                     send ""
                     send "&7----------------------------------"
@@ -62,14 +274,14 @@ command /tribes <text="show"> [<text>]:
                 send " "
                 send "&6%loop-value% &7tribe."
                 send " "
-                send "  &7- %{tribes::%loop-value%::1}%"
-                send "  &7- &6%size of {tribes::%loop-value%::*}% &7member(s)"
+                send "  &7- %{tribes::%loop-value%::members::1}%"
+                send "  &7- &6%size of {tribes::%loop-value%::members::*}% &7member(s)"
                 send "  &7- &6%size of {tribes::%loop-value%::chunks::*}% &7chunks claimed"
                 send " "
                 send "&7--------------------"
         if arg-1 is "claim":
             loop {tribes::*}:
-                if {tribes::%loop-value-1%::1} contains "&dChieften &6> %player%":
+                if {tribes::%loop-value-1%::members::1} contains "&dChieften &6> %player%":
                     if {averagelevel.%player%}*2 <= size of {tribes::%loop-value-1%::chunks::*}:
                         send "&cYou need a higher average level to claim more chunks!" to player
                         play sound {@decline} with volume 1 at player for player
@@ -99,7 +311,7 @@ command /tribes <text="show"> [<text>]:
             play sound {@decline} with volume 1 at player for player
         if arg-1 is "unclaim":
             loop {tribes::*}:
-                if {tribes::%loop-value%::1} contains "&dChieften &6> %player%":
+                if {tribes::%loop-value%::members::1} contains "&dChieften &6> %player%":
                     {tribes::%loop-value%::chunks::*} contains chunk at player's location:
                         send "&6Chunk unclaimed!" to player
                         play sound {@accept} with volume 1 at player for player
@@ -111,16 +323,16 @@ command /tribes <text="show"> [<text>]:
                         play sound {@decline} with volume 1 at player for player
         if arg-1 is "leave":
             loop {tribes::*}:
-                if {tribes::%loop-value-1%::*} contains player or "&dChieften &6> %player%":
+                if {tribes::%loop-value-1%::members::*} contains player or "&dChieften &6> %player%":
                     send "&7You have left &6%loop-value-1%'s &7group!" to player
                     play sound {@accept} with volume 1 at player for player
-                    if {tribes::%loop-value-1%::1} contains player or "&dChieften &6> %player%":
+                    if {tribes::%loop-value-1%::members::1} contains player or "&dChieften &6> %player%":
                         loop {tribes::%loop-value-1%::chunks::*}:
                             clear {claimed.%loop-value-2%}
-                        clear {tribes::%loop-value-1%::*}
+                        clear {tribes::%loop-value-1%::members::*}
                         remove loop-value from {tribes::*}
                         send "&cGroup deleted!" to player
-                    remove player or "&dChieften &6> %player%" from {tribes::%loop-value-1%::*}
+                    remove player or "&dChieften &6> %player%" from {tribes::%loop-value-1%::members::*}
         if arg-1 is "invite":
             loop {tribes::*}:
                 if {tribes::%loop-value%::1} contains "&dChieften &6> %player%":
@@ -136,8 +348,8 @@ command /tribes <text="show"> [<text>]:
         if arg-1 is "join":
             if arg-2 is set:
                 if {invitedt::%player%::*} contains arg-2:
-                    add player to {tribes::%arg-2%::*}
-                    send "&7You have joined &6%{tribes::%arg-2%::1}%'s &7tribe!" to player
+                    add player to {tribes::%arg-2%::members::1}
+                    send "&7You have joined &6%{tribes::%arg-2%::members::1}%'s &7tribe!" to player
                     remove arg-2 from {invitedt::%arg-2%::*}
                     stop
                 else:
@@ -184,6 +396,7 @@ command /resettribes:
         clear {tribes::*}
         loop all players:
             clear {interritory.%loop-player%}
+        clear {roles::*}
 
 on player move:
     #if (!event.getFrom().getChunk().equals(event.getTo().getChunk())):

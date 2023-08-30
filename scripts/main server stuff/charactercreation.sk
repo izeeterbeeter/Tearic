@@ -25,6 +25,8 @@ on jump:
             send "&dTearic chosen!" to player
         set {stage.%player%} to 2
 
+on first join:
+    intro(player)
 
 
 on any movement:

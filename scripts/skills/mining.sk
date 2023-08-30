@@ -3,7 +3,21 @@
 		#give player iron pickaxe named "&7Iron Hammer" with lore "&cUsed by the Dwarves of old."
 		#set {mine.%player%} to arg 1 parsed as integer
 		#send {mine.%player%} to player
-		
+
+on load:
+	set {gems::*} to flint named "&cRuby",flint named "&eTopaz",flint named "<##2b69a5>Sapphire",flint named "<##FFBF00>Amber"
+	set {_cookedtin} to flint named "&fTin Ingot"
+	set {_rawtin} to flint named "&fRaw Tin"
+	set {_rawcrucible} to cauldron named "&fRaw Crucible"
+	set {_crucible} to cauldron named "&fCrucible"
+	register new shaped recipe for {_rawcrucible} using clay ball, air, clay ball, clay ball, air, clay ball, clay ball, clay ball and clay ball with id "raw_crucible" in group "crucible"
+	register new furnace recipe for {_cookedtin} using {_rawtin} with id "furnace_tin"
+
+on load:
+	set {_rawcrucible} to cauldron named "&fRaw Crucible"
+	set {_crucible} to cauldron named "&fCrucible"
+	register new furnace recipe for {_crucible} using {_rawcrucible} with id "furnace_crucible"
+
 on break:
 	if {mine.%player%} > 29:
 		if event-block is any stone or ore:
@@ -13,7 +27,72 @@ on break:
 					damage player's tool by 1
 				if durability of tool is max durability of tool: 
 					remove 1 of tool from player
-				
+
+command /resetcrucible:
+	trigger:
+		clear {crucibles::*}
+
+on rightclick:
+	set {_loc} to event-location
+	if {crucibles::*} contains {_loc}:
+		loop all entities in radius 1 of event-block:
+			set {_entityName} to "%loop-entity%"
+			if {_entityName} contains "text display":
+				kill loop-entity
+		if player's tool is copper ingot: #or flint named "&fTin Ingot":
+			size of {crucibles::%{_loc}%::*} is less than 2
+			add 1 of player's tool to {crucibles::%{_loc}%::*}
+		if player's tool is flint named "&fTin Ingot":
+			size of {crucibles::%{_loc}%::*} is less than 2
+			add 1 of player's tool to {crucibles::%{_loc}%::*}
+		if player is sneaking:
+			set {_p} to last element of {crucibles::%{_loc}%::*}
+			give 1 of {_p} to player
+			remove {_p} from {crucibles::%{_loc}%::*}
+		if size of {crucibles::%{_loc}%::*} is 2:
+			if {crucibles::%{_loc}%::*} contains copper ingot:
+				if {crucibles::%{_loc}%::*} contains flint named "&fTin Ingot":
+					clear {crucibles::%{_loc}%::*} 
+					drop flint named "&fBronze Ingot" above {_loc}
+					play sound "block.lava.pop" with volume 1 at {_loc} for all players
+					play sound "item.firecharge.use" with volume 1 at {_loc} for all players
+		le spawn text display 0.5 meter in front of event-block
+		set {_1} to last spawned entity
+		set display text of {_1} to "Contains: %{crucibles::%{_loc}%::*}%"
+		wait 2 seconds
+		kill {_1}
+
+
+on break:
+	set {_loc} to event-location
+	if {crucibles::*} contains {_loc}:
+		clear drops
+		drop cauldron named "&fCrucible" at {_loc}
+		wait 1 tick
+		clear {crucibles::%{_loc}%::*}
+		remove {_loc} from {crucibles::*}
+
+on place:
+	player's tool's name contains "&fRaw Crucible"
+	cancel event
+
+on place:
+	player's tool's name contains "&fCrucible"
+	set {_loc} to event-location
+	add {_loc} to {crucibles::*}
+	{crucibles::%{_loc}%::*}
+
+
+on break:
+	if event-block is andesite:
+		{BlockByPlayer::%event-location%} is not set
+		{snowy::*} contains "%biome at player%"
+		drop flint named "&fRaw Tin" at event-block
+
+
+
+
+
 on mining any stone or obsidian or iron ore or copper ore or deepslate:
 	if {serverage} < 1:
 		if event-block is iron ore:
@@ -38,6 +117,11 @@ on break:
 	if {mine.%player%} < 15:
 		cancel event
 		send action bar "&7You need at least mining level &c15 &7to do this!" to player
+
+on break of any stone:
+	set {_chance} to {mine.%player%}-10
+	chance of {_chance}%:
+		drop random element of {gems::*}
 
 on break:
 	event-block is iron ore or deepslate iron ore

@@ -26,9 +26,6 @@ on rightclick:
     set {_rm} to random element out of {_c::*}
     v_frostray({_rm}, entity)
 
-on rightclick:
-    player is holding flint
-    sphere_show(true,true,5,red,5,block below player)
     #v_frostspear(player's target, player)
 #entity.iron_golem.attack
 function v_expel(b: entity):
@@ -41,7 +38,7 @@ function v_expel(b: entity):
         loop all entities in radius 4 of {_b}:
             if y coordinate of loop-entity is greater than or equal to y coordinate of block below {_b}:
                 if loop-entity's name does not contain {_n}:
-                    play sound "entity.iron_golem.attack" with volume 2 at block at {_b} for all players
+                     "entity.iron_golem.attack" with volume 2 at block at {_b} for all players
                     loop-entity is alive
                     dodamage({_n}, loop-entity, 0.5, "Frost")
                     push loop-entity direction from {_b} to loop-entity with force 1.2

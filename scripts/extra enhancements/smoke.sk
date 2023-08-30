@@ -1,0 +1,31 @@
+on fuel burn:
+    smoke(event-block)
+
+on smelt:
+    smoke(event-block)
+
+function smoke(b: block):
+    summon armor stand at {_b}
+    set {_smoke} to last spawned armor stand
+    set tag "Invisible" of nbt compound of {_smoke} to true
+    set tag "Small" of nbt compound of {_smoke} to true
+    set tag "Invulnerable" of nbt compound of {_smoke} to true
+    while {_smoke} is alive:
+        wait 1 tick
+        add 1 to {_p}
+        extinguish {_smoke}
+        push {_smoke} upwards with speed 0.1
+        draw 1 of dust using dustOption(rgb(58, 58, 58), 2) 1 above {_smoke} with offset vector(0.5, 0.5, 0.5)
+        if y coordinate of {_smoke}'s location is greater than 300:
+            kill {_smoke}
+        if {_p} is greater than 300:
+            loop all entities in radius 6 of {_smoke}:
+                damage loop-entity by 1
+            kill {_smoke}
+
+on ignition:
+    smoke(event-block)
+
+
+on burn:
+    smoke(event-block)

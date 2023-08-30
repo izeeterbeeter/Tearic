@@ -399,10 +399,11 @@ every 5 seconds:
 function show_xp(p: player, xp: text, type: object, display: text):
 	set {_xpreq} to xp_req({_p},"%{_xp}%")
 	set {_bar.%{_p}%} to bossbar named "%{_p}%%{_xp}%" with title "<##D1E8A1>%{_display}% &7%{_type}%/%{_xpreq}%"
-	set boss bar color of {_bar.%{_p}%} to bar green
+	set boss bar color of {_bar.%{_p}%} to green
 	set boss bar style of {_bar.%{_p}%} to segmented 6
 	set bossbar progress of {_bar.%{_p}%} to ({_type}/{_xpreq})*100
 	add {_p} to bossbar players of {_bar.%{_p}%}
+	
 
 
 #movement

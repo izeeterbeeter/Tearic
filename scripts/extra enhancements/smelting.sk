@@ -66,12 +66,17 @@ on damage:
 				damage victim by 0.5
 				set damage to final damage
 			if lore of attacker's tool contains "&7Lifesteal":
-				heal attacker by 1 heart
+				heal(1,attacker)
 	else:
 		push attacker backwards with force 1
 		apply slowness of tier 2 without any particles to attacker for 1 second
 		apply blindness of tier 1 without any particles to attacker for 1 second
-	
+
+
+on preparing craft:
+	event-item is any iron tool or iron sword or any diamond tool or diamond sword
+	set slot 0 of event-inventory to air
+
 #on craft:
 	#if event-item is iron sword or iron axe or diamond sword or diamond axe:
 		#set {_random} to a random number between 1 and 100
@@ -101,34 +106,34 @@ on damage:
 			#stop
 		#set lore of event-slot to "&7Adept"
 
-on craft:
-	if {furnace.%player%} < 12:
-		if event-item is iron tool or iron sword:
-			close player's inventory
-			send action bar "&7You need at least smithing level &c12 &7to do this!" to player
-			cancel event
-	if {furnace.%player%} < 17:
-		if event-item is chainmail armor:
-			close player's inventory
-			send action bar "&7You need at least smithing level &c17 &7to do this!" to player
-			cancel event
-	if {furnace.%player%} < 24:
-		if event-item is iron armor:
-			close player's inventory
-			send action bar "&7You need at least smithing level &c24 &7to do this!" to player
-			cancel event
-	if {furnace.%player%} < 28:
-		if event-item is diamond tool or diamond sword:
-			close player's inventory
-			send action bar "&7You need at least smithing level &c28 &7to do this!" to player
-			cancel event
-	if {furnace.%player%} < 38:
-		if event-item is diamond armor:
-			close player's inventory
-			send action bar "&7You need at least smithing level &c38 &7to do this!" to player
-			cancel event
-	if {furnace.%player%} < 50:
-		if event-item is netherite ingot:
-			close player's inventory
-			send action bar "&7You need at least smithing level &c50 &7to do this!" to player
-			cancel event
+# on craft:
+# 	if {furnace.%player%} < 12:
+# 		if event-item is iron tool or iron sword:
+# 			close player's inventory
+# 			send action bar "&7You need at least smithing level &c12 &7to do this!" to player
+# 			cancel event
+# 	if {furnace.%player%} < 17:
+# 		if event-item is chainmail armor:
+# 			close player's inventory
+# 			send action bar "&7You need at least smithing level &c17 &7to do this!" to player
+# 			cancel event
+# 	if {furnace.%player%} < 24:
+# 		if event-item is iron armor:
+# 			close player's inventory
+# 			send action bar "&7You need at least smithing level &c24 &7to do this!" to player
+# 			cancel event
+# 	if {furnace.%player%} < 28:
+# 		if event-item is diamond tool or diamond sword:
+# 			close player's inventory
+# 			send action bar "&7You need at least smithing level &c28 &7to do this!" to player
+# 			cancel event
+# 	if {furnace.%player%} < 38:
+# 		if event-item is diamond armor:
+# 			close player's inventory
+# 			send action bar "&7You need at least smithing level &c38 &7to do this!" to player
+# 			cancel event
+# 	if {furnace.%player%} < 50:
+# 		if event-item is netherite ingot:
+# 			close player's inventory
+# 			send action bar "&7You need at least smithing level &c50 &7to do this!" to player
+# 			cancel event

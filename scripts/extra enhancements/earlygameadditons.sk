@@ -30,7 +30,6 @@ on respawn:
         while {invensla.%loop-block%} is set:
             wait 2 ticks
             draw 100 of dust using dustOption(white, 1) at block 10 above loop-block with offset vector(0.1,6,0.1)
-        broadcast loop-block
         wait 1 tick
         stop
 
@@ -68,6 +67,7 @@ on rightclick on sheep:
 
 on entity target:
     if name of entity contains "&7Goblin":
+        name of entity does not contain "&7Goblin: &7Spear Slinger"
         while entity's target is set:
             wait 5 ticks
             apply slowness of tier 1 without any particles to entity for 2 seconds
@@ -180,11 +180,16 @@ function generate_ruins(b: block):
             chance of 50%:
                 set block above loop-block to minecraft:grass
         loop 6 times:
+            set {_random} to random integer between 1 and 2
             set {_a1} to block 10 above {_spot}
             set {_a2} to block 10 above 10 east of {_spot}
             spawn baby zombie at random element of blocks between {_a1} and {_a2}
             set {_goblin} to last spawned entity
-            set name of {_goblin} to "&7Goblin"
+            if {_random} is 1:
+                set name of {_goblin} to "&7Goblin"
+            if {_random} is 2:
+                set name of {_goblin} to "&7Goblin: &7Spear Slinger"
+                set {spears.%{_goblin}%} to 1
             equip {_goblin} with random element of {@goblin_heads}
             set tool of {_goblin} to stick named "&7Stone Spear"
             set max health of {_goblin} to 35
@@ -218,6 +223,11 @@ function generate_ruins(b: block):
             loop-block is not a water
             block below loop-block is not a water
             set loop-block to cobblestone
+        loop all blocks in radius 12 of {_spot}:
+            loop-block is air or minecraft:grass
+            block below loop-block is grass or ice or sand
+            lootspawner(loop-block,"chest")
+            stop
     {_j} is 3:
         set {_cages::*} to {@cage1},{@cage2},{@cage3},{@cage4}
         set block at {_spot} to campfire
@@ -258,10 +268,15 @@ function generate_ruins(b: block):
                     add 1 to {_y}
                     clear {_n}
         loop 7 times:
+            set {_random} to random integer between 1 and 2
             set {_a1} to block 10 above {_spot}
             spawn baby zombie at {_a1}
             set {_goblin} to last spawned entity
-            set name of {_goblin} to "&7Goblin"
+            if {_random} is 1:
+                set name of {_goblin} to "&7Goblin"
+            if {_random} is 2:
+                set name of {_goblin} to "&7Goblin: &7Spear Slinger"
+                set {spears.%{_goblin}%} to 1
             equip {_goblin} with random element of {@goblin_heads}
             set tool of {_goblin} to stick named "&7Stone Spear"
             set max health of {_goblin} to 35

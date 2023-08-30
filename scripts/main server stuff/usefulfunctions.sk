@@ -37,6 +37,40 @@ command /increasenutrition:
         set {nutrition.%player%.dairy} to 10
         set {nutrition.%player%.fruit} to 10
 
+command /runaway:
+    trigger:
+        runaway(player's target entity)
+
 command /setmain <text>:
     trigger:
         set {main.%player%} to arg-1
+
+function runaway(e: entity):
+    loop all blocks in radius 10 of {_e}:
+        block above loop-block is air or minecraft:grass
+        loop-block is not air
+        distance between loop-block and {_e} is greater than 8
+        add loop-block's location to {_a::*}
+    set {_block} to random element of {_a::*}
+    while {_block} is set:
+        wait 1 tick
+        set path target with speed 1.5 of {_e} to {_block}
+        add 1 to {_a}
+        if {_a} > 55:
+            stop
+        loop all blocks in radius 3 of {_e}:
+            loop-block's location is {_block}
+            stop
+        
+
+on damage:
+    victim is an animal
+    loop all animals in radius 10 of victim:
+        runaway(loop-animal)
+
+function heal(n: number,e: entity):
+    set {_health} to health of {_e}
+    apply instant health of tier 1 to {_e} for 1 tick
+    wait 1.5 tick
+    set health of {_e} to {_health} + {_n}
+    

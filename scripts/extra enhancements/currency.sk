@@ -1,0 +1,61 @@
+
+on join:
+    {coins::%player%} is not set
+    pay("%player%",100,"The Keeper")
+
+function add_transaction(r: text, s: text, a: number):
+    add "&a%{_s}% &7-> &6%{_r}% &7(&a+%{_a}%&7)" to {transactions::%{_r}%::*}
+    add "&a%{_s}% &7-> &6%{_r}% &7(&c-%{_a}%&7)" to {transactions::%{_s}%::*}
+
+function failed_transaction(r: text, s: text):
+    add "&a%{_s}% &7-> &6%{_r}% &c(FAILED)" to {transactions::%{_r}%::*}
+    add "&a%{_s}% &7-> &6%{_r}% &c(FAILED)" to {transactions::%{_s}%::*}
+
+function pay(p: text, a: number, t: text):
+    if {_t} is not "The Keeper":
+        {_a} > {coins::%{_t}%}
+        failed_transaction({_p},{_t})
+        send "&cTransaction failed!" to {_t} parsed as player
+        play sound "entity.villager.no" with volume 1 for {_t} parsed as player
+        if {coins::%{_t}%} is less than 0:
+            set {coins::%{_t}%} to 0
+        stop
+    remove {_a} from {coins::%{_t}%}
+    add {_a} to {coins::%{_p}%}
+    play sound "entity.experience_orb.pickup" with volume 1 for {_p} parsed as player
+    play sound "entity.experience_orb.pickup" with volume 1 for {_t} parsed as player
+    add_transaction({_p},{_t},{_a})
+    send "&aTransaction successful!" to {_t} parsed as player
+    send "&6Coins Recieved! &a+%{_a}%" to {_p} parsed as player
+    if {coins::%{_t}%} is less than 0:
+        set {coins::%{_t}%} to 0
+
+
+command /reseteco:
+    trigger:
+        clear {transactions::*}
+        clear {coins::*}
+
+command /pay <offlineplayer> <number>:
+    description: Pay another player.
+    usage: Correct usage: /pay <a player> <amount>
+    trigger:
+        pay("%arg-1%",arg-2,"%player%")
+
+
+command /coins:
+    description: View your Keeper Account!
+    trigger:
+        send "&7---------------------------" to player
+        send "" 
+        send "&7Hello, &a%player%!"
+        send "&7You currently have &6%{coins::%player%}% coin(s) &7in your name! &a:)"
+        send ""
+        send "&7Transactions (Most recent is top)"
+        loop reversed {transactions::%player%::*}:
+            add 1 to {_c}
+            if {_c} is 11:
+                stop loop
+            send "&7%{_c}%: %loop-value%" to player
+        send ""
+        send "&7---------------------------" to player

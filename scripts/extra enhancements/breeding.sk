@@ -1,0 +1,25 @@
+on right click on a animal:
+    event-animal is not a bat or a parrot or a wolf
+    send title "" to player
+    if {friendship.%event-animal%::%player%} is not set:
+        set {friendship.%event-animal%::%player%} to 0
+    send subtitle "&a%{friendship.%event-animal%::%player%}%&7/100 &c♥" to player
+    if player is holding hay bale:
+        remove 1 hay bale from player's tool
+        add 10 to {friendship.%event-animal%::%player%}
+        if {friendship.%event-animal%::%player%} > 100:
+            set {friendship.%event-animal%::%player%} to 100
+        send title "" to player
+        send subtitle "&a%{friendship.%event-animal%::%player%}%&7/100 &c♥" to player
+    if player is holding wheat or carrot:
+        {friendship.%event-animal%::%player%} < 100
+        cancel event
+        send title "" to player
+        send subtitle "&aThe animal refuses." to player
+
+
+on entity target:
+    event-entity is a animal
+    target is a player
+    {friendship.%event-entity%::%player%} < 75
+    cancel event

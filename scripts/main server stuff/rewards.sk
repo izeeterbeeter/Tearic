@@ -95,8 +95,28 @@ on rightclick:
         play sound "entity.item.pickup" with volume 1 at location of player for all players
         give player {_reward}
 
+function drop_currency(b: block, a: number):
+    drop a sunflower named "&6%{_a}% coins" at {_b}
+
+on player pickup of a sunflower:
+    event-item's name contains " coins"
+    set {_a::*} to event-item's name split at " "
+    cancel event
+    pay("%player%",uncolored {_a::1} parsed as number,"The Keeper")
+    delete event-dropped item
+    
 
 
+on death of a mob:
+    chance of 1%
+    attacker is player
+    drop_loot("&fCommon", victim)
+
+on death:
+    chance of 10%
+    attacker is player
+    drop_currency(block at victim,random integer between 1 and 5)
+    
 
 
 

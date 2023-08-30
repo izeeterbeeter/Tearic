@@ -205,12 +205,6 @@ every 2 second:
             apply slowness of tier 2 without any particles to loop-player for 2 seconds
             apply weakness of tier 1 without any particles to loop-player for 2 seconds
 
-on rightclick:
-    event-item is any meat
-    {vegan.%player%} is true
-    cancel event
-    send action bar "&7i can't eat this..." to player
-
 on consume:
     lore of event-item is set
     cancel event
@@ -237,26 +231,29 @@ on consume:
     remove 1 of player's tool from player's tool
     apply potion of saturation of tier 1 without any particles to player for "%{_food}*2% ticks" parsed as timespan
 
+on join:
+    while player is online:
+        wait 5 ticks
+        player is holding any food
+        loop {foodtypes::*}:
+            if {nutrition.%player%.%loop-value%} < 10:
+                add loop-value-1 to {_fart::*}
+        loop {_fart::*}:
+            show_nutrition_bar(player,loop-value)
 
 function show_nutrition_bar(p: player,t: text):
     if {_t} is "dairy":
-        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&fDairy"
-        set boss bar color of {_bar.%{_p}%} to bar white
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&fDairy" with color white
     if {_t} is "grain":
-        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&eGrain"
-        set boss bar color of {_bar.%{_p}%} to bar yellow
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&eGrain" with color yellow
     if {_t} is "vegetable":
-        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&aVegetable"
-        set boss bar color of {_bar.%{_p}%} to bar green
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&aVegetable" with color green
     if {_t} is "meat":
-        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&4Meat"
-        set boss bar color of {_bar.%{_p}%} to bar red
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&4Meat" with color red
     if {_t} is "fish":
-        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&1Fish"
-        set boss bar color of {_bar.%{_p}%} to bar blue
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&1Fish" with color blue
     if {_t} is "fruit":
-        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&cFruit"
-        set boss bar color of {_bar.%{_p}%} to bar red
+        set {_bar.%{_p}%} to bossbar named "%{_p}%%{_t}%" with title "&cFruit" with color red
     set boss bar style of {_bar.%{_p}%} to segmented 6
     set bossbar progress of {_bar.%{_p}%} to ({nutrition.%{_p}%.%{_t}%}/10)*100
     add {_p} to bossbar players of {_bar.%{_p}%}

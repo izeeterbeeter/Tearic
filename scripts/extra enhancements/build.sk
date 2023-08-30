@@ -1,0 +1,71 @@
+
+function build_building(blocks: objects, length: number, width: number, height: number, location: location):
+    set {_blockIndex} to 1
+    set {_y} to {_location}'s y-coordinate
+    loop {_height} times:
+        set {_z} to {_location}'s z-coordinate
+        loop {_width} times:
+            set {_x} to {_location}'s x-coordinate
+            loop {_length} times:
+                set {_currentBlock} to {_blocks::%{_blockIndex}%}
+                set block at location({_x}, {_y}, {_z}) to {_currentBlock}
+                add 1 to {_x}
+                add 1 to {_blockIndex}
+            add 1 to {_z}
+        add 1 to {_y}
+    broadcast "Building completed!"
+
+
+
+on load:
+    set {test::*} to oak log
+
+
+command /build <string>:
+    trigger:
+        build_building({builds::%player%::%arg-1%::*},9,9,10,player's targeted block's location)
+
+
+command /setpoint <integer>:
+    trigger:
+        if arg-1 is 1:
+            set {selection::%player%::point1} to player's targeted block's location
+            send "Point 1 set!"
+        if arg-1 is 2:
+            set {selection::%player%::point2} to player's targeted block's location
+            send "Point 2 set!"
+
+command /getblocks:
+    trigger:
+        if {selection::%player%::point1} or {selection::%player%::point2} is not set:
+            send "You must set both points first!"
+            stop
+        set {_blocks::*} to blocks_in_cube({selection::%player%::point1}, {selection::%player%::point2})
+        set {_length} to abs({selection::%player%::point1}'s x-coordinate - {selection::%player%::point2}'s x-coordinate) + 1
+        set {_width} to abs({selection::%player%::point1}'s z-coordinate - {selection::%player%::point2}'s z-coordinate) + 1
+        set {_height} to abs({selection::%player%::point1}'s y-coordinate - {selection::%player%::point2}'s y-coordinate) + 1
+        set {_name} to "building(%random integer between 1000 and 9999%).log"
+        set {builds::%player%::%{_name}%::*} to {_blocks::*}
+        log "Length: %{_length}%, Width: %{_width}%, Height: %{_height}%, Blocks: %{_blocks::*}%" to {_name}
+        send "Block data saved to a log file! (%{_name}%),Length: %{_length}%, Width: %{_width}%, Height: %{_height}%"
+
+function blocks_in_cube(loc1: location, loc2: location) :: objects:
+    set {_minX} to min({_loc1}'s x-coordinate, {_loc2}'s x-coordinate)
+    set {_maxX} to max({_loc1}'s x-coordinate, {_loc2}'s x-coordinate)
+    set {_minY} to min({_loc1}'s y-coordinate, {_loc2}'s y-coordinate)
+    set {_maxY} to max({_loc1}'s y-coordinate, {_loc2}'s y-coordinate)
+    set {_minZ} to min({_loc1}'s z-coordinate, {_loc2}'s z-coordinate)
+    set {_maxZ} to max({_loc1}'s z-coordinate, {_loc2}'s z-coordinate)
+    set {_y} to {_minY}
+    loop {_maxY} - {_minY} + 1 times:
+        set {_z} to {_minZ}
+        loop {_maxZ} - {_minZ} + 1 times:
+            set {_x} to {_minX}
+            loop {_maxX} - {_minX} + 1 times:
+                set {_block} to block at location({_x}, {_y}, {_z})'s type
+                add {_block} to {_blocks::*}
+                add 1 to {_x}
+            add 1 to {_z}
+        add 1 to {_y}
+    return {_blocks::*}
+

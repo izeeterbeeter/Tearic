@@ -1,0 +1,143 @@
+
+
+
+function is_smelter(b: block) :: boolean:
+    loop blocks in radius 1.9 of {_b}:
+        block 1 in front of {_b} is not loop-block
+        loop-block is not {_b}
+        if loop-block is not mud bricks:
+            return false
+    return true
+
+
+on break:
+    event-block is a furnace
+    set {_loc} to location of event-block
+    {smelter::*} contains {_loc}
+    clear {smelter::%{_loc}%::*}
+    clear {smelter::%{_loc}%}
+    remove {_loc} from {smelter::*}
+
+
+on rightclick:
+    player's tool is any bucket
+    if player's tool's name contains "ingot":
+        cancel event
+
+
+on rightclick:
+    player's tool is a bucket
+    event-block is furnace
+    set {_loc} to location of event-block
+    {smelter::*} contains {_loc}
+    if is_smelter(event-block):
+        if {smelter::%{_loc}%::melted} is not "":
+            remove 1 from {smelter::%{_loc}%::melted::1}
+            remove 1 of player's tool from player's tool
+            give player 1 lava bucket named "&fBucket of %{smelter::%{_loc}%::melted}%"
+        if {smelter::%{_loc}%::melted::1} is 0:
+            set {smelter::%{_loc}%::melted} to ""
+
+on rightclick:
+    event-block is furnace
+    set {_loc} to location of event-block
+    {smelter::*} contains {_loc}
+    if is_smelter(event-block):
+        if player's tool is charcoal or coal:
+            {smelter::%{_loc}%::fuel} is less than 64
+            if player is sneaking:
+                set {_amount} to item amount of player's tool
+                set {_fuelamount} to {smelter::%{_loc}%::fuel}
+                set {_totalFuel} to {_amount} + {_fuelamount}
+                if {_totalFuel} > 64:
+                    set {_amountToAdd} to 64 - {_fuelamount}
+                    remove {_amountToAdd} of player's tool from player's tool
+                    add {_amountToAdd} to {smelter::%{_loc}%::fuel}
+                    play sound "ui.button.click" with volume 1 at {_loc} for all players
+                else:
+                    add {_amount} to {smelter::%{_loc}%::fuel}
+                    play sound "ui.button.click" with volume 1 at {_loc} for all players
+                    clear player's tool
+            else:
+                add 1 to {smelter::%{_loc}%::fuel}
+                play sound "ui.button.click" with volume 1 at {_loc} for all players
+                remove 1 of player's tool from player's tool
+        if player's tool is iron ingot:
+            {smelter::%{_loc}%::melting} is false
+            {smelter::%{_loc}%::fuel} is greater than 9
+            subtract 10 from {smelter::%{_loc}%::fuel}
+            set {smelter::%{_loc}%::melting} to iron ingot
+            set {smelter::%{_loc}%::timer} to 10
+            #set block at {_loc} to lit furnace
+            remove 1 of player's tool from player's tool
+            #le spawn block display 0.5 meter in front and 0.5 meter below and 0.5 meter right of event-block
+            #set {_1} to last spawned entity
+        # set display block item type of {_1} to fire
+            while {smelter::%{_loc}%::melting} is not false:
+                smoke(block above {_loc})
+                set block 1 in front of event-block to fire
+                wait 1 second
+                subtract 1 from {smelter::%{_loc}%::timer}
+                play sound "block.blastfurnace.fire_crackle" with volume 1.5 at {_loc} for all players
+                if {smelter::%{_loc}%::timer} is 0:
+                    # block.blastfurnace.fire_crackle # block.lava.pop
+                    play sound "block.blastfurnace.fire_crackle" with volume 1 at {_loc} for all players
+                    play sound "block.lava.pop" with volume 1 at {_loc} for all players
+                    play sound "item.firecharge.use" with volume 1 at {_loc} for all players
+                    set {smelter::%{_loc}%::melted} to iron ingot
+                    set {smelter::%{_loc}%::melting} to false
+                    #set block at {_loc} to furnace
+                    #kill {_1}
+                    set block 1 in front of event-block to air
+                    add 1 to {smelter::%{_loc}%::melted::1}
+
+
+
+on rightclick:
+    event-block is a furnace
+    if is_smelter(event-block):
+        cancel event
+        set {_loc} to location of event-block
+        if {smelter::*} does not contain {_loc}:
+            add {_loc} to {smelter::*}
+        if {smelter::%{_loc}%::*} is not set:
+            set {smelter::%{_loc}%::fuel} to 0
+            set {smelter::%{_loc}%::melted} to ""
+            set {smelter::%{_loc}%::melting} to false
+        loop all entities in radius 1.9 of event-block:
+            set {_entityName} to "%loop-entity%"
+            if {_entityName} contains "text display":
+                kill loop-entity
+        le spawn text display 0.5 meter above and 1.5 meter in front of event-block
+        set {_1} to last spawned entity
+        le spawn text display 0.7 meter above and 1.5 meter in front of event-block
+        set {_2} to last spawned entity
+        le spawn text display 0.9 meter above and 1.5 meter in front of event-block
+        set {_3} to last spawned entity
+        set display text of {_1} to "&7Fuel: %{smelter::%{_loc}%::fuel}%"
+        if {smelter::%{_loc}%::melted} is not "":
+            set display text of {_2} to "&7%{smelter::%{_loc}%::melted}%: &d%{smelter::%{_loc}%::melted::1}% &7bucket(s)"
+        else:
+            set display text of {_2} to "&cNothing here boss!"
+        if {smelter::%{_loc}%::melting} is not false:
+            set display text of {_3} to "&bCurrently melting &d%{smelter::%{_loc}%::melting}%"
+        else:
+            set display text of {_3} to "&7Give me a ingot to smelt!"
+        wait 5 seconds
+        kill {_1},{_2},{_3}
+
+
+# on rightclick:
+#     event-block is a furnace
+#     cancel event
+#     le spawn text display 0.5 meter above and 0.5 meter in front of event-block
+#     set {_1} to last spawned entity
+#     le spawn text display 0.7 meter above and 0.5 meter in front of event-block
+#     set {_2} to last spawned entity
+#     le spawn text display 0.9 meter above and 0.5 meter in front of event-block
+#     set {_3} to last spawned entity
+#     set display text of {_1} to "&7Fuel: 10"
+#     set display text of {_2} to "&7Melted Iron: &d2 &7buckets"
+#     set display text of {_3} to "&bCurrently melting..."
+#     wait 5 seconds
+#     kill {_1},{_2},{_3}
